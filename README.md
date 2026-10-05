@@ -23,7 +23,9 @@ O projeto diagnostica **três regimes atmosféricos distintos**:
 - 🐍 **Pacote `metpack/`:**
   - `wyoming.py`: Download e raspagem limpa de sondagens com cálculo de Emanuel (1994).
   - `tcon.py`: Geração dos gráficos de contorno de diferenças térmicas de densidade ($T_\rho$).
+  - `plot_sat_ir.py`: Geração da figura de satélite infravermelho realçado (IR 11 µm) a partir do NOAA CDR ISCCP-H (GOES-8).
   - `generate_figures.py`: Geração das cartas de reanálise sinótica com fronteiras em Cartopy, comparações de perfis e hodógrafos.
+  - `generate_pptx.py`: Script gerador do arquivo PowerPoint oficial (10 slides).
 
 ---
 
@@ -33,13 +35,16 @@ O projeto diagnostica **três regimes atmosféricos distintos**:
 # 1. Executar as matrizes de Emanuel para as 3 sondagens
 uv run --with matplotlib --with numpy metpack/tcon.py
 
-# 2. Gerar todas as figuras científicas e cartas sinóticas
+# 2. Gerar a imagem de satélite IR realçada (GOES-8 / NOAA ISCCP-H)
+uv run --with netCDF4 --with cartopy --with matplotlib --with numpy --with scipy python metpack/plot_sat_ir.py
+
+# 3. Gerar todas as figuras científicas e cartas sinóticas
 uv run --with metpy --with cartopy --with matplotlib --with numpy generate_figures.py
 
-# 3. Gerar a apresentação em PowerPoint (10 slides / 20 min)
+# 4. Gerar a apresentação em PowerPoint (10 slides / 20 min)
 uv run --with python-pptx generate_pptx.py
 
-# 4. Atualizar o dashboard web (index.html)
+# 5. Atualizar o dashboard web (index.html)
 uv run build_index_html.py
 ```
 

@@ -346,17 +346,10 @@ HTML_TEMPLATE = r'''<!DOCTYPE html>
     </header>
 
     <!-- NAVEGAÇÃO DE ABAS: 3 ABAS CIENTÍFICAS E DIRETAS -->
-    <div class="nav-tabs" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-            <button class="tab-btn active" id="tabMainBtn" onclick="switchTab('main')">📊 Painel Interativo de Mesoescala</button>
-            <button class="tab-btn" id="tabComparisonBtn" onclick="switchTab('comparison')">⚖️ Comparação Tríplice (3 Sondagens Lado a Lado)</button>
-            <button class="tab-btn" id="tabRoadmapBtn" onclick="switchTab('roadmap')">🎓 Roteiro do Estudante (Ambas Apresentações)</button>
-        </div>
-        <div>
-            <a href="apresentacao_meso.pptx" download class="tab-btn" style="background: #2563eb; color: #ffffff; text-decoration: none; font-weight: bold; border: 1px solid #3b82f6; box-shadow: 0 2px 8px rgba(37,99,235,0.3);">
-                📥 Baixar Apresentação PPTX (10 Slides / 20 min)
-            </a>
-        </div>
+    <div class="nav-tabs" style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <button class="tab-btn active" id="tabMainBtn" onclick="switchTab('main')">📊 Painel Interativo de Mesoescala</button>
+        <button class="tab-btn" id="tabComparisonBtn" onclick="switchTab('comparison')">⚖️ Comparação Tríplice (3 Sondagens Lado a Lado)</button>
+        <button class="tab-btn" id="tabRoadmapBtn" onclick="switchTab('roadmap')">🎓 Roteiro do Estudante (Ambas Apresentações)</button>
     </div>
 
     <!-- ======================================================================= -->
@@ -496,6 +489,20 @@ HTML_TEMPLATE = r'''<!DOCTYPE html>
             </div>
         </div>
 
+        <!-- IMAGEM DE SATÉLITE REALÇADA (IR 11 µm) -->
+        <div class="grid-dashboard" id="satSection">
+            <div class="card col-12">
+                <div class="card-title">
+                    <span>Satélite GOES-8 / NOAA ISCCP-H — Imagem de Infravermelho Realçada (IR 11 µm)</span>
+                    <span class="status-badge badge-extreme">ENCHENTE DE NATAL (24/12/1995)</span>
+                </div>
+                <p style="font-size: 0.88rem; color: #cbd5e1; margin-bottom: 8px;">
+                    Monitoramento real da evolução convectiva severa sobre o Sul do Brasil. <strong>Painel A:</strong> Condições às 12:00 UTC (horário síncrono da radiossondagem SBPA) com topos convectivos a -59°C (170 hPa). <strong>Painel B:</strong> Ápice do Complexo Convectivo de Mesoescala às 18:00 UTC com topos penetrantes a -63.5°C (160 hPa) provocando acumulados torrenciais históricos na Enchente de Natal.
+                </p>
+                <img src="metpack/fig_sat_ir_19951224.png" alt="Satélite GOES-8 IR 24/12/1995" class="responsive-fig">
+            </div>
+        </div>
+
         <!-- TABELA DE DADOS BRUTOS DA SONDAGEM OBSERVADA -->
         <div class="grid-dashboard">
             <div class="card col-12">
@@ -599,27 +606,7 @@ HTML_TEMPLATE = r'''<!DOCTYPE html>
     <!-- ======================================================================= -->
     <div id="tabRoadmap" style="display: none;">
         <div class="grid-dashboard">
-            <!-- BANNER DE DOWNLOAD DA APRESENTAÇÃO -->
-            <div class="card col-12" style="background: linear-gradient(135deg, #1e293b, #0f172a); border: 2px solid #3b82f6; margin-bottom: 8px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
-                    <div>
-                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
-                            <span class="status-badge badge-extreme" style="background: #2563eb;">ARQUIVO PPTX PRONTO</span>
-                            <span class="status-badge badge-mod">10 SLIDES EM 16:9 WIDESCREEN</span>
-                            <span class="status-badge badge-neutral">CRONÔMETRO: 20 MINUTOS</span>
-                        </div>
-                        <h2 style="color: #60a5fa; margin-bottom: 6px; font-size: 1.35rem;">Apresentação Completa do Seminário: <code>apresentacao_meso.pptx</code></h2>
-                        <p style="color: #cbd5e1; font-size: 0.92rem; margin: 0; max-width: 820px;">
-                            Contém todos os 10 slides estritamente sincronizados com o roteiro de 20 minutos da banca (Prof. Reinaldo Haas - UFSC), figuras científicas de alta resolução embutidas e <strong>notas completas do orador com o script falado</strong> em cada slide.
-                        </p>
-                    </div>
-                    <div>
-                        <a href="apresentacao_meso.pptx" download style="display: inline-flex; align-items: center; gap: 8px; background: #2563eb; color: #fff; padding: 13px 24px; border-radius: 8px; font-weight: bold; text-decoration: none; box-shadow: 0 4px 15px rgba(37,99,235,0.4); font-size: 1.05rem; border: 1px solid #60a5fa;">
-                            📥 Baixar apresentacao_meso.pptx (5.3 MB)
-                        </a>
-                    </div>
-                </div>
-            </div>
+
 
             <!-- GUIA TUTORIAL DIDÁTICO PARA OS ALUNOS -->
             <div class="card col-12" style="background: rgba(30, 41, 59, 0.7); border: 2px solid #eab308; margin-bottom: 12px;">
@@ -716,15 +703,24 @@ HTML_TEMPLATE = r'''<!DOCTYPE html>
                 </div>
 
                 <!-- BLOCO 6 -->
-                <div class="timeline-card">
-                    <span class="time-badge">17 - 20 min | Slides 9 & 10</span>
-                    <h3 style="color: var(--accent-green); margin-bottom: 6px;">Conclusão: Síntese dos Gatilhos de Mesoescala & Fechamento para a Banca</h3>
+                <div class="timeline-card danger">
+                    <span class="time-badge">17 - 19 min | Slide 9</span>
+                    <h3 style="color: var(--accent-red); margin-bottom: 6px;">Monitoramento por Satélite: Imagem Infravermelho (IR 11 µm)</h3>
                     <p style="font-size: 0.9rem; color: #cbd5e1; margin-bottom: 8px;">
-                        Síntese integrada (Instabilidade Extrema + Rompimento do Capping Lid + Suporte Cinemático do JBN). Classificação como Supercélulas de Alta Precipitação (HP) com rajadas descendentes severas. Abertura formal para a arguição da banca examinadora.
+                        Comprovação observacional via satélite GOES-8 / NOAA ISCCP-H CDR em 24/12/1995. Painel A (12Z - momento da sondagem SBPA) com topos a -59°C (170 hPa) e Painel B (18Z - ápice vespertino) com topos penetrantes a -63.5°C (160 hPa) descarregando chuvas torrenciais na histórica Enchente de Natal.
                     </p>
                     <div style="margin-top: 8px;">
-                        <a href="metpack/fig_esquema_supercelula_hp.png" target="_blank" style="color: #38bdf8; font-size: 0.85rem; font-weight: 600; text-decoration: underline;">🔍 Ver Esquema Conceitual Supercélula HP (fig_esquema_supercelula_hp.png)</a>
+                        <a href="metpack/fig_sat_ir_19951224.png" target="_blank" style="color: #38bdf8; font-size: 0.85rem; font-weight: 600; text-decoration: underline;">🔍 Ver Imagem de Satélite IR Realçada (fig_sat_ir_19951224.png)</a>
                     </div>
+                </div>
+
+                <!-- BLOCO 7 -->
+                <div class="timeline-card">
+                    <span class="time-badge">19 - 20 min | Slide 10</span>
+                    <h3 style="color: var(--accent-green); margin-bottom: 6px;">Conclusões Finais & Abertura Formal para a Banca</h3>
+                    <p style="font-size: 0.9rem; color: #cbd5e1; margin-bottom: 8px;">
+                        Síntese integrada (MUCAPE de 4646 J/kg, suporte cinemático do JBN com 44 nós, topos de satélite de -63.5°C). Referências bibliográficas fundamentais (Emanuel 1994, Doswell 2001) e abertura formal para a arguição da banca examinadora.
+                    </p>
                 </div>
             </div>
         </div>

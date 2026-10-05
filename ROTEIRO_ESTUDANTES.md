@@ -128,8 +128,8 @@ uv run build_index_html.py
 | **06** | `10:00 - 12:30` | **Perfis Verticais de Estabilidade ($\theta, \theta_e, \theta_s, N, S$)** | Analisar o pico de Brunt-Väisälä ($N$) em 925 hPa no caso severo (a tampa protetora), o decréscimo drástico de $\theta_e$ com a altitude e o forte cisalhamento cinemático nos primeiros 3 km. | `fig_3_soundings_profiles_comparison.png` |
 | **07** | `12:30 - 14:30` | **Diagnóstico de Umidade, Água Precipitável e DCAPE** | Avaliar a razão de mistura ($r = 16.4\text{ g/kg}$), o conteúdo de água precipitável ($PW = 50.8\text{ mm}$) e o $DCAPE = 1149\text{ J/kg}$, alertando para o altíssimo potencial de rajadas destrutivas (*downbursts*). | Perfis de umidade e métricas |
 | **08** | `14:30 - 17:00` | **Cinemática: Hodógrafo, JBN e Helicidade (SRH)** | Apresentar o hodógrafo em espiral; caracterizar o núcleo do JBN em 925 hPa ($44\text{ nós} \approx 23.2\text{ m/s}$), o cisalhamento vertical 0-6 km ($28.7\text{ m/s}$) e a helicidade $0-3\text{ km} = 245\text{ m}^2/\text{s}^2$, provando o suporte à supercélula rotatória. | `fig_kinematics_hodograph.png` |
-| **09** | `17:00 - 18:30` | **Síntese dos Gatilhos de Mesoescala & Modo Convectivo** | Integrar os quatro ingredientes clássicos de Doswell (Umidade + Instabilidade + Levantamento + Cisalhamento). Classificar o evento como Supercélula de Alta Precipitação (HP) com ventos destrutivos. | Diagrama conceitual de síntese |
-| **10** | `18:30 - 20:00` | **Conclusões Finais & Abertura para a Banca** | Recapitular as conclusões principais, agradecer à atenção da banca e colocar-se formalmente à disposição para a sessão de arguição. | Slide final de encerramento |
+| **09** | `17:00 - 19:00` | **Monitoramento por Satélite: Imagem Infravermelho (IR 11 µm)** | Apresentar a comprovação observacional via GOES-8 / NOAA ISCCP-H CDR em 24/12/1995. Painel A (12Z síncrono com a sondagem SBPA) com topos a -59°C (170 hPa) e Painel B (18Z auge da convecção) com topos penetrantes a -63.5°C (160 hPa) associados à histórica Enchente de Natal. | `fig_sat_ir_19951224.png` |
+| **10** | `19:00 - 20:00` | **Conclusões Finais & Abertura para a Banca** | Recapitular as conclusões principais, agradecer à atenção da banca e colocar-se formalmente à disposição para a sessão de arguição. | Slide final de encerramento |
 
 ---
 
@@ -159,5 +159,6 @@ uv run build_index_html.py
 - **Scripts de Processamento:**
   - `metpack/wyoming.py`: Download e raspagem limpa de dados de sondagem.
   - `metpack/tcon.py`: Geração dos gráficos de contorno de diferenças térmicas de Emanuel.
+  - `metpack/plot_sat_ir.py`: Geração da figura de satélite infravermelho realçado (IR 11 µm) a partir dos dados do NOAA ISCCP-H / GOES-8.
   - `generate_figures.py`: Geração das figuras comparativas, mapas Cartopy e hodógrafos.
   - `generate_pptx.py`: Script gerador do arquivo PowerPoint oficial.

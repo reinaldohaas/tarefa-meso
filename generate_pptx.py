@@ -641,38 +641,39 @@ O cisalhamento profundo inclina a coluna convectiva, fazendo com que a chuva e o
 Com SRH 0-3 km de 245 m²/s² e Bulk Richardson Number de 34, a cinemática confirma um ambiente clássico para tempestades supercelulares.""")
 
     # --------------------------------------------------------------------------
-    # SLIDE 9: Síntese dos Gatilhos de Mesoescala & Modo Convectivo (17 - 20 min, Parte 1)
+    # SLIDE 9: Monitoramento por Satélite: Imagem Infravermelho (IR 11 µm) (17 - 19 min)
     # --------------------------------------------------------------------------
     s9 = prs.slides.add_slide(blank_layout)
     set_slide_background(s9)
-    add_header(s9, "Síntese dos Gatilhos de Mesoescala & Modo Convectivo",
-               "Modelo Conceitual: Supercélula de Alta Precipitação (HP) com Transição para Linha de Instabilidade",
-               "17 - 20 min", 9)
+    add_header(s9, "Monitoramento por Satélite: Imagem Infravermelho (IR 11 µm)",
+               "Satélite GOES-8 / NOAA ISCCP-H (24/12/1995): Evolução da Convecção Profunda e Enchente de Natal",
+               "17 - 19 min", 9)
 
-    img_hp = 'metpack/fig_esquema_supercelula_hp.png'
-    if os.path.exists(img_hp):
-        s9.shapes.add_picture(img_hp, Inches(0.8), Inches(1.75), width=Inches(7.2))
+    img_sat = 'metpack/fig_sat_ir_19951224.png'
+    if os.path.exists(img_sat):
+        s9.shapes.add_picture(img_sat, Inches(0.6), Inches(1.7), width=Inches(8.4))
 
-    card_s9 = create_card(s9, Inches(8.2), Inches(1.75), Inches(4.35), Inches(5.15))
-    tb_s9 = s9.shapes.add_textbox(Inches(8.4), Inches(1.9), Inches(3.95), Inches(4.85))
+    card_s9 = create_card(s9, Inches(9.2), Inches(1.7), Inches(3.5), Inches(5.2))
+    tb_s9 = s9.shapes.add_textbox(Inches(9.35), Inches(1.85), Inches(3.2), Inches(4.9))
     tf_s9 = tb_s9.text_frame
     tf_s9.word_wrap = True
 
     sections_s9 = [
-        ("Matriz de Gatilhos de Mesoescala:", [
-            "1. Gatilho Dinâmico: Difluência e CVA em 500 hPa gerando ascensão sinótica.",
-            "2. Gatilho Termodinâmico: Rompimento do Capping Lid em 925 hPa por aquecimento diurno e convergência no JBN.",
-            "3. Fonte de Umidade: Fluxo de θe > 350 K e r = 22 g/kg suprido ininterruptamente."
+        ("Satélite & Base de Dados:", [
+            "Sensor: Imager GOES-8 (Canal 4 - IR 11 µm).",
+            "Fonte: NOAA ISCCP-H CDR (Gridded 10 km).",
+            "Cobertura: América do Sul e Bacia do Prata."
         ], C_CYAN),
-        ("Classificação do Modo Convectivo:", [
-            "Alto CAPE (> 3.800 J/kg) + Alto Cisalhamento 0-6 km (28.7 m/s) = Supercélula.",
-            "PW Extremo (52.4 mm) + Alto DCAPE (1.149 J/kg) = Subtipo de Alta Precipitação (HP Supercell).",
-            "O mesociclone fica envolto por cortinas pesadas de chuva torrencial e granizo."
-        ], C_ROSE),
-        ("Evolução para Linha de Instabilidade:", [
-            "O alto DCAPE gera piscinas frias (cold pools) densas e frentes de rajada vigorosas.",
-            "A rápida coalescência das piscinas frias promove a transição da supercélula para Linha de Instabilidade / CCM em poucas horas."
-        ], C_AMBER)
+        ("Painel A (12:00 UTC / 09:00 HL):", [
+            "Horário síncrono da radiossondagem de SBPA.",
+            "Camada de ar úmido sob forte Capping Lid.",
+            "Convecção ativa sobre a fronteira oeste com topos a -59°C (170 hPa)."
+        ], C_AMBER),
+        ("Painel B (18:00 UTC / 15:00 HL):", [
+            "Auge vespertino da convecção severa.",
+            "Rompimento explosivo da inversão e avanço do Complexo Convectivo de Mesoescala (CCM).",
+            "Topos penetrantes a -63.5°C (160 hPa) descarregando chuvas torrenciais (Enchente de Natal)."
+        ], C_ROSE)
     ]
     for stitle, sbullets, scol in sections_s9:
         pb = tf_s9.add_paragraph() if tf_s9.paragraphs[0].text else tf_s9.paragraphs[0]
@@ -689,15 +690,14 @@ Com SRH 0-3 km de 245 m²/s² e Bulk Richardson Number de 34, a cinemática conf
             p_bullet.space_before = Pt(2)
 
     set_speaker_notes(s9, """ROTEIRO DO ORADOR (17:00 - 18:30):
-Integrando todos os diagnósticos termodinâmicos e cinemáticos em um modelo conceitual de mesoescala.
-À esquerda, sintetizamos a estrutura física da tempestade prevista para este evento.
-A combinação de alto CAPE (acima de 3.800 J/kg no modelo reversível e 4.600 J/kg no MUCAPE) com cisalhamento vertical profundo de 28.7 m/s classifica inequivocamente o sistema como uma tempestade Supercelular.
+Apresentamos agora a comprovação observacional por satélite meteorológico para o dia 24 de dezembro de 1995.
+Utilizamos os dados do sensor de infravermelho de 11 micrômetros do satélite GOES-8, processados a partir do Climate Data Record ISCCP-H da NOAA, cobrindo o Sul do Brasil e a Bacia do Prata.
 
-Entretanto, devido ao conteúdo excepcional de umidade troposférica (PW de 52.4 mm), esta tempestade não se comporta como uma supercélula clássica de planície seca (LP), mas sim como uma Supercélula de Alta Precipitação (HP Supercell).
-Em uma supercélula HP, a precipitação pesada e o granizo envolvem completamente o mesociclone, ocultando a rotação de observadores em solo e gerando chuvas torrenciais.
+No Painel A, correspondente às 12:00 UTC (9 da manhã no horário local), exatamente no momento do lançamento da nossa radiossondagem em Porto Alegre, observamos a nebulosidade associada à frente fria e ao canal de umidade do JBN. Os topos convectivos mais frios já atingiam cerca de -59°C sobre o oeste e sul do Rio Grande do Sul, enquanto a região metropolitana de Porto Alegre ainda acumulava calor sob a tampa de inversão térmica.
 
-Além disso, como o DCAPE é de 1.149 J/kg, a corrente descendente traseira (RFD) e a dianteira (FFD) produzem piscinas frias (cold pools) muito densas e agressivas.
-Quando a frente de rajada da piscina fria avança sobre o ar quente e úmido trazido pelo JBN, ela força novas convecções ao longo de sua borda. Esse mecanismo faz com que supercélulas individuais na Bacia do Prata rapidamente se fundam em linhas de instabilidade organizadas e Complexos Convectivos de Mesoescala (CCMs).""")
+No Painel B, às 18:00 UTC (3 da tarde, horário local), testemunhamos o ápice da atividade convectiva explosiva. Com o aquecimento superficial e a advecção forçada, o capping lid foi superado, e a energia disponível de mais de 4.600 J/kg de CAPE foi liberada violentamente.
+A imagem infravermelha realçada revela topos penetrantes ultrapassando -63°C no nível de 160 hPa, estruturando um intenso Complexo Convectivo de Mesoescala.
+Foi essa configuração de tempestades severas supercelulares de alta precipitação que desencadeou a histórica Enchente de Natal de 1995 no Sul do Brasil, provocando acumulados pluviométricos extremos em Santa Catarina e no leste gaúcho.""")
 
     # --------------------------------------------------------------------------
     # SLIDE 10: Conclusão & Fechamento para Arguição da Banca (17 - 20 min, Parte 2)
