@@ -307,10 +307,17 @@
     </header>
 
     <!-- NAVEGAÇÃO DE ABAS: DIAGNÓSTICO VS ROTEIRO DA BANCA VS SAÍDAS WYOMING -->
-    <div class="nav-tabs">
-        <button class="tab-btn active" id="tabMainBtn" onclick="switchTab('main')">Painel de Diagnóstico & Gráficos</button>
-        <button class="tab-btn" id="tabCapeOutBtn" onclick="switchTab('capeout')">Saídas do wyoming.f (cape.out & Gráficos)</button>
-        <button class="tab-btn" id="tabRoadmapBtn" onclick="switchTab('roadmap')">Roteiro Cronometrado da Apresentação (20 Minutos)</button>
+    <div class="nav-tabs" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button class="tab-btn active" id="tabMainBtn" onclick="switchTab('main')">Painel de Diagnóstico & Gráficos</button>
+            <button class="tab-btn" id="tabCapeOutBtn" onclick="switchTab('capeout')">Saídas do wyoming.f (cape.out & Gráficos)</button>
+            <button class="tab-btn" id="tabRoadmapBtn" onclick="switchTab('roadmap')">Roteiro Cronometrado da Apresentação (20 Minutos)</button>
+        </div>
+        <div>
+            <a href="apresentacao_meso.pptx" download class="tab-btn" style="background: #2563eb; color: #ffffff; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; font-weight: bold; border: 1px solid #3b82f6; box-shadow: 0 2px 8px rgba(37,99,235,0.3);">
+                📊 Baixar Apresentação PPTX (10 Slides / 20 min)
+            </a>
+        </div>
     </div>
 
     <!-- ABA 1: PAINEL PRINCIPAL -->
@@ -439,6 +446,28 @@
     <!-- ABA 2: ROTEIRO CRONOMETRADO DA APRESENTAÇÃO (20 MINUTOS) -->
     <div id="tabRoadmap" style="display: none;">
         <div class="grid-dashboard">
+            <!-- BANNER DE DOWNLOAD DA APRESENTAÇÃO -->
+            <div class="card col-12" style="background: linear-gradient(135deg, #1e293b, #0f172a); border: 2px solid #3b82f6; margin-bottom: 8px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+                            <span class="status-badge badge-extreme" style="background: #2563eb;">ARQUIVO PPTX PRONTO</span>
+                            <span class="status-badge badge-mod">10 SLIDES EM 16:9 WIDESCREEN</span>
+                            <span class="status-badge badge-neutral">CRONÔMETRO: 20 MINUTOS</span>
+                        </div>
+                        <h2 style="color: #60a5fa; margin-bottom: 6px; font-size: 1.35rem;">Apresentação Completa do Seminário: <code>apresentacao_meso.pptx</code></h2>
+                        <p style="color: #cbd5e1; font-size: 0.92rem; margin: 0; max-width: 820px;">
+                            Contém todos os 10 slides estritamente sincronizados com o roteiro de 20 minutos da banca (Prof. Reinaldo Haas - UFSC), figuras científicas de alta resolução embutidas e <strong>notas completas do orador com o script falado</strong> em cada slide.
+                        </p>
+                    </div>
+                    <div>
+                        <a href="apresentacao_meso.pptx" download style="display: inline-flex; align-items: center; gap: 8px; background: #2563eb; color: #fff; padding: 13px 24px; border-radius: 8px; font-weight: bold; text-decoration: none; box-shadow: 0 4px 15px rgba(37,99,235,0.4); font-size: 1.05rem; border: 1px solid #60a5fa;">
+                            📥 Baixar apresentacao_meso.pptx (4.9 MB)
+                        </a>
+                    </div>
+                </div>
+            </div>
+
             <div class="card col-12">
                 <div class="card-title">
                     <span>Roteiro Oficial de Apresentação para a Banca (FSC7116 - UFSC)</span>
@@ -452,9 +481,12 @@
                     <p style="font-size: 0.9rem; color: #cbd5e1; margin-bottom: 8px;">
                         <strong>Conteúdo Obrigatório:</strong> Apresentação do evento severo escolhido (24/12/1995 em SBPA), imagens de satélite/radar e cartas de reanálise de 500 hPa (cavado baroclínico e difluência a jusante) e 850 hPa (Baixa do Chaco e Jato de Baixos Níveis advectando ar tropical quente e úmido).
                     </p>
-                    <p style="font-size: 0.85rem; color: var(--text-secondary);">
+                    <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 10px;">
                         <em>Frase de Abertura:</em> "A configuração de 500 e 850 hPa em 24/12/1995 estabeleceu um acoplamento clássico de difluência em altos níveis e advecção subtropical em baixos níveis, gerando um ambiente de altíssima energia potencial sobre o Rio Grande do Sul."
                     </p>
+                    <div style="margin-top: 8px;">
+                        <a href="metpack/fig_synoptic_analysis.png" target="_blank" style="color: #38bdf8; font-size: 0.85rem; font-weight: 600; text-decoration: underline;">🔍 Ver Carta Sinótica de Reanálise 500 & 850 hPa (fig_synoptic_analysis.png)</a>
+                    </div>
                 </div>
 
                 <!-- BLOCO 2 -->
@@ -464,8 +496,12 @@
                     <p style="font-size: 0.9rem; color: #cbd5e1; margin-bottom: 8px;">
                         <strong>Conteúdo Obrigatório:</strong> Comparação dos 3 perfis no Skew-T (12/12 pós-frontal estável, 23/12 moderado, 24/12 explosivo). Formalismo de CAPE e CIN, e análise do gradiente vertical ∂θe/∂z &lt; 0 demonstrando instabilidade convectiva severa.
                     </p>
-                    <div class="theory-box" style="margin-top: 4px;">
-                        $$\text{CAPE} = \int_{p_{\text{EL}}}^{p_{\text{LFC}}} R_d (T_{\rho, p} - T_{\rho, e}) \, d\ln p \quad | \quad \text{24/12: MUCAPE} = 7808.7\text{ J/kg, CIN} = 0\text{ J/kg}$$
+                    <div class="theory-box" style="margin-top: 4px; margin-bottom: 8px;">
+                        $$\text{CAPE} = \int_{z_{\text{LFC}}}^{z_{\text{EL}}} g \left( \frac{T_{v,p} - T_{v,e}}{T_{v,e}} \right) dz \quad | \quad \text{24/12: MUCAPE} = 4645.5\text{ J/kg, CIN} = -6.5\text{ J/kg}$$
+                    </div>
+                    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                        <a href="metpack/fig_3_soundings_skewt.png" target="_blank" style="color: #38bdf8; font-size: 0.85rem; font-weight: 600; text-decoration: underline;">🔍 Ver Comparação das 3 Sondagens (fig_3_soundings_skewt.png)</a>
+                        <a href="metpack/fig_colab_severe_skewt.png" target="_blank" style="color: #38bdf8; font-size: 0.85rem; font-weight: 600; text-decoration: underline;">🔍 Ver Skew-T MetPy + Tabela de Índices (fig_colab_severe_skewt.png)</a>
                     </div>
                 </div>
 
@@ -476,8 +512,11 @@
                     <p style="font-size: 0.9rem; color: #cbd5e1; margin-bottom: 8px;">
                         <strong>Conteúdo Obrigatório:</strong> Explicação dos resultados do <code>wyoming.f</code> citando rigorosamente o livro <em>Atmospheric Convection</em> (Emanuel, 1994, Cap. 4 & 6) e o recurso oficial MIT OCW 12.811. Demonstrar como o termo de carregamento de hidrometeoros (<code>-r_l</code>) reduz a flutuabilidade real.
                     </p>
-                    <div class="theory-box" style="margin-top: 4px;">
-                        $$T_\rho = T \left( \frac{1 + r_v/\epsilon}{1 + r_t} \right) \approx T (1 + 0.608\, r_v - r_l - r_i) \quad \implies \quad \text{CAPE cai de 7808 para 6120 J/kg}$$
+                    <div class="theory-box" style="margin-top: 4px; margin-bottom: 8px;">
+                        $$T_\rho = T \left( \frac{1 + r_v/\epsilon}{1 + r_t} \right) \approx T (1 + 0.608\, r_v - r_l - r_i) \quad \implies \quad \text{CAPE reversível cai para 3832 J/kg (Water Loading: } \Delta = 340\text{ J/kg)}$$
+                    </div>
+                    <div>
+                        <a href="metpack/tcon_comparacao_emanuel.png" target="_blank" style="color: #38bdf8; font-size: 0.85rem; font-weight: 600; text-decoration: underline;">🔍 Ver Mapas 2D Reversível vs Pseudoadiabático (tcon_comparacao_emanuel.png)</a>
                     </div>
                 </div>
 
@@ -488,8 +527,11 @@
                     <p style="font-size: 0.9rem; color: #cbd5e1; margin-bottom: 8px;">
                         <strong>Conteúdo Obrigatório:</strong> Perfis verticais de temperatura potencial virtual (θv), frequência de Brunt-Väisälä (N²), razão de mistura (atingindo 22 g/kg em 925 hPa!), Água Precipitável (PW &gt; 52 mm) e DCAPE (1149 J/kg). Mostrar que o pico de N² próximo à superfície agiu como um "capping lid" acumulador de energia.
                     </p>
-                    <div class="theory-box" style="margin-top: 4px;">
-                        $$N^2 = \frac{g}{\theta_v}\frac{\partial \theta_v}{\partial z} \quad | \quad \text{PW} = \frac{1}{g}\int r(p)\, dp \quad | \quad \text{DCAPE} = 1149\text{ J/kg (Risco de Microbursts)}$$
+                    <div class="theory-box" style="margin-top: 4px; margin-bottom: 8px;">
+                        $$N^2 = \frac{g}{\theta_v}\frac{\partial \theta_v}{\partial z} \quad | \quad \text{PW} = \frac{1}{g}\int r(p)\, dp = 52.4\text{ mm} \quad | \quad \text{DCAPE} = 1149\text{ J/kg (Risco de Microbursts } W_{\text{down}} \approx 48\text{ m/s)}$$
+                    </div>
+                    <div>
+                        <a href="metpack/fig_cap2_profiles.png" target="_blank" style="color: #38bdf8; font-size: 0.85rem; font-weight: 600; text-decoration: underline;">🔍 Ver Perfis Verticais de θ, N², r e DCAPE (fig_cap2_profiles.png)</a>
                     </div>
                 </div>
 
@@ -498,10 +540,13 @@
                     <span class="time-badge">14 - 17 min | Slide 8</span>
                     <h3 style="color: var(--accent-blue); margin-bottom: 6px;">Cinemática: Hodógrafo, Jato em Baixos Níveis (JBN) e Helicidade (SRH)</h3>
                     <p style="font-size: 0.9rem; color: #cbd5e1; margin-bottom: 8px;">
-                        <strong>Conteúdo Obrigatório:</strong> Análise do hodógrafo curvo, identificação do núcleo do JBN em 925 hPa com vento de 44 nós (22.6 m/s), cisalhamento bulk 0-6 km de 28.7 m/s e SRH 0-3 km de 245 m²/s² suportando convecção supercelular rotatória.
+                        <strong>Conteúdo Obrigatório:</strong> Análise do hodógrafo curvo, identificação do núcleo do JBN em 925 hPa com vento de 44 nós (23.2 m/s), cisalhamento bulk 0-6 km de 28.7 m/s e SRH 0-3 km de 245 m²/s² suportando convecção supercelular rotatória.
                     </p>
-                    <div class="theory-box" style="margin-top: 4px;">
-                        $$\text{SRH} = -\int_0^h \left[ (u - c_x)\frac{\partial v}{\partial z} - (v - c_y)\frac{\partial u}{\partial z} \right] dz \quad | \quad \Delta \mathbf{V}_{0-6} = 28.7\text{ m/s}$$
+                    <div class="theory-box" style="margin-top: 4px; margin-bottom: 8px;">
+                        $$\text{SRH} = -\int_0^h \left[ (u - c_x)\frac{\partial v}{\partial z} - (v - c_y)\frac{\partial u}{\partial z} \right] dz = 245\text{ m}^2/\text{s}^2 \quad | \quad \Delta \mathbf{V}_{0-6} = 28.7\text{ m/s (55.8 kt)}$$
+                    </div>
+                    <div>
+                        <a href="metpack/fig_kinematics_hodograph.png" target="_blank" style="color: #38bdf8; font-size: 0.85rem; font-weight: 600; text-decoration: underline;">🔍 Ver Hodógrafo Polar do Vento & Camadas Cinemáticas (fig_kinematics_hodograph.png)</a>
                     </div>
                 </div>
 
@@ -512,6 +557,13 @@
                     <p style="font-size: 0.9rem; color: #cbd5e1; margin-bottom: 8px;">
                         <strong>Conteúdo Obrigatório:</strong> Síntese integrada (Instabilidade Extrema + Rompimento do Capping Lid + Suporte Cinemático do JBN). Classificação como Supercélulas de Alta Precipitação (HP) com rajadas descendentes severas. Abertura formal para a arguição da banca examinadora.
                     </p>
+                    <div style="margin-top: 8px;">
+                        <a href="metpack/fig_esquema_supercelula_hp.png" target="_blank" style="color: #38bdf8; font-size: 0.85rem; font-weight: 600; text-decoration: underline;">🔍 Ver Modelo Conceitual da Supercélula HP (fig_esquema_supercelula_hp.png)</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- ABA 3: SAÍDAS DETALHADAS DO WYOMING.F / CAPE.OUT -->
     <div id="tabCapeOut" style="display: none;">
         <div class="grid-dashboard">

@@ -73,13 +73,37 @@ Start-Process tcon_comparacao_emanuel.png
 Start-Process diagnostico_mesoescala.png
 ```
 
+### Passo 3.5: Gerar as Figuras Científicas do Seminário (`generate_figures.py`)
+Gera os gráficos de alta resolução baseados nas rotinas do Google Colab do Prof. Reinaldo Haas:
+```powershell
+cd C:\Users\haas\github\tarefa-meso
+& "$HOME\.local\bin\uv.exe" run --with metpy --with pandas --with matplotlib generate_figures.py
+```
+Figuras geradas em `metpack/`:
+- `fig_colab_severe_skewt.png`: Skew-T + Hodógrafo + Tabela com 21 índices convectivos do MetPy.
+- `fig_3_soundings_skewt.png`: Comparação das 3 sondagens (12/12 estável, 23/12 moderado, 24/12 severo).
+- `fig_synoptic_analysis.png`: Cartas sinóticas conceituais de 500 hPa (difluência/cavado) e 850 hPa (JBN/umidade).
+- `fig_cap2_profiles.png`: Perfis verticais do Cap. 2 de Emanuel ($\theta/\theta_e/\theta_s$, Brunt-Väisälä $N^2$ com capping lid, razão de mistura $r$ e DCAPE).
+- `fig_kinematics_hodograph.png`: Hodógrafo polar detalhado com camadas cinemáticas, vetor JBN, vetor de tempestade e cisalhamento 0-6 km.
+- `fig_esquema_supercelula_hp.png`: Modelo conceitual de Supercélula de Alta Precipitação (HP) e transição para Linha de Instabilidade.
+
+### Passo 3.6: Gerar a Apresentação em PowerPoint (`generate_pptx.py`)
+Gera o arquivo `apresentacao_meso.pptx` estritamente sincronizado com o roteiro de 20 minutos (10 slides) para a banca examinadora:
+```powershell
+cd C:\Users\haas\github\tarefa-meso
+& "$HOME\.local\bin\uv.exe" run --with python-pptx generate_pptx.py
+Start-Process apresentacao_meso.pptx
+```
+
 ---
 
 ## 4. Estrutura dos Arquivos de Saída
 
+* **`apresentacao_meso.pptx`**: Apresentação oficial completa em formato PowerPoint (16:9 widescreen, 10 slides, figuras embutidas, roteiro cronometrado e script falado completo nas notas do orador).
 * **`cape.out`**: Tabela com as 20 camadas de origem na baixa troposfera, contendo PA reversível, PA pseudoadiabático, NA (CIN), CAPE reversível, CAPE pseudoadiabático e DCAPE.
 * **`p.out`**: Vetor com os níveis de pressão verticais interpolados a cada 5 hPa.
 * **`porig.out`**: Vetor com os níveis de pressão de origem da parcela.
 * **`tdifrev.out`**: Matriz 2D de anomalias térmicas reversíveis ($\Delta T_\rho$ em K) para cada par $(p_{\text{origem}}, p_{\text{elevada}})$.
 * **`tdifpseudo.out`**: Matriz 2D de anomalias térmicas pseudoadiabáticas ($\Delta T_v$ em K).
 * **`modsound.txt`**: Perfil tratado da sondagem ($P$, $T$, $RH$).
+
