@@ -5,6 +5,19 @@
 
 ---
 
+## 0. Diretriz Didática para os Alunos (FSC7116 - UFSC)
+
+### ⚠️ Requisito Obrigatório para a Banca Examinadora (Prof. Reinaldo Haas):
+Cada aluno ou grupo de trabalho **DEVE ESCOLHER OBRIGATORIAMENTE TRÊS RADIOSSONDAGENS ATMOSFÉRICAS REAIS DISTINTAS**, contemplando os três estados fundamentais da troposfera:
+
+1. **Atmosfera ESTÁVEL:** Perfil dominado por subsidência anticiclônica ou regime pós-frontal, ar seco em médios níveis ($T - T_d > 15^\circ\text{C}$), CAPE nulo ($\text{CAPE} = 0\text{ J/kg}$), estabilidade estática profunda ($N^2 > 0$ em toda a coluna), sem LFC ou EL.
+2. **Atmosfera NEUTRA (ou Transição):** Perfil com umidade na camada limite e CAPE moderado, porém associado a inibição convectiva (CIN) e/ou ausência de suporte dinâmico em 500 hPa e cisalhamento vertical fraco ($0\text{--}6\text{ km} \approx 10\text{ m/s}$), resultando em convecção rasa ou desorganizada.
+3. **Atmosfera INSTÁVEL (Convecção Severa):** Perfil com acúmulo extremo de energia ($\text{MUCAPE} > 2.000\text{--}4.600\text{ J/kg}$), presença de Capping Lid (tampa de inversão em 925 hPa) com posterior rompimento, forte gradiente $\partial \theta_e/\partial z < 0$, convergência no JBN ($> 20\text{ m/s}$) e cisalhamento profundo ($0\text{--}6\text{ km} > 20\text{ m/s}$) propício a Supercélulas de Alta Precipitação (HP) e downbursts.
+
+> **Flexibilidade de Escolha:** As 3 sondagens podem ser da **mesma estação em datas diferentes** (como no nosso caso modelo de Porto Alegre - SBPA em dez/1995: 12/12 estável, 23/12 neutro e 24/12 severo) **OU de estações e regiões geográficas diferentes** na América do Sul (ex: comparar simultaneamente SBPA sob tempo severo com SBFL ou SBCT em regime neutro/estável via Universidade de Wyoming).
+
+---
+
 ## 1. Visão Geral e Mapeamento MATLAB/Fortran $\iff$ Python
 
 Este pacote reúne rotinas para aquisição, processamento numérico, cálculo de flutuabilidade convectiva e visualização de radiossondagens da atmosfera. 

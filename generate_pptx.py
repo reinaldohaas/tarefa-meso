@@ -116,90 +116,110 @@ def build_presentation():
     print("Iniciando montagem dos 10 slides do Seminário de Mesoescala...")
 
     # --------------------------------------------------------------------------
-    # SLIDE 1: Capa & Contexto do Caso Severo (00 - 03 min, Parte 1)
+    # SLIDE 1: Capa & Tutorial Didático para os Alunos (00 - 03 min, Parte 1)
     # --------------------------------------------------------------------------
     s1 = prs.slides.add_slide(blank_layout)
     set_slide_background(s1)
 
     # Header de Apresentação
-    top_box = s1.shapes.add_textbox(Inches(1.0), Inches(0.8), Inches(11.3), Inches(0.5))
+    top_box = s1.shapes.add_textbox(Inches(1.0), Inches(0.55), Inches(11.3), Inches(0.45))
     p1 = top_box.text_frame.paragraphs[0]
-    p1.text = "UNIVERSIDADE FEDERAL DE SANTA CATARINA  |  DEPARTAMENTO DE FÍSICA / CFM"
+    p1.text = "UFSC  |  DEPARTAMENTO DE FÍSICA / CFM  |  FSC7116 METEOROLOGIA DE MESOESCALA"
     p1.font.size = Pt(11)
     p1.font.bold = True
     p1.font.color.rgb = C_CYAN
 
-    # Título Gigante
-    t1_box = s1.shapes.add_textbox(Inches(1.0), Inches(1.4), Inches(11.3), Inches(1.8))
+    # Banner de Tutorial Didático (Obrigatório para os Alunos)
+    tut_card = create_card(s1, Inches(1.0), Inches(1.05), Inches(11.33), Inches(1.05), bg_color=RGBColor(24, 38, 70), border_color=C_AMBER)
+    tb_tut = s1.shapes.add_textbox(Inches(1.2), Inches(1.12), Inches(10.9), Inches(0.9))
+    tf_tut = tb_tut.text_frame
+    tf_tut.word_wrap = True
+    p_tut1 = tf_tut.paragraphs[0]
+    p_tut1.text = "📖 TUTORIAL & DIRETRIZ DIDÁTICA OBRIGATÓRIA PARA OS ALUNOS (PROF. REINALDO HAAS):"
+    p_tut1.font.size = Pt(11)
+    p_tut1.font.bold = True
+    p_tut1.font.color.rgb = C_AMBER
+
+    p_tut2 = tf_tut.add_paragraph()
+    p_tut2.text = "Cada aluno ou grupo DEVE selecionar OBRIGATORIAMENTE TRÊS RADIOSSONDAGENS REAIS DISTINTAS contemplando os 3 estados atmosféricos:\n" \
+                  "1) Atmosfera ESTÁVEL   |   2) Atmosfera NEUTRA (ou Transição)   |   3) Atmosfera INSTÁVEL (Convecção Severa)\n" \
+                  "As sondagens podem diferir em DATAS na mesma localidade OU em LUGARES DIFERENTES (ex: SBPA, SBFL, SBCT, Argentina, etc.)."
+    p_tut2.font.size = Pt(9.5)
+    p_tut2.font.color.rgb = C_WHITE
+    p_tut2.space_before = Pt(3)
+
+    # Título Principal do Seminário
+    t1_box = s1.shapes.add_textbox(Inches(1.0), Inches(2.25), Inches(11.3), Inches(1.4))
     tf1 = t1_box.text_frame
     tf1.word_wrap = True
     p_title = tf1.paragraphs[0]
     p_title.text = "Diagnóstico Termodinâmico e Dinâmico\nde Tempestade Severa em Mesoescala"
-    p_title.font.size = Pt(32)
+    p_title.font.size = Pt(28)
     p_title.font.bold = True
     p_title.font.color.rgb = C_WHITE
 
     p_sub = tf1.add_paragraph()
-    p_sub.text = "Estudo do Caso Extremo de Porto Alegre (SBPA - 83971) em 24 de Dezembro de 1995"
-    p_sub.font.size = Pt(16)
-    p_sub.font.color.rgb = C_AMBER
-    p_sub.space_before = Pt(8)
+    p_sub.text = "Aplicação Metodológica: Estudo Comparativo das 3 Sondagens de Porto Alegre (SBPA - 83971)"
+    p_sub.font.size = Pt(15)
+    p_sub.font.color.rgb = C_CYAN
+    p_sub.space_before = Pt(4)
 
     # 3 Cards de Destaque
     cards_data = [
-        ("📍 Local & Horário", "Porto Alegre (SBPA - 83971)\n12Z (09:00 Horário Local)\nBacia do Prata / Cone Sul", C_CYAN),
-        ("⚡ Severidade Convectiva", "MUCAPE: 4.645 J/kg\nSBCAPE: 1.862 J/kg | CIN: -6 J/kg\nJBN em 925 hPa: 44 kt (23 m/s)", C_ROSE),
-        ("📚 Fundamentação Teórica", "Teoria de Emanuel (1994)\nCódigo wyoming.f / tcon.py\nMIT OCW 12.811 & MetPy", C_EMERALD)
+        ("📍 3 Casos Selecionados", "1. Estável: 12/12/1995 12Z\n2. Neutra: 23/12/1995 12Z\n3. Instável: 24/12/1995 12Z\nLocal: SBPA (Porto Alegre)", C_CYAN),
+        ("⚡ 3 Análises Completas", "• Flutuabilidade e CAPE/CIN\n• Emanuel Tρ e Water Loading\n• Freq. Brunt-Väisälä N² e Lid\n• JBN e Helicidade (SRH)", C_ROSE),
+        ("📚 Arcabouço Teórico", "• Kerry Emanuel (1994)\n• MIT OCW 12.811\n• wyoming.f / tcon.py\n• MetPy & Cartopy", C_EMERALD)
     ]
     for i, (ctitle, cdesc, ccol) in enumerate(cards_data):
-        card = create_card(s1, Inches(1.0 + i * 3.85), Inches(3.4), Inches(3.6), Inches(2.3))
-        tb = s1.shapes.add_textbox(Inches(1.15 + i * 3.85), Inches(3.55), Inches(3.3), Inches(2.0))
+        card = create_card(s1, Inches(1.0 + i * 3.85), Inches(3.75), Inches(3.6), Inches(2.2))
+        tb = s1.shapes.add_textbox(Inches(1.15 + i * 3.85), Inches(3.9), Inches(3.3), Inches(1.9))
         tf = tb.text_frame
         tf.word_wrap = True
         pt = tf.paragraphs[0]
         pt.text = ctitle
-        pt.font.size = Pt(14)
+        pt.font.size = Pt(13)
         pt.font.bold = True
         pt.font.color.rgb = ccol
 
         pd = tf.add_paragraph()
         pd.text = cdesc
-        pd.font.size = Pt(11)
+        pd.font.size = Pt(10.5)
         pd.font.color.rgb = C_WHITE
-        pd.space_before = Pt(8)
+        pd.space_before = Pt(6)
 
     # Rodapé com Autor e Orientador
-    foot_box = s1.shapes.add_textbox(Inches(1.0), Inches(6.1), Inches(11.3), Inches(0.9))
+    foot_box = s1.shapes.add_textbox(Inches(1.0), Inches(6.15), Inches(11.3), Inches(0.85))
     tf_f = foot_box.text_frame
     p_f = tf_f.paragraphs[0]
-    p_f.text = "Disciplina: FSC7116 - Meteorologia de Mesoescala   •   Orientador: Prof. Dr. Reinaldo Haas"
+    p_f.text = "Orientador: Prof. Dr. Reinaldo Haas   •   Disciplina: FSC7116 - Meteorologia de Mesoescala (UFSC)"
     p_f.font.size = Pt(11)
     p_f.font.bold = True
     p_f.font.color.rgb = C_MUTED
     p_f2 = tf_f.add_paragraph()
-    p_f2.text = "⏱️ Tempo de Apresentação: 20 Minutos  |  Roteiro Estruturado para Arguição da Banca"
+    p_f2.text = "⏱️ Tempo de Apresentação: 20 Minutos  |  Roteiro com 3 Sondagens e 3 Análises Completas para a Banca"
     p_f2.font.size = Pt(10)
     p_f2.font.color.rgb = C_AMBER
     p_f2.space_before = Pt(3)
 
-    set_speaker_notes(s1, """ROTEIRO DO ORADOR (00:00 - 01:30):
+    set_speaker_notes(s1, """ROTEIRO DO ORADOR & TUTORIAL DIDÁTICO (00:00 - 01:30):
 Bom dia à banca examinadora, ao Professor Reinaldo Haas e aos colegas presentes.
-Hoje apresento o seminário de Meteorologia de Mesoescala referente à análise diagnóstica completa de uma tempestade severa histórica na Bacia do Prata, ocorrida em 24 de dezembro de 1995 às 12Z sobre a estação de Porto Alegre (SBPA).
+Hoje apresento o seminário de Meteorologia de Mesoescala, concebido como um tutorial metodológico para a análise e diagnóstico de convecção profunda.
 
-Este trabalho está fundamentado na termodinâmica de parcelas formulada por Kerry Emanuel em seu clássico livro 'Atmospheric Convection' (1994) e no código wyoming.f do MIT OCW 12.811, combinado com o ecossistema moderno em Python utilizando o MetPy.
+Conforme a diretriz da disciplina FSC7116, cada aluno deve selecionar obrigatoriamente três radiossondagens atmosféricas reais representando três estados fundamentais: uma atmosfera Estável, uma atmosfera Neutra (ou de transição) e uma atmosfera Instável (tempo severo).
+Essas sondagens podem ser escolhidas em datas diferentes na mesma estação — como fizemos aqui para Porto Alegre (SBPA - 83971) em dezembro de 1995 — ou em estações e regiões geográficas diferentes (por exemplo, comparando simultaneamente SBPA, SBFL e SBCT).
 
-Nosso objetivo neste seminário de 20 minutos é responder: quais foram os gatilhos termodinâmicos e dinâmicos que transformaram uma atmosfera pós-frontal estável em um ambiente de convecção profunda explosiva com CAPE superior a 4.600 J/kg e cisalhamento vertical capaz de gerar supercélulas de alta precipitação e rajadas destrutivas.""")
+Nossa apresentação contempla três sondagens e três análises físicas aprofundadas, fundamentadas no clássico 'Atmospheric Convection' de Kerry Emanuel (1994), nas rotinas wyoming.f do MIT OCW 12.811 e na biblioteca científica MetPy.""")
 
     # --------------------------------------------------------------------------
-    # SLIDE 2: Sinótica e Caso de Estudo - 500 hPa e 850 hPa (00 - 03 min, Parte 2)
+    # SLIDE 2: Sinótica e Caso de Estudo - 500 hPa e 850 hPa com Divisão Continental
     # --------------------------------------------------------------------------
     s2 = prs.slides.add_slide(blank_layout)
     set_slide_background(s2)
     add_header(s2, "Forçamento Sinótico & Suporte Dinâmico de Mesoescala",
-               "Acoplamento Vertical entre o Cavado em 500 hPa e o Jato em Baixos Níveis (JBN) em 850 hPa",
+               "Acoplamento Vertical sobre a América do Sul (500 e 850 hPa) com Divisão de Continentes, Países e Estados (Cartopy)",
                "00 - 03 min", 2)
 
-    # Imagem Sinótica à esquerda
+    # Imagem Sinótica com Cartopy à esquerda
     img_syn = 'metpack/fig_synoptic_analysis.png'
     if os.path.exists(img_syn):
         s2.shapes.add_picture(img_syn, Inches(0.8), Inches(1.75), width=Inches(7.2))
@@ -211,89 +231,110 @@ Nosso objetivo neste seminário de 20 minutos é responder: quais foram os gatil
     tf_syn.word_wrap = True
 
     pts_syn = [
-        ("Nível Médio (500 hPa) - Forçamento QG:", [
-            "Cavado de onda curta pronunciado sobre a Argentina/Cordilheira.",
-            "Forte difluência de mesoescala a jusante diretamente sobre o RS.",
-            "Advecção de Vorticidade Ciclônica Relativa (CVA / PVA) gerando sustentação de larga escala (ω < 0 via Equação Ômega Quase-Geostrófica)."
-        ], C_CYAN),
-        ("Baixos Níveis (850 hPa) - Alimentação Termodinâmica:", [
-            "Jato em Baixos Níveis (JBN) da América do Sul ativo com ventos > 23 m/s (44 kt) transportando calor e umidade tropical da Amazônia e Chaco.",
-            "Crista pronunciada de θe (> 350 K) focada sobre o centro-oeste e sul do RS.",
-            "Convergência de massa e umidade (∇·(qV) < 0) desestabilizando a camada limite."
+        ("Cartografia e Divisão Continental (Cartopy):", [
+            "Mapa georreferenciado da América do Sul exibindo fronteiras de Brasil, Argentina, Uruguai e Paraguai, além dos estados (RS, SC, PR).",
+            "Permite localizar espacialmente o contraste orográfico dos Andes e a Bacia do Prata."
         ], C_AMBER),
-        ("Acoplamento Vertical:", [
-            "Sobreposição de suporte dinâmico aloft e convergência térmica em baixos níveis, preparando o ambiente para convecção profunda explosiva."
+        ("Nível Médio (500 hPa) - Forçamento Dinâmico:", [
+            "Cavado de onda curta pronunciado sobre a Argentina / Andes.",
+            "Difluência acentuada a jusante diretamente sobre o RS.",
+            "Advecção de Vorticidade Ciclônica Relativa (CVA / PVA) gerando sustentação de grande escala (ω < 0 via Eq. Ômega QG)."
+        ], C_CYAN),
+        ("Baixos Níveis (850 hPa) - Alimentação pelo JBN:", [
+            "Jato em Baixos Níveis (JBN) canalizado a leste dos Andes com ventos > 23 m/s (44 kt) transportando calor e umidade da Amazônia/Chaco.",
+            "Crista pronunciada de θe (> 355 K) convergindo no RS.",
+            "Desestabilização diferencial da camada limite atmosférica."
         ], C_EMERALD)
     ]
     for block_title, bullets, bcol in pts_syn:
         pb = tf_syn.add_paragraph() if tf_syn.paragraphs[0].text else tf_syn.paragraphs[0]
         pb.text = block_title
-        pb.font.size = Pt(11)
+        pb.font.size = Pt(10.5)
         pb.font.bold = True
         pb.font.color.rgb = bcol
         pb.space_before = Pt(6)
         for b in bullets:
             p_bullet = tf_syn.add_paragraph()
             p_bullet.text = f"• {b}"
-            p_bullet.font.size = Pt(9.5)
+            p_bullet.font.size = Pt(9.0)
             p_bullet.font.color.rgb = C_WHITE
             p_bullet.space_before = Pt(2)
 
     set_speaker_notes(s2, """ROTEIRO DO ORADOR (01:30 - 03:00):
 Passando para a configuração sinótica que sustentou este caso no dia 24 de dezembro de 1995 às 12Z.
-À esquerda, temos o mapa de reanálise em dois níveis fundamentais: 500 hPa e 850 hPa.
-Em 500 hPa, observamos um cavado pronunciado adentrando a partir da Argentina, estabelecendo uma forte difluência de mesoescala sobre o Rio Grande do Sul. Pela teoria Quase-Geostrófica, a advecção de vorticidade ciclônica relativa positiva (CVA ou PVA) força movimentos verticais ascendentes de grande escala (ômega negativo), reduzindo as pressões à superfície e enfraquecendo a estabilidade atmosférica.
+À esquerda, temos os mapas sinóticos gerados com a biblioteca Cartopy, incorporando a cartografia real da América do Sul com as divisões de continentes, fronteiras de países (Brasil, Argentina, Uruguai, Paraguai) e divisões estaduais (RS, SC, PR).
+Essa divisão geográfica é essencial para visualizar como os Andes canalizam os escoamentos na baixa e média troposfera.
 
-Simultaneamente, em 850 hPa, identificamos a atuação clássica do Jato em Baixos Níveis da América do Sul (JBN), canalizado a leste dos Andes. O JBN atinge velocidades superiores a 23 m/s (44 nós) em 925/850 hPa, bombeando uma língua de altíssima temperatura potencial equivalente (θe > 350 K) direto da bacia Amazônica e do Chaco em direção ao RS.
-Esse acoplamento vertical — forçamento dinâmico em médios níveis sobreposto a uma advecção térmica e de umidade agressiva em baixos níveis — é o clássico 'carregamento da mola' para os maiores eventos de tempo severo da América do Sul.""")
+Em 500 hPa, observamos um cavado de onda curta bem estruturado sobre a Argentina, estabelecendo uma forte difluência de mesoescala sobre o Rio Grande do Sul. Pela teoria Quase-Geostrófica, a advecção de vorticidade ciclônica relativa positiva (CVA ou PVA) força movimentos verticais ascendentes de grande escala (ômega negativo), reduzindo as pressões e enfraquecendo a estabilidade.
+
+Simultaneamente, em 850 hPa, identificamos a atuação clássica do Jato em Baixos Níveis da América do Sul (JBN), fluindo ao longo da borda leste dos Andes. O JBN atinge velocidades superiores a 23 m/s (44 nós) em 925/850 hPa, bombeando uma língua de altíssima temperatura potencial equivalente (θe > 355 K) direto da bacia Amazônica e do Chaco para o RS.
+Esse acoplamento vertical — suporte dinâmico em altitude e advecção quente/úmida em baixos níveis — prepara o ambiente para a convecção explosiva.""")
 
     # --------------------------------------------------------------------------
-    # SLIDE 3: As 3 Sondagens - Comparação dos Skew-T (03 - 07 min, Parte 1)
+    # SLIDE 3: As 3 Sondagens e as 3 Análises - Parte I: Estável vs Neutra
     # --------------------------------------------------------------------------
     s3 = prs.slides.add_slide(blank_layout)
     set_slide_background(s3)
-    add_header(s3, "Evolução Temporal: Comparação das 3 Sondagens",
-               "Transição Atmosférica em Porto Alegre: Pós-Frontal Estável (12/12) ➔ Neutro/Transição (23/12) ➔ Explosivo Severo (24/12)",
+    add_header(s3, "As Três Sondagens & Três Análises: Estável (12/12) vs Neutra (23/12)",
+               "Diagnóstico Físico Individual dos Dois Primeiros Regimes: Pós-Frontal Estável e Transição Neutra",
                "03 - 07 min", 3)
 
-    img_3s = 'metpack/fig_3_soundings_skewt.png'
+    img_3s = 'metpack/fig_3_soundings_complete_analysis.png'
     if os.path.exists(img_3s):
-        s3.shapes.add_picture(img_3s, Inches(0.8), Inches(1.75), width=Inches(11.75))
+        s3.shapes.add_picture(img_3s, Inches(0.8), Inches(1.75), width=Inches(7.2))
 
-    # Banner comparativo inferior
-    c_banner = create_card(s3, Inches(0.8), Inches(5.8), Inches(11.75), Inches(1.2))
-    tb_b = s3.shapes.add_textbox(Inches(0.95), Inches(5.85), Inches(11.45), Inches(1.1))
-    tf_b = tb_b.text_frame
-    tf_b.word_wrap = True
-    pb_t = tf_b.paragraphs[0]
-    pb_t.text = "Síntese Física da Evolução Sinótica das Sondagens da Universidade de Wyoming:"
-    pb_t.font.size = Pt(10.5)
-    pb_t.font.bold = True
-    pb_t.font.color.rgb = C_AMBER
+    card_s3 = create_card(s3, Inches(8.2), Inches(1.75), Inches(4.35), Inches(5.15))
+    tb_s3 = s3.shapes.add_textbox(Inches(8.4), Inches(1.9), Inches(3.95), Inches(4.85))
+    tf_s3 = tb_s3.text_frame
+    tf_s3.word_wrap = True
 
-    pb_desc = tf_b.add_paragraph()
-    pb_desc.text = "12/12/1995 (Estável): Subsidência pós-frontal anticiclônica, atmosfera seca em médios níveis (T-Td > 15°C), CAPE = 0 J/kg, ar estável.\n" \
-                   "23/12/1995 (Neutro/Transição): Retorno do fluxo de norte, umedecimento da coluna, CAPE moderado (848 J/kg), CIN significativo (-120 J/kg).\n" \
-                   "24/12/1995 (Severo): Rompimento de barreira por advecção quente em 925 hPa (T=30°C, Td=25°C), MUCAPE = 4.645 J/kg, CIN = -6.5 J/kg."
-    pb_desc.font.size = Pt(9.5)
-    pb_desc.font.color.rgb = C_WHITE
-    pb_desc.space_before = Pt(2)
+    sections_s3 = [
+        ("ANÁLISE 1: Atmosfera Estável (12/12/1995 12Z)", [
+            "Sinótica: Domínio pós-frontal de alta pressão migratória e forte subsidência.",
+            "Termodinâmica: Ar muito seco em médios níveis (T - Td > 15°C); inversão de subsidência; SBCAPE = 15.7 J/kg; MUCAPE = 0 J/kg; sem LFC/EL.",
+            "Emanuel Tρ: Sem água líquida condensada (rl = 0); CAPE reversível e pseudoadiabático nulos.",
+            "Brunt-Väisälä: N² > 0 em toda a coluna (estabilidade estática profunda)."
+        ], C_CYAN),
+        ("ANÁLISE 2: Atmosfera Neutra / Transição (23/12/1995 12Z)", [
+            "Sinótica: Deslocamento da alta para o Atlântico; retorno do fluxo tropical de norte.",
+            "Termodinâmica: Umedecimento progressivo da CLP (T0=25.8°C, Td0=24.4°C, r_max=19.4 g/kg); SBCAPE = 2762 J/kg; PW = 57.0 mm.",
+            "Inibição / Gatilho: Apesar do CAPE moderado, ausência de suporte dinâmico em 500 hPa; cisalhamento fraco (Bulk Shear 0-6km = 10.2 m/s).",
+            "Modo Convectivo: Regime quase-neutro, cúmulos desorganizados ou convecção isolada sem severidade."
+        ], C_AMBER)
+    ]
+    for stitle, sbullets, scol in sections_s3:
+        pb = tf_s3.add_paragraph() if tf_s3.paragraphs[0].text else tf_s3.paragraphs[0]
+        pb.text = stitle
+        pb.font.size = Pt(10.5)
+        pb.font.bold = True
+        pb.font.color.rgb = scol
+        pb.space_before = Pt(6)
+        for b in sbullets:
+            p_bullet = tf_s3.add_paragraph()
+            p_bullet.text = f"• {b}"
+            p_bullet.font.size = Pt(9.0)
+            p_bullet.font.color.rgb = C_WHITE
+            p_bullet.space_before = Pt(2)
 
     set_speaker_notes(s3, """ROTEIRO DO ORADOR (03:00 - 05:00):
-Entrando no bloco obrigatório de comparação das três sondagens atmosféricas de Porto Alegre obtidas na Universidade de Wyoming.
-No primeiro painel, dia 12 de dezembro de 1995 às 12Z, temos a condição de estabilidade pós-frontal. Notem a grande separação entre a curva vermelha (temperatura) e a verde (ponto de orvalho) em médios níveis, denotando subsidência anticiclônica e ar extremamente seco. A parcela de superfície não encontra nível de convecção livre (LFC); o CAPE é estritamente zero e a atmosfera é termodinamicamente inerte.
+Entrando no bloco das Três Sondagens e Três Análises Físicas, conforme solicitado para a apresentação.
+No painel à esquerda, exibimos lado a lado as radiossondagens de Porto Alegre com Skew-T, hodógrafo e métricas diagnósticas.
 
-No segundo painel, dia 23 de dezembro, 11 dias depois, a sinótica começa a mudar. O fluxo de norte reintroduz umidade nos primeiros quilômetros. O perfil apresenta CAPE de 848 J/kg, porém ainda associado a uma inibição convectiva (CIN) substancial de -120 J/kg que bloqueia a convecção espontânea (estado marginalmente neutro/transição).
+ANÁLISE 1 (Atmosfera Estável - 12/12/1995 12Z):
+Este caso representa a atmosfera sob regime pós-frontal dominada por uma massa de ar frio e crista anticiclônica migratória. Notem a enorme separação entre a temperatura e o ponto de orvalho em médios níveis. O ar descendente (subsidência) aquece adiabaticamente e seca a coluna, impedindo a formação de nuvens convectivas.
+O MUCAPE é estritamente zero; a frequência de Brunt-Väisälä N² é positiva em toda a troposfera, caracterizando estabilidade estática profunda. Não há suporte termodinâmico para nenhuma convecção.
 
-Finalmente, no terceiro painel, dia 24 de dezembro, a situação atinge o limiar explosivo. A curva de orvalho cola na de temperatura nos primeiros 900 hPa. Há uma inversão extremamente quente e úmida em 925 hPa onde a temperatura atinge 30°C com ponto de orvalho de 25°C. O CAPE salta para mais de 1.860 J/kg para a superfície e incríveis 4.645 J/kg para a parcela mais instável (MUCAPE), enquanto a inibição cai para apenas -6.5 J/kg.""")
+ANÁLISE 2 (Atmosfera Neutra / Transição - 23/12/1995 12Z):
+Onze dias depois, a sinótica muda: o anticiclone migra para o mar e ventos de quadrante norte começam a injetar umidade na camada limite. A razão de mistura sobe para 19.4 g/kg e o SBCAPE atinge 2.762 J/kg com PW de 57 mm.
+No entanto, este ambiente é marginalmente neutro/transicional: não há forçamento dinâmico em 500 hPa e o cisalhamento vertical 0-6 km é fraco (apenas 10.2 m/s, com SRH de 81 m²/s²). O hodógrafo é quase linear e curto. Portanto, embora exista energia potencial, falta organização dinâmica, impedindo tempestades severas.""")
 
     # --------------------------------------------------------------------------
-    # SLIDE 4: Diagnóstico Termodinâmico: CAPE, CIN e d(theta_e)/dz (03 - 07 min, Parte 2)
+    # SLIDE 4: As 3 Sondagens e as 3 Análises - Parte II: Instável & Matriz Comparativa
     # --------------------------------------------------------------------------
     s4 = prs.slides.add_slide(blank_layout)
     set_slide_background(s4)
-    add_header(s4, "Diagnóstico Termodinâmico: Flutuabilidade & Instabilidade Potencial",
-               "Interpretação Física das Integrais de CAPE/CIN, Níveis Críticos (LCL, LFC, EL) e ∂θe/∂z < 0",
+    add_header(s4, "As Três Sondagens & Três Análises: Instável Severa (24/12) & Matriz Comparativa",
+               "Diagnóstico Físico do Caso Severo e Tabela Comparativa Tríplice dos Três Estados Atmosféricos",
                "03 - 07 min", 4)
 
     img_skew = 'metpack/fig_colab_severe_skewt.png'
@@ -301,46 +342,52 @@ Finalmente, no terceiro painel, dia 24 de dezembro, a situação atinge o limiar
         s4.shapes.add_picture(img_skew, Inches(0.8), Inches(1.75), width=Inches(7.2))
 
     card_th = create_card(s4, Inches(8.2), Inches(1.75), Inches(4.35), Inches(5.15))
-    tb_th = s4.shapes.add_textbox(Inches(8.4), Inches(1.9), Inches(3.95), Inches(4.85))
+    tb_th = s4.shapes.add_textbox(Inches(8.4), Inches(1.85), Inches(3.95), Inches(4.9))
     tf_th = tb_th.text_frame
     tf_th.word_wrap = True
 
     sections_th = [
-        ("Definição Física do CAPE e CIN:", [
-            "CAPE = ∫ [g · (Tv,p - Tv,e) / Tv,e] dz  (entre LFC e EL).",
-            "MUCAPE: 4.645 J/kg | SBCAPE: 1.862 J/kg.",
-            "W_max teórico = √(2 · CAPE) ≈ 96.4 m/s (corrente ascendente explosiva, limitada por arrasto e entranhamento)."
+        ("ANÁLISE 3: Atmosfera Instável / Explosiva (24/12)", [
+            "Inversão quente/úmida em 925 hPa (JBN): T = 30°C, Td = 25°C, r = 22.02 g/kg.",
+            "MUCAPE: 4.645 J/kg | SBCAPE: 1.862 J/kg | CIN: -6.5 J/kg.",
+            "LCL a 600 m (942 hPa), LFC imediato e EL a 165 hPa (~13.8 km).",
+            "Instabilidade Convectiva: ∂θe / ∂z < 0 profundo até 650 hPa."
         ], C_ROSE),
-        ("Níveis Convectivos Fundamentais:", [
-            "LCL (Condensação por Levantamento): 942 hPa (~600 m). Nuvens com base muito baixa.",
-            "LFC (Convecção Livre): Imediato para parcela de 925 hPa; CIN insignificante (-6.5 J/kg).",
-            "EL (Equilíbrio Térmico): 165 hPa (~13.8 km), topo de nuvem penetrando a tropopausa."
+        ("MATRIZ COMPARATIVA TRÍPLICE (3 SONDAGENS):", [
+            "• Estável (12/12): MUCAPE = 0 J/kg | CIN = 0 | Shear = 13.7 m/s | r = 11.6 g/kg",
+            "• Neutra (23/12): MUCAPE = 2762 J/kg | CIN = 0 | Shear = 10.2 m/s | r = 19.4 g/kg",
+            "• Instável (24/12): MUCAPE = 4645 J/kg | CIN = -6.5 | Shear = 28.7 m/s | r = 22.0 g/kg",
+            "Conclusão: O caso 24/12 combina flutuabilidade extrema com cisalhamento supercelular e JBN."
         ], C_CYAN),
-        ("Critério de Instabilidade Potencial / Convectiva:", [
-            "∂θe / ∂z < 0 presente desde a superfície até 650 hPa.",
-            "Se uma camada com essa propriedade for forçada a subir em bloco até a saturação, torna-se fortemente instável para parcelas individuais."
-        ], C_EMERALD)
+        ("Diretriz Metodológica para os Alunos:", [
+            "Ao realizarem o trabalho, os alunos devem montar uma matriz comparativa análoga destacando a evolução física dos três estados."
+        ], C_AMBER)
     ]
     for stitle, sbullets, scol in sections_th:
         pb = tf_th.add_paragraph() if tf_th.paragraphs[0].text else tf_th.paragraphs[0]
         pb.text = stitle
-        pb.font.size = Pt(11)
+        pb.font.size = Pt(10.5)
         pb.font.bold = True
         pb.font.color.rgb = scol
-        pb.space_before = Pt(6)
+        pb.space_before = Pt(5)
         for b in sbullets:
             p_bullet = tf_th.add_paragraph()
             p_bullet.text = f"• {b}"
-            p_bullet.font.size = Pt(9.5)
+            p_bullet.font.size = Pt(8.8)
             p_bullet.font.color.rgb = C_WHITE
             p_bullet.space_before = Pt(2)
 
     set_speaker_notes(s4, """ROTEIRO DO ORADOR (05:00 - 07:00):
-Aprofundando a interpretação física da sondagem severa do dia 24 de dezembro.
-No gráfico Skew-T gerado pelo MetPy à esquerda, a área sombreada em vermelho representa o CAPE — a integral da aceleração de flutuabilidade entre o Nível de Convecção Livre (LFC) e o Nível de Equilíbrio (EL).
-Pela fórmula clássica do balanço de energia cinética, a velocidade vertical máxima teórica é a raiz de duas vezes o CAPE. Para o MUCAPE de 4.645 J/kg, isso resulta em um W_max de 96 m/s! Embora na natureza processos de arrasto de gotas, atrito e entranhamento de ar seco reduzam esse valor pela metade (~45 a 50 m/s), trata-se ainda de uma corrente ascendente violenta com energia suficiente para sustentar pedras de granizo gigantes.
+Avançando para a ANÁLISE 3 (Atmosfera Instável Severa - 24/12/1995 12Z) e o confronto dos três casos na Matriz Comparativa.
+No gráfico Skew-T à esquerda, gerado rigorosamente com o código do Google Colab do Prof. Reinaldo Haas, vemos o perfil termodinâmico explosivo de Porto Alegre.
+A parcela de 925 hPa apresenta temperatura de 30°C com ponto de orvalho de 25°C e razão de mistura de 22 g/kg!
+O MUCAPE atinge 4.645 J/kg com inibição de convecção insignificante (-6.5 J/kg). O LCL é extremamente baixo (600 metros) e o LFC ocorre imediatamente. Pela condição de instabilidade potencial, temos dθe/dz fortemente negativo até 650 hPa.
 
-Outro aspecto vital cobrado pela banca é a condição de instabilidade potencial ou convectiva, dada matematicamente por ∂θe/∂z < 0. Observamos que θe diminui fortemente com a altitude entre a superfície (349 K), atingindo um pico de 378 K em 925 hPa e caindo para menos de 335 K em 650 hPa. Quando o cavado sinótico ergue essa camada em bloco, o topo atinge a saturação mais tarde que a base úmida, gerando uma taxa de lapso vertical supersaturada extremamente instável.""")
+Na Matriz Comparativa Tríplice que estruturamos para os alunos:
+- No dia 12 (Estável): MUCAPE é 0 J/kg, ar seco, subsidência.
+- No dia 23 (Neutro): MUCAPE é 2.762 J/kg, mas o cisalhamento vertical é fraco (10.2 m/s) e não há forçamento em 500 hPa.
+- No dia 24 (Instável Severo): MUCAPE salta para 4.645 J/kg, acompanhado de cisalhamento profundo de 28.7 m/s e SRH de 245 m²/s².
+Essa comparação tríplice ilustra com clareza a física da convecção severa: não basta ter apenas CAPE moderado; é a convergência do JBN, o rompimento da tampa de inversão e o cisalhamento rotatório que determinam o evento severo.""")
 
     # --------------------------------------------------------------------------
     # SLIDE 5: Emanuel (1994) & Temp. Densidade (07 - 10 min)
