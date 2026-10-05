@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratório de Meteorologia de Mesoescala (FSC7116 - UFSC)</title>
+    <style>
+        :root {
+            --bg-primary: #0a0f1d;
+            --bg-secondary: #131c31;
+            --bg-card: #1e293b;
+            --accent-blue: #38bdf8;
+            --accent-green: #4ade80;
+            --accent-red: #f87171;
+            --accent-yellow: #fbbf24;
+            --accent-purple: #c084fc;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --border-color: #334155;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.5;
+            padding: 16px;
+        }
+
+        header {
+            background-color: var(--bg-secondary);
+            border-bottom: 2px solid var(--accent-blue);
+            padding: 18px 24px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .title-container h1 {
+            font-size: 1.5rem;
+            color: var(--accent-blue);
+            font-weight: 700;
+        }
+
+        .title-container p {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+        }
+
+        .case-selector {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--bg-card);
+            padding: 8px 14px;
+            border-radius: 8px;
+        }
+
+        select {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.92rem;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 18px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .tab-btn {
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active, .tab-btn:hover {
+            background: var(--accent-blue);
+            color: #0a0f1d;
+            border-color: var(--accent-blue);
+        }
+
+        .grid-dashboard {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 18px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 18px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.25);
+        }
+
+        .col-12 { grid-column: span 12; }
+        .col-8 { grid-column: span 8; }
+        .col-6 { grid-column: span 6; }
+        .col-4 { grid-column: span 4; }
+
+        @media (max-width: 1024px) {
+            .col-8, .col-6, .col-4 { grid-column: span 12; }
+        }
+
+        .card-title {
+            font-size: 1.05rem;
+            color: var(--accent-blue);
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px;
+        }
+
+        .metric-box {
+            background: var(--bg-card);
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 4px solid var(--accent-blue);
+        }
+
+        .metric-box.danger { border-left-color: var(--accent-red); }
+        .metric-box.warning { border-left-color: var(--accent-yellow); }
+        .metric-box.success { border-left-color: var(--accent-green); }
+        .metric-box.purple { border-left-color: var(--accent-purple); }
+
+        .metric-val {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .metric-lbl {
+            font-size: 0.72rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            border-radius: 8px;
+            background: #080c16;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 6px;
+        }
+
+        .btn-sm {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            padding: 4px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .btn-sm.active, .btn-sm:hover {
+            background: var(--accent-blue);
+            color: #0a0f1d;
+            font-weight: 600;
+        }
+
+        .theory-box {
+            background: #0e172a;
+            border-left: 4px solid var(--accent-blue);
+            padding: 12px 16px;
+            border-radius: 0 8px 8px 0;
+            margin-top: 12px;
+            font-size: 0.85rem;
+            color: #cbd5e1;
+        }
+
+        .theory-box code {
+            background: #1e293b;
+            padding: 2px 5px;
+            border-radius: 4px;
+            color: var(--accent-yellow);
+            font-family: monospace;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+
+        th, td {
+            padding: 7px 10px;
+            text-align: right;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--bg-card);
+            color: var(--accent-blue);
+            position: sticky;
+            top: 0;
+        }
+
+        th:first-child, td:first-child { text-align: left; }
+
+        .table-container {
+            max-height: 380px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-extreme { background: #ef4444; color: white; }
+        .badge-mod { background: #f59e0b; color: white; }
+        .badge-stable { background: #10b981; color: white; }
+
+        .legend-row {
+            display: flex;
+            gap: 14px;
+            font-size: 0.78rem;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+        .legend-item { display: flex; align-items: center; gap: 5px; }
+        .legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+
+        /* ESTILO DO ROTEIRO CRONOMETRADO */
+        .timeline-card {
+            background: var(--bg-card);
+            border-radius: 8px;
+            border-left: 4px solid var(--accent-blue);
+            padding: 14px 18px;
+            margin-bottom: 12px;
+        }
+        .timeline-card.alert { border-left-color: var(--accent-yellow); }
+        .timeline-card.danger { border-left-color: var(--accent-red); }
+
+        .time-badge {
+            display: inline-block;
+            background: #0f172a;
+            color: var(--accent-blue);
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            margin-bottom: 6px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="title-container">
+            <h1>Laboratório de Meteorologia de Mesoescala (FSC7116 - UFSC)</h1>
+            <p>Diagnóstico Termodinâmico, Cinemático & Kerry Emanuel (1994, MIT OCW 12.811)</p>
+        </div>
+        <div class="case-selector">
+            <label for="soundingSelect"><strong>Sondagem SBPA:</strong></label>
+            <select id="soundingSelect" onchange="loadCase(this.value)">
+                <option value="19951212">12/12/1995 12Z - Pós-frontal / Estável</option>
+                <option value="19951223">23/12/1995 12Z - Pré-convectivo Moderado</option>
+                <option value="19951224" selected>24/12/1995 12Z - Convecção Explosiva / Severa</option>
+            </select>
+        </div>
+    </header>
+
+    <!-- NAVEGAÇÃO DE ABAS: DIAGNÓSTICO VS ROTEIRO DA BANCA -->
+    <div class="nav-tabs">
+        <button class="tab-btn active" id="tabMainBtn" onclick="switchTab('main')">Painel de Diagnóstico & Gráficos</button>
+        <button class="tab-btn" id="tabRoadmapBtn" onclick="switchTab('roadmap')">Roteiro Cronometrado da Apresentação (20 Minutos)</button>
+    </div>
+
+    <!-- ABA 1: PAINEL PRINCIPAL -->
+    <div id="tabMain">
+        <!-- MÉTRICAS INTEGRADAS -->
+        <div class="grid-dashboard">
+            <div class="card col-12">
+                <div class="card-title">
+                    <span>Parâmetros Ambientais & Índices Termodinâmicos</span>
+                    <span id="caseBadge" class="status-badge badge-extreme">AVALIAÇÃO SEVERA</span>
+                </div>
+                <div class="metrics-grid">
+                    <div class="metric-box danger">
+                        <div class="metric-val" id="mucapeVal">7808 J/kg</div>
+                        <div class="metric-lbl">MUCAPE (Pseudo Tv)</div>
+                    </div>
+                    <div class="metric-box warning">
+                        <div class="metric-val" id="capeRevVal">6120 J/kg</div>
+                        <div class="metric-lbl">CAPE Reversível (Tρ)</div>
+                    </div>
+                    <div class="metric-box success">
+                        <div class="metric-val" id="mucinVal">0 J/kg</div>
+                        <div class="metric-lbl">MUCIN (Inibição)</div>
+                    </div>
+                    <div class="metric-box danger">
+                        <div class="metric-val" id="dcapeVal">1149 J/kg</div>
+                        <div class="metric-lbl">DCAPE (Downburst)</div>
+                    </div>
+                    <div class="metric-box purple">
+                        <div class="metric-val" id="shear1kmVal">18.4 m/s</div>
+                        <div class="metric-lbl">Cisalhamento 0-1km</div>
+                    </div>
+                    <div class="metric-box purple">
+                        <div class="metric-val" id="shear6kmVal">28.7 m/s</div>
+                        <div class="metric-lbl">Cisalhamento 0-6km</div>
+                    </div>
+                    <div class="metric-box danger">
+                        <div class="metric-val" id="srhVal">245 m²/s²</div>
+                        <div class="metric-lbl">SRH 0-3km (Bunkers)</div>
+                    </div>
+                    <div class="metric-box warning">
+                        <div class="metric-val" id="liVal">-5.2 °C</div>
+                        <div class="metric-lbl">Lifted Index (LFVT)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GRÁFICOS: SKEW-T E HODÓGRAFO -->
+        <div class="grid-dashboard">
+            <!-- SKEW-T -->
+            <div class="card col-8">
+                <div class="card-title">
+                    <span>Diagrama Termodinâmico Skew-T / Log-P</span>
+                    <div class="btn-group">
+                        <button class="btn-sm active" id="btnPseudo" onclick="toggleParcelMode('pseudo')">Pseudoadiabático (Tv)</button>
+                        <button class="btn-sm" id="btnRev" onclick="toggleParcelMode('reversible')">Reversível (Tρ Emanuel)</button>
+                    </div>
+                </div>
+                <canvas id="skewtCanvas" width="750" height="540"></canvas>
+                <div class="legend-row">
+                    <div class="legend-item"><div class="legend-dot" style="background:#ef4444;"></div> Temp. Ambiente (T)</div>
+                    <div class="legend-item"><div class="legend-dot" style="background:#10b981;"></div> Ponto de Orvalho (Td)</div>
+                    <div class="legend-item"><div class="legend-dot" style="background:#fbbf24;"></div> Trajetória Parcela (Tp)</div>
+                    <div class="legend-item"><div class="legend-dot" style="background:rgba(74, 222, 128, 0.4);"></div> CAPE (Flutuabilidade +)</div>
+                    <div class="legend-item"><div class="legend-dot" style="background:rgba(248, 113, 113, 0.4);"></div> CIN (Inibição -)</div>
+                </div>
+                <div class="theory-box" id="emanuelTheoryText">
+                    <strong>Fundamento de Kerry Emanuel (1994, Cap. 4 & 6; MIT 12.811):</strong>
+                    Na ascensão <em>reversível</em>, o código <code>wyoming.f</code> calcula 
+                    <code>TLVR = TG * (1. + RG/EPS) / (1. + R(I))</code>. O termo <code>-r_l</code> 
+                    (carga de água líquida retida) reduz a flutuabilidade positiva da parcela, evitando a superestimação física do CAPE.
+                </div>
+            </div>
+
+            <!-- HODÓGRAFO E BRUNT-VÄISÄLÄ -->
+            <div class="card col-4">
+                <div class="card-title">
+                    <span>Hodógrafo do Vento & Helicidade</span>
+                </div>
+                <canvas id="hodoCanvas" width="380" height="320"></canvas>
+                <div class="legend-row">
+                    <div class="legend-item"><div class="legend-dot" style="background:#ef4444;"></div> 0 - 1 km</div>
+                    <div class="legend-item"><div class="legend-dot" style="background:#10b981;"></div> 1 - 3 km</div>
+                    <div class="legend-item"><div class="legend-dot" style="background:#38bdf8;"></div> 3 - 6 km</div>
+                    <div class="legend-item"><div class="legend-dot" style="background:#fbbf24;"></div> Vetor Tempestade (c)</div>
+                </div>
+
+                <div class="card-title" style="margin-top: 16px;">
+                    <span>Perfil de Brunt-Väisälä: N²(z)</span>
+                </div>
+                <canvas id="bruntCanvas" width="380" height="150"></canvas>
+                <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 4px;">
+                    Camadas com N² > 3.5×10⁻⁴ s⁻² caracterizam forte estabilidade estática e inversão de capeamento (*capping lid*).
+                </div>
+            </div>
+        </div>
+
+        <!-- TABELA DE DADOS BRUTOS -->
+        <div class="grid-dashboard">
+            <div class="card col-12">
+                <div class="card-title">
+                    <span>Níveis de Pressão e Perfis Observados</span>
+                    <span style="font-size: 0.8rem; color: var(--text-secondary);">Estação SBPA - Porto Alegre (83971)</span>
+                </div>
+                <div class="table-container">
+                    <table id="soundingTable">
+                        <thead>
+                            <tr>
+                                <th>PRES (hPa)</th>
+                                <th>HGHT (m)</th>
+                                <th>TEMP (°C)</th>
+                                <th>DWPT (°C)</th>
+                                <th>DIR (°)</th>
+                                <th>SPED (m/s)</th>
+                                <th>θe (K)</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ABA 2: ROTEIRO CRONOMETRADO DA APRESENTAÇÃO (20 MINUTOS) -->
+    <div id="tabRoadmap" style="display: none;">
+        <div class="grid-dashboard">
+            <div class="card col-12">
+                <div class="card-title">
+                    <span>Roteiro Oficial de Apresentação para a Banca (FSC7116 - UFSC)</span>
+                    <span class="status-badge badge-mod">TEMPO TOTAL: 20 MINUTOS</span>
+                </div>
+
+                <!-- BLOCO 1 -->
+                <div class="timeline-card">
+                    <span class="time-badge">00 - 03 min | Slides 1 & 2</span>
+                    <h3 style="color: var(--accent-blue); margin-bottom: 6px;">Sinótica e Contexto do Caso Extremo</h3>
+                    <p style="font-size: 0.9rem; color: #cbd5e1; margin-bottom: 8px;">
+                        <strong>Conteúdo Obrigatório:</strong> Apresentação do evento severo escolhido (24/12/1995 em SBPA), imagens de satélite/radar e cartas de reanálise de 500 hPa (cavado baroclínico e difluência a jusante) e 850 hPa (Baixa do Chaco e Jato de Baixos Níveis advectando ar tropical quente e úmido).
+                    </p>
+                    <p style="font-size: 0.85rem; color: var(--text-secondary);">
+                        <em>Frase de Abertura:</em> "A configuração de 500 e 850 hPa em 24/12/1995 estabeleceu um acoplamento clássico de difluência em altos níveis e advecção subtropical em baixos níveis, gerando um ambiente de altíssima energia potencial sobre o Rio Grande do Sul."
+                    </p>
+                </div>
+
+                <!-- BLOCO 2 -->
+                <div class="timeline-card alert">
+                    <span class="time-badge">03 - 07 min | Slides 3 & 4</span>
+                    <h3 style="color: var(--accent-yellow); margin-bottom: 6px;">As Três Sondagens e Interpretação Física de CAPE, CIN e θe</h3>
+                    <p style="font-size: 0.9rem; color: #cbd5e1; margin-bottom: 8px;">
+                        <strong>Conteúdo Obrigatório:</strong> Comparação dos 3 perfis no Skew-T (12/12 pós-frontal estável, 23/12 moderado, 24/12 explosivo). Formalismo de CAPE e CIN, e análise do gradiente vertical ∂θe/∂z &lt; 0 demonstrando instabilidade convectiva severa.
+                    </p>
+                    <div class="theory-box" style="margin-top: 4px;">
+                        $$\text{CAPE} = \int_{p_{\text{EL}}}^{p_{\text{LFC}}} R_d (T_{\rho, p} - T_{\rho, e}) \, d\ln p \quad | \quad \text{24/12: MUCAPE} = 7808.7\text{ J/kg, CIN} = 0\text{ J/kg}$$
+                    </div>
+                </div>
+
+                <!-- BLOCO 3 -->
+                <div class="timeline-card danger">
+                    <span class="time-badge">07 - 10 min | Slide 5</span>
+                    <h3 style="color: var(--accent-red); margin-bottom: 6px;">Temperatura de Densidade (Tρ) e Algoritmo de Kerry Emanuel</h3>
+                    <p style="font-size: 0.9rem; color: #cbd5e1; margin-bottom: 8px;">
+                        <strong>Conteúdo Obrigatório:</strong> Explicação dos resultados do <code>wyoming.f</code> citando rigorosamente o livro <em>Atmospheric Convection</em> (Emanuel, 1994, Cap. 4 & 6) e o recurso oficial MIT OCW 12.811. Demonstrar como o termo de carregamento de hidrometeoros (<code>-r_l</code>) reduz a flutuabilidade real.
+                    </p>
+                    <div class="theory-box" style="margin-top: 4px;">
+                        $$T_\rho = T \left( \frac{1 + r_v/\epsilon}{1 + r_t} \right) \approx T (1 + 0.608\, r_v - r_l - r_i) \quad \implies \quad \text{CAPE cai de 7808 para 6120 J/kg}$$
+                    </div>
+                </div>
+
+                <!-- BLOCO 4 -->
+                <div class="timeline-card">
+                    <span class="time-badge">10 - 14 min | Slides 6 & 7</span>
+                    <h3 style="color: var(--accent-purple); margin-bottom: 6px;">Variáveis do Capítulo 2: θv, Brunt-Väisälä (N²), Razão de Mistura e PW</h3>
+                    <p style="font-size: 0.9rem; color: #cbd5e1; margin-bottom: 8px;">
+                        <strong>Conteúdo Obrigatório:</strong> Perfis verticais de temperatura potencial virtual (θv), frequência de Brunt-Väisälä (N²), razão de mistura (atingindo 22 g/kg em 925 hPa!), Água Precipitável (PW &gt; 52 mm) e DCAPE (1149 J/kg). Mostrar que o pico de N² próximo à superfície agiu como um "capping lid" acumulador de energia.
+                    </p>
+                    <div class="theory-box" style="margin-top: 4px;">
+                        $$N^2 = \frac{g}{\theta_v}\frac{\partial \theta_v}{\partial z} \quad | \quad \text{PW} = \frac{1}{g}\int r(p)\, dp \quad | \quad \text{DCAPE} = 1149\text{ J/kg (Risco de Microbursts)}$$
+                    </div>
+                </div>
+
+                <!-- BLOCO 5 -->
+                <div class="timeline-card danger">
+                    <span class="time-badge">14 - 17 min | Slide 8</span>
+                    <h3 style="color: var(--accent-blue); margin-bottom: 6px;">Cinemática: Hodógrafo, Jato em Baixos Níveis (JBN) e Helicidade (SRH)</h3>
+                    <p style="font-size: 0.9rem; color: #cbd5e1; margin-bottom: 8px;">
+                        <strong>Conteúdo Obrigatório:</strong> Análise do hodógrafo curvo, identificação do núcleo do JBN em 925 hPa com vento de 44 nós (22.6 m/s), cisalhamento bulk 0-6 km de 28.7 m/s e SRH 0-3 km de 245 m²/s² suportando convecção supercelular rotatória.
+                    </p>
+                    <div class="theory-box" style="margin-top: 4px;">
+                        $$\text{SRH} = -\int_0^h \left[ (u - c_x)\frac{\partial v}{\partial z} - (v - c_y)\frac{\partial u}{\partial z} \right] dz \quad | \quad \Delta \mathbf{V}_{0-6} = 28.7\text{ m/s}$$
+                    </div>
+                </div>
+
+                <!-- BLOCO 6 -->
+                <div class="timeline-card">
+                    <span class="time-badge">17 - 20 min | Slides 9 & 10</span>
+                    <h3 style="color: var(--accent-green); margin-bottom: 6px;">Conclusão: Síntese dos Gatilhos de Mesoescala & Fechamento para a Banca</h3>
+                    <p style="font-size: 0.9rem; color: #cbd5e1; margin-bottom: 8px;">
+                        <strong>Conteúdo Obrigatório:</strong> Síntese integrada (Instabilidade Extrema + Rompimento do Capping Lid + Suporte Cinemático do JBN). Classificação como Supercélulas de Alta Precipitação (HP) com rajadas descendentes severas. Abertura formal para a arguição da banca examinadora.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DADOS METEOROLÓGICOS REAIS
+        const soundings = {
+            "19951212": {
+                date: "12/12/1995 12Z",
+                status: "ESTÁVEL / PÓS-FRONTAL",
+                badgeClass: "badge-stable",
+                mucape: 0.9,
+                capeRev: 0.0,
+                mucin: 45.0,
+                dcape: 644.0,
+                li: 2.5,
+                shear1km: 6.2,
+                shear6km: 26.5,
+                srh3km: 58.0,
+                stormMotion: [15.2, 5.1],
+                levels: [
+                    {p: 1014.0, z: 3, t: 19.4, td: 16.3, dir: 180, spd: 4.1, thte: 324.2, thtv: 293.4},
+                    {p: 1000.0, z: 119, t: 18.4, td: 15.7, dir: 170, spd: 5.2, thte: 323.6, thtv: 293.5},
+                    {p: 979.1, z: 300, t: 16.7, td: 14.6, dir: 165, spd: 6.2, thte: 322.2, thtv: 293.5},
+                    {p: 948.0, z: 576, t: 14.2, td: 12.9, dir: 170, spd: 5.7, thte: 320.1, thtv: 293.5},
+                    {p: 925.0, z: 784, t: 12.8, td: 11.7, dir: 160, spd: 4.6, thte: 319.3, thtv: 294.0},
+                    {p: 885.0, z: 1155, t: 13.2, td: -0.8, dir: 189, spd: 4.6, thte: 308.8, thtv: 297.3},
+                    {p: 850.0, z: 1495, t: 13.4, td: 6.4, dir: 215, spd: 4.6, thte: 321.4, thtv: 301.5},
+                    {p: 811.0, z: 1889, t: 12.2, td: 4.2, dir: 225, spd: 8.0, thte: 322.4, thtv: 304.1},
+                    {p: 755.0, z: 2484, t: 8.0, td: 5.5, dir: 236, spd: 11.3, thte: 327.5, thtv: 306.0},
+                    {p: 700.0, z: 3106, t: 5.8, td: -3.2, dir: 245, spd: 10.8, thte: 322.5, thtv: 309.7},
+                    {p: 614.0, z: 4168, t: -1.3, td: -1.4, dir: 255, spd: 17.3, thte: 330.4, thtv: 313.6},
+                    {p: 500.0, z: 5780, t: -11.5, td: -25.5, dir: 265, spd: 12.4, thte: 322.4, thtv: 319.1},
+                    {p: 400.0, z: 7460, t: -20.7, td: -31.7, dir: 250, spd: 28.3, thte: 330.5, thtv: 328.1},
+                    {p: 300.0, z: 9540, t: -34.1, td: -50.1, dir: 230, spd: 33.0, thte: 337.7, thtv: 337.2},
+                    {p: 250.0, z: 10800, t: -41.7, td: -65.7, dir: 260, spd: 40.2, thte: 344.0, thtv: 343.9},
+                    {p: 200.0, z: 12250, t: -53.3, td: -70.3, dir: 305, spd: 14.4, thte: 348.3, thtv: 348.2},
+                    {p: 150.0, z: 14070, t: -63.9, td: -76.9, dir: 250, spd: 36.5, thte: 359.8, thtv: 359.8},
+                    {p: 100.0, z: 16510, t: -74.3, td: -87.3, dir: 250, spd: 23.2, thte: 383.9, thtv: 383.9}
+                ]
+            },
+            "19951223": {
+                date: "23/12/1995 12Z",
+                status: "MODERADAMENTE INSTÁVEL",
+                badgeClass: "badge-mod",
+                mucape: 2031.9,
+                capeRev: 1650.0,
+                mucin: 15.0,
+                dcape: 530.6,
+                li: -6.1,
+                shear1km: 11.8,
+                shear6km: 14.5,
+                srh3km: 135.0,
+                stormMotion: [9.5, -4.2],
+                levels: [
+                    {p: 1009.0, z: 3, t: 25.8, td: 24.4, dir: 100, spd: 2.1, thte: 354.8, thtv: 301.6},
+                    {p: 1000.0, z: 83, t: 25.0, td: 23.8, dir: 135, spd: 1.5, thte: 353.2, thtv: 301.5},
+                    {p: 975.3, z: 300, t: 23.2, td: 22.7, dir: 195, spd: 4.1, thte: 351.2, thtv: 301.7},
+                    {p: 942.0, z: 600, t: 21.3, td: 20.7, dir: 230, spd: 7.7, thte: 348.0, thtv: 302.5},
+                    {p: 925.0, z: 757, t: 20.6, td: 19.5, dir: 230, spd: 10.8, thte: 346.3, thtv: 303.2},
+                    {p: 850.0, z: 1497, t: 18.4, td: 12.4, dir: 245, spd: 12.9, thte: 337.8, thtv: 307.4},
+                    {p: 810.0, z: 1906, t: 15.4, td: 14.8, dir: 248, spd: 14.3, thte: 346.3, thtv: 308.9},
+                    {p: 763.4, z: 2400, t: 12.6, td: 11.3, dir: 250, spd: 16.0, thte: 342.7, thtv: 310.7},
+                    {p: 700.0, z: 3122, t: 8.4, td: 6.3, dir: 245, spd: 14.9, thte: 338.6, thtv: 313.4},
+                    {p: 614.0, z: 4200, t: 2.2, td: -1.1, dir: 245, spd: 5.7, thte: 335.1, thtv: 317.7},
+                    {p: 500.0, z: 5840, t: -7.5, td: -10.2, dir: 265, spd: 9.3, thte: 335.8, thtv: 324.5},
+                    {p: 400.0, z: 7540, t: -18.7, td: -23.5, dir: 205, spd: 6.7, thte: 335.8, thtv: 330.9},
+                    {p: 300.0, z: 9640, t: -33.9, td: -44.9, dir: 220, spd: 4.6, thte: 338.4, thtv: 337.5},
+                    {p: 250.0, z: 10880, t: -42.9, td: -64.9, dir: 240, spd: 5.2, thte: 342.3, thtv: 342.2},
+                    {p: 200.0, z: 12350, t: -52.9, td: -74.9, dir: 130, spd: 12.9, thte: 348.9, thtv: 348.8},
+                    {p: 150.0, z: 14160, t: -65.1, td: -83.1, dir: 115, spd: 18.5, thte: 357.8, thtv: 357.7},
+                    {p: 100.0, z: 16598, t: -72.1, td: -88.1, dir: 85, spd: 4.1, thte: 388.2, thtv: 388.2}
+                ]
+            },
+            "19951224": {
+                date: "24/12/1995 12Z",
+                status: "CONVECÇÃO SEVERA EXPLOSIVA",
+                badgeClass: "badge-extreme",
+                mucape: 7808.7,
+                capeRev: 6120.0,
+                mucin: 0.0,
+                dcape: 1149.0,
+                li: -5.2,
+                shear1km: 18.4,
+                shear6km: 28.7,
+                srh3km: 245.0,
+                stormMotion: [-16.5, -9.2],
+                levels: [
+                    {p: 1009.0, z: 3, t: 24.6, td: 23.2, dir: 110, spd: 5.2, thte: 349.2, thtv: 300.2},
+                    {p: 1000.0, z: 84, t: 24.8, td: 22.5, dir: 80, spd: 8.8, thte: 348.6, thtv: 301.0},
+                    {p: 975.4, z: 300, t: 22.7, td: 21.0, dir: 70, spd: 13.4, thte: 345.3, thtv: 300.8},
+                    {p: 942.5, z: 600, t: 26.9, td: 23.3, dir: 65, spd: 19.6, thte: 363.7, thtv: 308.7},
+                    {p: 925.0, z: 764, t: 30.0, td: 25.0, dir: 60, spd: 22.6, thte: 377.8, thtv: 314.0},
+                    {p: 910.5, z: 900, t: 27.6, td: 22.7, dir: 60, spd: 23.2, thte: 368.2, thtv: 312.5},
+                    {p: 850.0, z: 1493, t: 17.0, td: 12.7, dir: 60, spd: 20.1, thte: 336.7, thtv: 305.9},
+                    {p: 802.0, z: 1984, t: 13.2, td: 13.2, dir: 52, spd: 13.0, thte: 341.0, thtv: 307.2},
+                    {p: 762.8, z: 2400, t: 10.8, td: 10.8, dir: 50, spd: 8.8, thte: 339.5, thtv: 308.8},
+                    {p: 700.0, z: 3112, t: 6.8, td: 6.7, dir: 45, spd: 9.3, thte: 337.3, thtv: 311.6},
+                    {p: 619.0, z: 4120, t: 1.2, td: 1.1, dir: 40, spd: 11.6, thte: 336.0, thtv: 315.9},
+                    {p: 500.0, z: 5820, t: -7.7, td: -16.7, dir: 35, spd: 12.4, thte: 330.8, thtv: 324.0},
+                    {p: 400.0, z: 7520, t: -18.1, td: -50.1, dir: 35, spd: 16.5, thte: 331.8, thtv: 331.4},
+                    {p: 300.0, z: 9610, t: -33.5, td: -43.5, dir: 10, spd: 7.2, thte: 339.2, thtv: 338.1},
+                    {p: 250.0, z: 10850, t: -43.1, td: -56.1, dir: 15, spd: 14.9, thte: 342.2, thtv: 341.9},
+                    {p: 200.0, z: 12320, t: -53.9, td: -72.9, dir: 15, spd: 14.9, thte: 347.3, thtv: 347.3},
+                    {p: 150.0, z: 14130, t: -65.3, td: -82.3, dir: 15, spd: 14.9, thte: 357.4, thtv: 357.4},
+                    {p: 100.0, z: 16580, t: -71.3, td: -87.3, dir: 15, spd: 14.9, thte: 389.7, thtv: 389.7}
+                ]
+            }
+        };
+
+        let currentCase = "19951224";
+        let parcelMode = "pseudo";
+
+        function switchTab(tab) {
+            document.getElementById('tabMain').style.display = tab === 'main' ? 'block' : 'none';
+            document.getElementById('tabRoadmap').style.display = tab === 'roadmap' ? 'block' : 'none';
+            document.getElementById('tabMainBtn').classList.toggle('active', tab === 'main');
+            document.getElementById('tabRoadmapBtn').classList.toggle('active', tab === 'roadmap');
+            if (tab === 'main') {
+                renderSkewT();
+                renderHodograph();
+                renderBruntVaisala();
+            }
+        }
+
+        function toggleParcelMode(mode) {
+            parcelMode = mode;
+            document.getElementById('btnPseudo').classList.toggle('active', mode === 'pseudo');
+            document.getElementById('btnRev').classList.toggle('active', mode === 'reversible');
+            
+            const theory = document.getElementById('emanuelTheoryText');
+            if (mode === 'reversible') {
+                theory.innerHTML = `<strong>Modo Reversível (Emanuel 1994, Cap. 4 & 6; MIT 12.811):</strong> A parcela conserva a entropia úmida total <code>s = (cpd + rt*cl)*ln(T) - Rd*ln(pd) + Lv*rv/T</code>. O termo <code>TLVR = TG * (1. + RG/EPS) / (1. + R(I))</code> subtrai ativamente o peso dos hidrometeoros retidos. O CAPE efetivo é reduzido para <strong>${soundings[currentCase].capeRev.toFixed(0)} J/kg</strong>.`;
+            } else {
+                theory.innerHTML = `<strong>Modo Pseudoadiabático (Clássico):</strong> Assume precipitação instantânea de todo o condensado (sem carregamento de água líquida: <code>r_l = 0</code>). A flutuabilidade utiliza apenas a temperatura virtual pura <code>Tv = TG * (1 + 0.608*rv)</code>. O CAPE atinge o valor máximo de <strong>${soundings[currentCase].mucape.toFixed(0)} J/kg</strong>.`;
+            }
+            renderSkewT();
+        }
+
+        function loadCase(key) {
+            currentCase = key;
+            const data = soundings[key];
+
+            document.getElementById('caseBadge').className = `status-badge ${data.badgeClass}`;
+            document.getElementById('caseBadge').innerText = data.status;
+
+            document.getElementById('mucapeVal').innerText = `${data.mucape.toFixed(0)} J/kg`;
+            document.getElementById('capeRevVal').innerText = `${data.capeRev.toFixed(0)} J/kg`;
+            document.getElementById('mucinVal').innerText = `${data.mucin.toFixed(0)} J/kg`;
+            document.getElementById('dcapeVal').innerText = `${data.dcape.toFixed(0)} J/kg`;
+            document.getElementById('shear1kmVal').innerText = `${data.shear1km.toFixed(1)} m/s`;
+            document.getElementById('shear6kmVal').innerText = `${data.shear6km.toFixed(1)} m/s`;
+            document.getElementById('srhVal').innerText = `${data.srh3km.toFixed(0)} m²/s²`;
+            document.getElementById('liVal').innerText = `${data.li.toFixed(1)} °C`;
+
+            const tbody = document.querySelector('#soundingTable tbody');
+            tbody.innerHTML = '';
+            data.levels.forEach(lvl => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${lvl.p.toFixed(1)}</td>
+                    <td>${lvl.z}</td>
+                    <td style="color:#ef4444;">${lvl.t.toFixed(1)}</td>
+                    <td style="color:#10b981;">${lvl.td.toFixed(1)}</td>
+                    <td>${lvl.dir}°</td>
+                    <td>${lvl.spd.toFixed(1)}</td>
+                    <td>${lvl.thte.toFixed(1)}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            renderSkewT();
+            renderHodograph();
+            renderBruntVaisala();
+        }
+
+        function renderSkewT() {
+            const canvas = document.getElementById('skewtCanvas');
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width;
+            const h = canvas.height;
+            const data = soundings[currentCase];
+
+            ctx.clearRect(0, 0, w, h);
+
+            const pMin = 100, pMax = 1050;
+            const tMin = -70, tMax = 40;
+
+            function getY(p) {
+                return h * (Math.log(p) - Math.log(pMin)) / (Math.log(pMax) - Math.log(pMin));
+            }
+
+            function getX(t, p) {
+                const y = getY(p);
+                const skewOffset = (h - y) * 0.75;
+                const tNorm = (t - tMin) / (tMax - tMin);
+                return (tNorm * (w - 100)) + 60 + skewOffset * 0.5 - 120;
+            }
+
+            ctx.strokeStyle = '#1e293b';
+            ctx.lineWidth = 1;
+            ctx.fillStyle = '#64748b';
+            ctx.font = '10px monospace';
+            const isobaricLevels = [1000, 850, 700, 500, 400, 300, 200, 150, 100];
+            isobaricLevels.forEach(p => {
+                const y = getY(p);
+                ctx.beginPath();
+                ctx.moveTo(50, y);
+                ctx.lineTo(w - 20, y);
+                ctx.stroke();
+                ctx.fillText(`${p} hPa`, 10, y + 3);
+            });
+
+            for (let t = -80; t <= 40; t += 10) {
+                ctx.beginPath();
+                ctx.moveTo(getX(t, pMax), getY(pMax));
+                ctx.lineTo(getX(t, pMin), getY(pMin));
+                ctx.strokeStyle = t === 0 ? '#334155' : '#141d2e';
+                ctx.lineWidth = t === 0 ? 1.5 : 1;
+                ctx.stroke();
+                if (t % 20 === 0) {
+                    ctx.fillText(`${t}°C`, getX(t, 1000), getY(1000) + 12);
+                }
+            }
+
+            if (data.mucape > 50) {
+                ctx.fillStyle = 'rgba(74, 222, 128, 0.18)';
+                ctx.beginPath();
+                const elP = currentCase === '19951224' ? 140 : 250;
+                ctx.moveTo(getX(data.levels[0].t, data.levels[0].p), getY(data.levels[0].p));
+                for (let p = data.levels[0].p; p >= elP; p -= 20) {
+                    const tParcel = data.levels[0].t - (6.0 * (data.levels[0].p - p) / 100.0) + (parcelMode === 'reversible' ? -2.5 : 0.0);
+                    ctx.lineTo(getX(tParcel, p), getY(p));
+                }
+                for (let i = data.levels.length - 1; i >= 0; i--) {
+                    if (data.levels[i].p >= elP && data.levels[i].p <= data.levels[0].p) {
+                        ctx.lineTo(getX(data.levels[i].t, data.levels[i].p), getY(data.levels[i].p));
+                    }
+                }
+                ctx.closePath();
+                ctx.fill();
+            }
+
+            ctx.strokeStyle = '#10b981';
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            data.levels.forEach((lvl, i) => {
+                const x = getX(lvl.td, lvl.p);
+                const y = getY(lvl.p);
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+            ctx.stroke();
+
+            ctx.strokeStyle = '#ef4444';
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            data.levels.forEach((lvl, i) => {
+                const x = getX(lvl.t, lvl.p);
+                const y = getY(lvl.p);
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+            ctx.stroke();
+
+            if (data.mucape > 5) {
+                ctx.strokeStyle = parcelMode === 'reversible' ? '#38bdf8' : '#fbbf24';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([5, 4]);
+                ctx.beginPath();
+                const sfc = data.levels[0];
+                ctx.moveTo(getX(sfc.t, sfc.p), getY(sfc.p));
+                const topP = currentCase === '19951224' ? 120 : 200;
+                for (let p = sfc.p; p >= topP; p -= 15) {
+                    const deltaT = (sfc.p - p) * 0.055;
+                    const waterLoad = (parcelMode === 'reversible' && p < 800) ? 2.5 : 0.0;
+                    const tp = (sfc.t - deltaT) - waterLoad;
+                    ctx.lineTo(getX(tp, p), getY(p));
+                }
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+        }
+
+        function renderHodograph() {
+            const canvas = document.getElementById('hodoCanvas');
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width;
+            const h = canvas.height;
+            const cx = w / 2;
+            const cy = h / 2;
+            const scale = 4.8;
+
+            ctx.clearRect(0, 0, w, h);
+
+            ctx.strokeStyle = '#1e293b';
+            ctx.lineWidth = 1;
+            ctx.fillStyle = '#64748b';
+            ctx.font = '10px monospace';
+            [10, 20, 30, 40].forEach(spd => {
+                const r = spd * scale;
+                ctx.beginPath();
+                ctx.arc(cx, cy, r, 0, 2 * Math.PI);
+                ctx.stroke();
+                ctx.fillText(`${spd} m/s`, cx + r - 25, cy - 4);
+            });
+
+            ctx.beginPath();
+            ctx.moveTo(15, cy); ctx.lineTo(w - 15, cy);
+            ctx.moveTo(cx, 15); ctx.lineTo(cx, h - 15);
+            ctx.stroke();
+
+            const data = soundings[currentCase];
+            const pts = data.levels.map(l => {
+                const rad = (l.dir * Math.PI) / 180;
+                const u = -l.spd * Math.sin(rad);
+                const v = -l.spd * Math.cos(rad);
+                return { x: cx + u * scale, y: cy - v * scale, z: l.z };
+            });
+
+            for (let i = 0; i < pts.length - 1; i++) {
+                const p1 = pts[i];
+                const p2 = pts[i + 1];
+                ctx.beginPath();
+                ctx.moveTo(p1.x, p1.y);
+                ctx.lineTo(p2.x, p2.y);
+                ctx.lineWidth = 3;
+
+                if (p2.z <= 1000) ctx.strokeStyle = '#ef4444';
+                else if (p2.z <= 3000) ctx.strokeStyle = '#10b981';
+                else if (p2.z <= 6000) ctx.strokeStyle = '#38bdf8';
+                else ctx.strokeStyle = '#64748b';
+                ctx.stroke();
+            }
+
+            const [smU, smV] = data.stormMotion;
+            const smX = cx + smU * scale;
+            const smY = cy - smV * scale;
+            ctx.fillStyle = '#fbbf24';
+            ctx.beginPath();
+            ctx.arc(smX, smY, 5, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.fillText('c', smX + 7, smY + 4);
+        }
+
+        function renderBruntVaisala() {
+            const canvas = document.getElementById('bruntCanvas');
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width;
+            const h = canvas.height;
+            const data = soundings[currentCase];
+
+            ctx.clearRect(0, 0, w, h);
+
+            ctx.strokeStyle = '#1e293b';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(40, 10); ctx.lineTo(40, h - 25);
+            ctx.lineTo(w - 15, h - 25);
+            ctx.stroke();
+
+            ctx.fillStyle = '#64748b';
+            ctx.font = '9px monospace';
+            ctx.fillText('0', 40, h - 10);
+            ctx.fillText('2×10⁻⁴', 130, h - 10);
+            ctx.fillText('4×10⁻⁴ s⁻²', 240, h - 10);
+
+            const g = 9.80665;
+            const n2Pts = [];
+            for (let i = 0; i < data.levels.length - 1; i++) {
+                const l1 = data.levels[i];
+                const l2 = data.levels[i + 1];
+                const dz = l2.z - l1.z;
+                if (dz > 20 && l2.z <= 8000) {
+                    const dth = l2.thtv - l1.thtv;
+                    const thMid = 0.5 * (l1.thtv + l2.thtv);
+                    const n2 = Math.max(-0.5e-4, (g / thMid) * (dth / dz));
+                    n2Pts.push({ n2: n2, z: 0.5 * (l1.z + l2.z) });
+                }
+            }
+
+            ctx.strokeStyle = '#c084fc';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            n2Pts.forEach((pt, i) => {
+                const x = 40 + (pt.n2 / 5e-4) * (w - 70);
+                const y = (h - 25) - (pt.z / 8000) * (h - 40);
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+            ctx.stroke();
+        }
+
+        window.onload = () => {
+            loadCase(currentCase);
+        };
+    </script>
+</body>
+</html>
