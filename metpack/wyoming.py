@@ -41,10 +41,10 @@ NA = 800
 NK = 20
 NS = 1000
 
-def run_wyoming(sounding_file='sounding.txt'):
+def run_wyoming(sounding_file='sounding.txt', out_prefix='', out_dir=None):
     if not os.path.exists(sounding_file):
         print(f"Erro: Arquivo '{sounding_file}' não encontrado no diretório atual.")
-        return
+        return None
 
     # -----------------------------------------------------------------------
     # 1. LEITURA DA SONDAGEM BRUTA DE WYOMING
@@ -317,49 +317,85 @@ def run_wyoming(sounding_file='sounding.txt'):
                     dcape[i] -= RD * tvm * dp_val
 
     # -----------------------------------------------------------------------
+    # -----------------------------------------------------------------------
     # 5. GRAVAÇÃO DO ARQUIVO cape.out (FORMATO IDÊNTICO AO wyoming.f)
     # -----------------------------------------------------------------------
-    with open('cape.out', 'w') as f_out:
-        f_out.write("     Number of soundings =    1\n")
-        f_out.write("                    ALL AREAS IN UNITS OF J/kg\n\n")
-        f_out.write(" Origin    Rev.    P.A.    Rev.    P.A.    Rev.    P.A.    Rev.    P.A.\n")
-        f_out.write(" p (mb)     PA      PA      NA      NA    CAPE    CAPE    DCAPE STDCAPE    STDCAPE\n")
-        f_out.write(" ------    ----    ----    ----    ----    ----    ----   -----   -------  -------\n")
-        for i in range(actual_nk):
-            f_out.write(f" {pl[i]:6.1f}{par[i]:8.1f}{pap[i]:8.1f}{nar[i]:8.1f}{nap[i]:8.1f}"
-                        f"{caper[i]:8.1f}{capep[i]:8.1f}{dcape[i]:8.1f}{0.0:8.1f}{0.0:8.1f}\n")
+    target_dir = out_dir if out_dir else os.path.dirname(os.path.abspath(sounding_file))
+    if not target_dir: target_dir = '.'
+    
+    def get_path(fname):
+        if out_prefix:
+            base, ext = os.path.splitext(fname)
+            return os.path.join(target_dir, f"{out_prefix}{base}{ext}")
+        return os.path.join(target_dir, fname)
+
+    # Grava cape.out
+    cape_lines = []
+    cape_lines.append("     Number of soundings =    1\n")
+    cape_lines.append("                    ALL AREAS IN UNITS OF J/kg\n\n")
+    cape_lines.append(" Origin    Rev.    P.A.    Rev.    P.A.    Rev.    P.A.    Rev.    P.A.\n")
+    cape_lines.append(" p (mb)     PA      PA      NA      NA    CAPE    CAPE    DCAPE STDCAPE    STDCAPE\n")
+    cape_lines.append(" ------    ----    ----    ----    ----    ----    ----   -----   -------  -------\n")
+    for i in range(actual_nk):
+        cape_lines.append(f" {pl[i]:6.1f}{par[i]:8.1f}{pap[i]:8.1f}{nar[i]:8.1f}{nap[i]:8.1f}"
+                          f"{caper[i]:8.1f}{capep[i]:8.1f}{dcape[i]:8.1f}{0.0:8.1f}{0.0:8.1f}\n")
+    
+    with open(get_path('cape.out'), 'w') as f_out:
+        f_out.writelines(cape_lines)
+    if out_prefix:
+        with open(os.path.join(target_dir, 'cape.out'), 'w') as f_def:
+            f_def.writelines(cape_lines)
 
     # Arquivos adicionais para contornos/perfis (ex: tcon.m e tcon.py)
-    with open('p.out', 'w') as f_p:
+    with open(get_path('p.out'), 'w') as f_p:
         for pi in p: f_p.write(f"{pi:.2f}\n")
+    if out_prefix:
+        with open(os.path.join(target_dir, 'p.out'), 'w') as f_p:
+            for pi in p: f_p.write(f"{pi:.2f}\n")
 
-    with open('porig.out', 'w') as f_po:
+    with open(get_path('porig.out'), 'w') as f_po:
         for pli in pl: f_po.write(f"{pli:.2f}\n")
+    if out_prefix:
+        with open(os.path.join(target_dir, 'porig.out'), 'w') as f_po:
+            for pli in pl: f_po.write(f"{pli:.2f}\n")
 
     # Matrizes de Anomalia Térmica (Linhas: nível elevado j; Colunas: nível de origem i)
-    with open('tdifrev.out', 'w') as f_tr:
+    with open(get_path('tdifrev.out'), 'w') as f_tr:
         for j in range(n):
             f_tr.write(" ".join(f"{tvrdif[i][j]:8.3f}" for i in range(actual_nk)) + "\n")
+    if out_prefix:
+        with open(os.path.join(target_dir, 'tdifrev.out'), 'w') as f_tr:
+            for j in range(n):
+                f_tr.write(" ".join(f"{tvrdif[i][j]:8.3f}" for i in range(actual_nk)) + "\n")
 
-    with open('tdifpseudo.out', 'w') as f_tp:
+    with open(get_path('tdifpseudo.out'), 'w') as f_tp:
         for j in range(n):
             f_tp.write(" ".join(f"{tvpdif[i][j]:8.3f}" for i in range(actual_nk)) + "\n")
+    if out_prefix:
+        with open(os.path.join(target_dir, 'tdifpseudo.out'), 'w') as f_tp:
+            for j in range(n):
+                f_tp.write(" ".join(f"{tvpdif[i][j]:8.3f}" for i in range(actual_nk)) + "\n")
 
     # modsound.txt para alimentação direta do skewt.m e skewt.py
-    with open('modsound.txt', 'w') as f_mod:
-        for k in range(n_raw):
-            t_c = ttem[k] - 273.15
-            rh_k = min(1.0, max(0.0, evtem[k] / estem[k])) if estem[k] > 0 else 0.0
-            f_mod.write(f"{ptem[k]:8.2f} {t_c:8.2f} {rh_k:8.4f}\n")
+    mod_lines = []
+    for k in range(n_raw):
+        t_c = ttem[k] - 273.15
+        rh_k = min(1.0, max(0.0, evtem[k] / estem[k])) if estem[k] > 0 else 0.0
+        mod_lines.append(f"{ptem[k]:8.2f} {t_c:8.2f} {rh_k:8.4f}\n")
+    with open(get_path('modsound.txt'), 'w') as f_mod:
+        f_mod.writelines(mod_lines)
+    if out_prefix:
+        with open(os.path.join(target_dir, 'modsound.txt'), 'w') as f_mod:
+            f_mod.writelines(mod_lines)
 
     print("\n" + "="*70)
-    print(" SUCESSO: Processamento Termodinâmico Concluído (Emanuel 1994)")
+    print(f" SUCESSO: Processamento Termodinâmico Concluído (Emanuel 1994) [{sounding_file}]")
     print("="*70)
     print(" Arquivos gerados:")
-    print("   -> cape.out (Tabela com CAPE Reversível e Pseudoadiabático)")
-    print("   -> p.out, porig.out")
-    print("   -> tdifrev.out, tdifpseudo.out (Matrizes para tcon.py e tcon.m)")
-    print("   -> modsound.txt (Para skewt.py e skewt.m)")
+    print(f"   -> {get_path('cape.out')}")
+    print(f"   -> {get_path('p.out')}, {get_path('porig.out')}")
+    print(f"   -> {get_path('tdifrev.out')}, {get_path('tdifpseudo.out')}")
+    print(f"   -> {get_path('modsound.txt')}")
     print("="*70)
     print(f" Nível de Superfície: {pl[0]:.1f} mb")
     print(f"   PA Pseudoadiabática (Tv) : {pap[0]:.1f} J/kg")
@@ -370,5 +406,16 @@ def run_wyoming(sounding_file='sounding.txt'):
     print(f"   Redução por Water Loading : {reducao:.1f}%")
     print("="*70)
 
+    return {
+        'pl': pl, 'par': par, 'pap': pap, 'nar': nar, 'nap': nap,
+        'caper': caper, 'capep': capep, 'dcape': dcape,
+        'p': p, 'porig': pl,
+        'tdifrev': [tvrdif[i] for i in range(actual_nk)],
+        'tdifpseudo': [tvpdif[i] for i in range(actual_nk)],
+        'ptem': ptem, 'ttem': ttem, 'rtem': rtem
+    }
+
 if __name__ == '__main__':
-    run_wyoming()
+    snd_file = sys.argv[1] if len(sys.argv) > 1 else 'sounding.txt'
+    pfx = sys.argv[2] if len(sys.argv) > 2 else ''
+    run_wyoming(snd_file, out_prefix=pfx)

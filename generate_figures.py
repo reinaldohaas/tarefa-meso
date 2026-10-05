@@ -547,17 +547,383 @@ def generate_kinematics_hodograph_detail():
     ax.set_xlabel("Componente Zonal U (m/s)", fontsize=11, fontweight='bold')
     ax.set_ylabel("Componente Meridional V (m/s)", fontsize=11, fontweight='bold')
     ax.set_title("Hodógrafo do Vento Horizontal & Análise Cinemática\nSBPA Porto Alegre - 24/12/1995 12Z", fontsize=13, fontweight='bold', color='#0f172a')
-    ax.legend(loc='lower left', fontsize=9, framealpha=0.95)
-    ax.grid(True, linestyle=':', alpha=0.4)
-
     out_path = 'metpack/fig_kinematics_hodograph.png'
     plt.savefig(out_path, dpi=180, bbox_inches='tight')
     plt.close()
     print(f"Saved: {out_path}")
+
+# ==============================================================================
+# 5. PERFIS DO COLAB PARA TODAS AS TRÊS SONDAGENS (ESTÁVEL, NEUTRA, INSTÁVEL)
+# ==============================================================================
+def generate_all_soundings_colab_profiles():
+    print("Generating complete Colab profiles (θ, θe, θs, N, S, r) for ALL 3 soundings...")
+    cases = [
+        {
+            'date': '19951212',
+            'title': 'Sondagem 1: Atmosfera Estável (12/12/1995 12Z)',
+            'desc': 'Ar seco em médios níveis, subsidência pós-frontal anticiclônica',
+            'color': '#0284c7',
+            'out_fig': 'metpack/fig_profiles_19951212.png'
+        },
+        {
+            'date': '19951223',
+            'title': 'Sondagem 2: Atmosfera Neutra / Transição (23/12/1995 12Z)',
+            'desc': 'Umedecimento progressivo da troposfera e advecção de norte',
+            'color': '#eab308',
+            'out_fig': 'metpack/fig_profiles_19951223.png'
+        },
+        {
+            'date': '19951224',
+            'title': 'Sondagem 3: Atmosfera Instável Severa (24/12/1995 12Z)',
+            'desc': 'Inversão quente/úmida em 925 hPa (JBN), MUCAPE = 4645 J/kg, Capping Lid',
+            'color': '#dc2626',
+            'out_fig': 'metpack/fig_profiles_19951224.png'
+        }
+    ]
+
+    for c in cases:
+        df = parse_sounding_file(f"metpack/sounding_{c['date']}_12Z.txt")
+        if df is None:
+            continue
+
+        p = df['p'].values * units.hPa
+        T = df['t'].values * units.degC
+        Td = df['td'].values * units.degC
+        z = df['z'].values * units.meter
+
+        theta = mpcalc.potential_temperature(p, T).to('kelvin')
+        theta_e = mpcalc.equivalent_potential_temperature(p, T, Td).to('kelvin')
+        theta_s = mpcalc.equivalent_potential_temperature(p, T, T).to('kelvin')
+        rh = mpcalc.relative_humidity_from_dewpoint(T, Td)
+        mixrat = mpcalc.mixing_ratio_from_relative_humidity(p, T, rh).to('g/kg')
+        pw = mpcalc.precipitable_water(p, Td).to('mm')
+        S = mpcalc.static_stability(p, T.to('kelvin'))
+        N = mpcalc.brunt_vaisala_frequency(z, theta)
+
+        fig, axes = plt.subplots(1, 4, figsize=(18, 7.5), dpi=150)
+        fig.suptitle(f"{c['title']}\nPerfis Verticais de Mesoescala (Colab Prof. Reinaldo Haas / Emanuel 1994)", 
+                     fontsize=14, fontweight='bold', color='#0f172a', y=0.98)
+
+        # 1. Theta, Theta-e, Theta-s
+        ax1 = axes[0]
+        ax1.plot(theta.magnitude, p.magnitude, color='#0284c7', linewidth=2.0, label='θ (Potencial)')
+        ax1.plot(theta_e.magnitude, p.magnitude, color='#16a34a', linewidth=2.2, label='θe (Equivalente)')
+        ax1.plot(theta_s.magnitude, p.magnitude, color='#dc2626', linestyle='--', linewidth=2.0, label='θs (Saturação)')
+        
+        # Destaque de camada com dtheta_e / dz < 0 (instabilidade potencial)
+        d_thte = np.diff(theta_e.magnitude)
+        p_mid = 0.5 * (p.magnitude[:-1] + p.magnitude[1:])
+        unstable_layers = p_mid[d_thte > 0] # p diminui com z, então d_thte > 0 quando thte diminui com z
+        if len(unstable_layers) > 0:
+            ax1.axhspan(unstable_layers.max(), unstable_layers.min(), color='#fef08a', alpha=0.35, 
+                        label='∂θe/∂z < 0 (Inst. Convectiva)')
+
+        ax1.set_ylim(1015, 100)
+        ax1.set_yscale('log')
+        yticks = [1000, 900, 800, 700, 600, 500, 400, 300, 200, 100]
+        ax1.set_yticks(yticks)
+        ax1.set_yticklabels([str(y) for y in yticks])
+        ax1.set_xlabel('Temperatura (K)', fontsize=10, fontweight='bold')
+        ax1.set_ylabel('Pressão (hPa)', fontsize=10, fontweight='bold')
+        ax1.set_title("Perfis de θ, θe e θs\nEstabilidade Potencial / Condicional", fontsize=10.5, fontweight='bold')
+        ax1.legend(loc='lower left', fontsize=8)
+        ax1.grid(True, linestyle=':', alpha=0.6)
+
+        # 2. Brunt-Väisälä N (s^-1)
+        ax2 = axes[1]
+        n_vals = np.where(np.isnan(N.magnitude), 0.0, N.magnitude)
+        ax2.plot(n_vals, p.magnitude, color='#7c3aed', linewidth=2.0, label='Freq. Brunt-Väisälä (N)')
+        ax2.axvline(0, color='gray', linestyle='--', linewidth=1.0)
+        
+        # Destaca inversão térmica se houver pico em baixos níveis
+        if c['date'] == '19951224':
+            ax2.axhspan(950, 900, color='#fed7aa', alpha=0.45, label='Capping Lid (925 hPa)')
+
+        ax2.set_ylim(1015, 100)
+        ax2.set_yscale('log')
+        ax2.set_yticks(yticks)
+        ax2.set_yticklabels([str(y) for y in yticks])
+        ax2.set_xlim(0, 0.05)
+        ax2.set_xlabel('Frequência N (s⁻¹)', fontsize=10, fontweight='bold')
+        ax2.set_title("Frequência de Brunt-Väisälä (N)\nOscilação de Ondas de Gravidade", fontsize=10.5, fontweight='bold')
+        ax2.legend(loc='lower right', fontsize=8)
+        ax2.grid(True, linestyle=':', alpha=0.6)
+
+        # 3. Estabilidade Estática S
+        ax3 = axes[2]
+        s_vals = S.magnitude
+        ax3.plot(s_vals, p.magnitude, color='#ea580c', linewidth=2.0, label='Estabilidade Estática (S)')
+        ax3.axvline(0, color='gray', linestyle='--', linewidth=1.0)
+        ax3.set_ylim(1015, 100)
+        ax3.set_yscale('log')
+        ax3.set_yticks(yticks)
+        ax3.set_yticklabels([str(y) for y in yticks])
+        s_valid = s_vals[~np.isnan(s_vals) & (p.magnitude >= 200)]
+        if len(s_valid) > 0:
+            ax3.set_xlim(max(-0.05, float(s_valid.min()) - 0.02), min(0.15, float(s_valid.max()) + 0.02))
+        ax3.set_xlabel('Estabilidade Estática S', fontsize=10, fontweight='bold')
+        ax3.set_title("Estabilidade Estática S(p)\nResistência a Deslocamentos", fontsize=10.5, fontweight='bold')
+        ax3.legend(loc='lower right', fontsize=8)
+        ax3.grid(True, linestyle=':', alpha=0.6)
+
+        # 4. Razão de Mistura r e PW
+        ax4 = axes[3]
+        r_vals = mixrat.magnitude
+        ax4.plot(r_vals, p.magnitude, color='#0d9488', linewidth=2.2, label='Razão de Mistura r')
+        ax4.fill_betweenx(p.magnitude, 0, r_vals, color='#99f6e4', alpha=0.4)
+        r_max = float(r_vals.max())
+        p_rmax = float(p.magnitude[np.argmax(r_vals)])
+        ax4.plot(r_max, p_rmax, 'ro', markersize=8, label=f'r_max: {r_max:.1f} g/kg ({p_rmax:.0f} hPa)')
+        
+        ax4.set_ylim(1015, 100)
+        ax4.set_yscale('log')
+        ax4.set_yticks(yticks)
+        ax4.set_yticklabels([str(y) for y in yticks])
+        ax4.set_xlim(0, max(24, r_max + 2))
+        ax4.set_xlabel('Razão de Mistura r (g/kg)', fontsize=10, fontweight='bold')
+        ax4.set_title(f"Umidade Troposférica r(z)\nÁgua Precipitável PW = {pw.magnitude:.1f} mm", fontsize=10.5, fontweight='bold')
+        ax4.legend(loc='upper right', fontsize=8)
+        ax4.grid(True, linestyle=':', alpha=0.6)
+
+        plt.tight_layout(rect=[0, 0, 1, 0.95])
+        plt.savefig(c['out_fig'], dpi=160, bbox_inches='tight')
+        plt.close()
+        print(f"Saved: {c['out_fig']}")
+
+# ==============================================================================
+# 6. COMPARAÇÃO TRÍPLICE DOS PERFIS DO COLAB (12/12 vs 23/12 vs 24/12)
+# ==============================================================================
+def generate_3_soundings_profiles_comparison():
+    print("Generating tripartite comparison of vertical profiles (θe, N, S, r)...")
+    cases = [
+        ('19951212', '12/12 (Estável)', '#0284c7', '-'),
+        ('19951223', '23/12 (Neutra)', '#eab308', '--'),
+        ('19951224', '24/12 (Instável)', '#dc2626', '-')
+    ]
+
+    fig, axes = plt.subplots(1, 4, figsize=(18, 7.8), dpi=160)
+    fig.suptitle("Comparação Científica dos Perfis do Colab: Três Regimes Atmosféricos em Porto Alegre (SBPA)\nEstável (12/12/1995) vs Neutro (23/12/1995) vs Instável Severo (24/12/1995)", 
+                 fontsize=13.5, fontweight='bold', color='#0f172a', y=0.98)
+
+    yticks = [1000, 900, 800, 700, 600, 500, 400, 300, 200, 100]
+
+    for date, label, color, ls in cases:
+        df = parse_sounding_file(f"metpack/sounding_{date}_12Z.txt")
+        if df is None: continue
+
+        p = df['p'].values * units.hPa
+        T = df['t'].values * units.degC
+        Td = df['td'].values * units.degC
+        z = df['z'].values * units.meter
+
+        theta = mpcalc.potential_temperature(p, T).to('kelvin')
+        theta_e = mpcalc.equivalent_potential_temperature(p, T, Td).to('kelvin')
+        rh = mpcalc.relative_humidity_from_dewpoint(T, Td)
+        mixrat = mpcalc.mixing_ratio_from_relative_humidity(p, T, rh).to('g/kg')
+        pw = mpcalc.precipitable_water(p, Td).to('mm')
+        S = mpcalc.static_stability(p, T.to('kelvin'))
+        N = mpcalc.brunt_vaisala_frequency(z, theta)
+
+        # 1. Theta-e comparison
+        axes[0].plot(theta_e.magnitude, p.magnitude, color=color, linestyle=ls, linewidth=2.2, 
+                     label=f"{label} [θe_sfc: {theta_e.magnitude[0]:.1f}K]")
+
+        # 2. Brunt-Väisälä N comparison
+        n_vals = np.where(np.isnan(N.magnitude), 0.0, N.magnitude)
+        axes[1].plot(n_vals, p.magnitude, color=color, linestyle=ls, linewidth=2.0, label=f"{label}")
+
+        # 3. Static Stability S comparison
+        s_vals = S.magnitude
+        axes[2].plot(s_vals, p.magnitude, color=color, linestyle=ls, linewidth=2.0, label=f"{label}")
+
+        # 4. Mixing Ratio r comparison
+        axes[3].plot(mixrat.magnitude, p.magnitude, color=color, linestyle=ls, linewidth=2.2, 
+                     label=f"{label} [PW: {pw.magnitude:.1f}mm]")
+
+    # Estilização dos 4 eixos
+    titles = [
+        "Temperatura Potencial Equivalente (θe)\nReservatório Energético & Inst. Convectiva",
+        "Frequência de Brunt-Väisälä (N)\nEstratificação & Inversão Tampa (Capping Lid)",
+        "Estabilidade Estática (S)\nResistência Termodinâmica ao Deslocamento",
+        "Razão de Mistura r(z) & PW\nCombustível de Umidade Troposférica"
+    ]
+    xlabels = ["θe (K)", "Frequência N (s⁻¹)", "Estabilidade Estática S", "Razão de Mistura r (g/kg)"]
+    xlims = [(305, 385), (0, 0.045), (-0.02, 0.12), (0, 24)]
+
+    for i, ax in enumerate(axes):
+        ax.set_ylim(1015, 100)
+        ax.set_yscale('log')
+        ax.set_yticks(yticks)
+        ax.set_yticklabels([str(y) for y in yticks])
+        ax.set_xlabel(xlabels[i], fontsize=10, fontweight='bold')
+        if i == 0:
+            ax.set_ylabel('Pressão (hPa)', fontsize=10, fontweight='bold')
+        else:
+            ax.set_ylabel('')
+        ax.set_xlim(xlims[i])
+        ax.set_title(titles[i], fontsize=10.2, fontweight='bold')
+        ax.legend(loc='lower left' if i != 3 else 'upper right', fontsize=8.5, framealpha=0.9)
+        ax.grid(True, linestyle=':', alpha=0.6)
+
+    # Anotações físicas destacadas
+    axes[0].annotate('Injeção Extrema de θe (JBN)\nθe = 377.8 K em 925 hPa', xy=(377.8, 925), xytext=(340, 750),
+                     arrowprops=dict(arrowstyle="->", color='#dc2626', lw=1.8),
+                     fontsize=8.5, fontweight='bold', color='#dc2626', bbox=dict(boxstyle="round", fc="#fee2e2", ec="#dc2626"))
+
+    axes[1].annotate('Pico de Estabilidade (Tampa)\nImpede convecção prematura', xy=(0.028, 925), xytext=(0.020, 650),
+                     arrowprops=dict(arrowstyle="->", color='#dc2626', lw=1.8),
+                     fontsize=8.5, fontweight='bold', color='#dc2626', bbox=dict(boxstyle="round", fc="#fee2e2", ec="#dc2626"))
+
+    axes[3].annotate('Vapor Tropical Amazônico\nr = 22.0 g/kg (Extremo RS)', xy=(22.0, 925), xytext=(12, 750),
+                     arrowprops=dict(arrowstyle="->", color='#dc2626', lw=1.8),
+                     fontsize=8.5, fontweight='bold', color='#dc2626', bbox=dict(boxstyle="round", fc="#fee2e2", ec="#dc2626"))
+
+    out_comp = 'metpack/fig_3_soundings_profiles_comparison.png'
+    plt.tight_layout(rect=[0, 0, 1, 0.95])
+    plt.savefig(out_comp, dpi=160, bbox_inches='tight')
+    plt.close()
+    print(f"Saved tripartite profiles comparison: {out_comp}")
+
+# ==============================================================================
+# 7. MATRIZES 2D DE KERRY EMANUEL (1994) PARA TODAS AS 3 SONDAGENS
+# ==============================================================================
+def generate_emanuel_matrices_all_cases():
+    print("Generating Emanuel 2D convection anomaly matrices for ALL 3 soundings...")
+    cases = [
+        ('19951212', '12/12/1995 (Estável)', '#0284c7'),
+        ('19951223', '23/12/1995 (Neutra)', '#eab308'),
+        ('19951224', '24/12/1995 (Instável)', '#dc2626')
+    ]
+
+    # Individual plots for each case
+    for date, label, color in cases:
+        p_path = f"metpack/{date}_p.out"
+        po_path = f"metpack/{date}_porig.out"
+        tr_path = f"metpack/{date}_tdifrev.out"
+        tp_path = f"metpack/{date}_tdifpseudo.out"
+
+        if not (os.path.exists(p_path) and os.path.exists(tr_path)):
+            continue
+
+        p = np.loadtxt(p_path)
+        porig = np.loadtxt(po_path)
+        tdifrev = np.loadtxt(tr_path)
+        tdifpseudo = np.loadtxt(tp_path)
+
+        n_rows, n_cols = tdifrev.shape
+        p = p[:n_rows]
+        porig = porig[:n_cols]
+        X, Y = np.meshgrid(porig, p)
+
+        # Reversible plot
+        fig, ax = plt.subplots(figsize=(8.5, 6.5), dpi=150, facecolor='#0f172a')
+        ax.set_facecolor('#1e293b')
+        mesh = ax.pcolormesh(X, Y, tdifrev, cmap='RdBu_r', shading='gouraud', vmin=-10, vmax=14)
+        cbar = plt.colorbar(mesh, ax=ax)
+        cbar.set_label('Diferença de Temp. de Densidade Reversível Tρ (K)', color='#f8fafc', fontweight='bold')
+        cbar.ax.tick_params(colors='#cbd5e1')
+        cs = ax.contour(X, Y, tdifrev, levels=np.arange(-8, 14, 2), colors='black', linewidths=1.0)
+        ax.clabel(cs, inline=True, fontsize=8, fmt='%1.0f')
+        ax.set_xlim(np.max(porig), np.min(porig))
+        ax.set_ylim(np.max(p), np.min(p))
+        ax.set_xlabel('Pressão de Origem da Parcela (mb)', color='#f8fafc', fontweight='bold', fontsize=10.5)
+        ax.set_ylabel('Pressão para a qual a Parcela é Levantada (mb)', color='#f8fafc', fontweight='bold', fontsize=10.5)
+        ax.set_title(f"Reversible Density Temp Difference Tρ (K) - Emanuel 1994\nSBPA {label}", 
+                     color='#38bdf8', fontweight='bold', fontsize=11.5, pad=10)
+        ax.tick_params(colors='#cbd5e1')
+        ax.grid(True, color='#334155', linestyle=':', linewidth=0.6)
+        plt.tight_layout()
+        out_rev = f"metpack/tcon_tdifrev_{date}.png"
+        plt.savefig(out_rev, dpi=160, facecolor=fig.get_facecolor(), edgecolor='none')
+        plt.close()
+
+        # Pseudoadiabatic plot
+        fig2, ax2 = plt.subplots(figsize=(8.5, 6.5), dpi=150, facecolor='#0f172a')
+        ax2.set_facecolor('#1e293b')
+        mesh2 = ax2.pcolormesh(X, Y, tdifpseudo, cmap='RdBu_r', shading='gouraud', vmin=-10, vmax=14)
+        cbar2 = plt.colorbar(mesh2, ax=ax2)
+        cbar2.set_label('Diferença de Temp. Pseudoadiabática Tv (K)', color='#f8fafc', fontweight='bold')
+        cbar2.ax.tick_params(colors='#cbd5e1')
+        cs2 = ax2.contour(X, Y, tdifpseudo, levels=np.arange(-8, 16, 2), colors='black', linewidths=1.0)
+        ax2.clabel(cs2, inline=True, fontsize=8, fmt='%1.0f')
+        ax2.set_xlim(np.max(porig), np.min(porig))
+        ax2.set_ylim(np.max(p), np.min(p))
+        ax2.set_xlabel('Pressão de Origem da Parcela (mb)', color='#f8fafc', fontweight='bold', fontsize=10.5)
+        ax2.set_ylabel('Pressão para a qual a Parcela é Levantada (mb)', color='#f8fafc', fontweight='bold', fontsize=10.5)
+        ax2.set_title(f"Pseudo-adiabatic Density Temp Difference Tv (K) - Emanuel 1994\nSBPA {label}", 
+                      color='#fbbf24', fontweight='bold', fontsize=11.5, pad=10)
+        ax2.tick_params(colors='#cbd5e1')
+        ax2.grid(True, color='#334155', linestyle=':', linewidth=0.6)
+        plt.tight_layout()
+        out_ps = f"metpack/tcon_tdifpseudo_{date}.png"
+        plt.savefig(out_ps, dpi=160, facecolor=fig2.get_facecolor(), edgecolor='none')
+        plt.close()
+        print(f"Saved Emanuel matrices for {date}: {out_rev}, {out_ps}")
+
+    # Master tripartite comparison of Emanuel matrices (2 rows x 3 columns)
+    fig_all, axes_all = plt.subplots(2, 3, figsize=(19, 11), dpi=160, facecolor='#0b132b')
+    fig_all.suptitle("Matrizes de Convecção de Kerry Emanuel (1994, MIT 12.811 / wyoming.f / tcon.py)\nComparação dos Três Casos: Estável (12/12) vs Neutra (23/12) vs Instável Severa (24/12)", 
+                     fontsize=14, fontweight='bold', color='#f8fafc', y=0.98)
+
+    for col, (date, label, col_color) in enumerate(cases):
+        p = np.loadtxt(f"metpack/{date}_p.out")
+        porig = np.loadtxt(f"metpack/{date}_porig.out")
+        tdifrev = np.loadtxt(f"metpack/{date}_tdifrev.out")
+        tdifpseudo = np.loadtxt(f"metpack/{date}_tdifpseudo.out")
+
+        n_rows, n_cols = tdifrev.shape
+        p = p[:n_rows]
+        porig = porig[:n_cols]
+        X, Y = np.meshgrid(porig, p)
+
+        # Linha 1: Reversível (Tρ com Water Loading)
+        ax_top = axes_all[0, col]
+        ax_top.set_facecolor('#131e3a')
+        m_top = ax_top.pcolormesh(X, Y, tdifrev, cmap='RdBu_r', shading='gouraud', vmin=-10, vmax=14)
+        c_top = ax_top.contour(X, Y, tdifrev, levels=np.arange(-8, 14, 2), colors='black', linewidths=0.9)
+        ax_top.clabel(c_top, inline=True, fontsize=7, fmt='%1.0f')
+        ax_top.set_xlim(np.max(porig), np.min(porig))
+        ax_top.set_ylim(np.max(p), np.min(p))
+        ax_top.set_title(f"{label}\nReversível Tρ (com Carga de Água Retida)", color='#38bdf8', fontweight='bold', fontsize=10.5)
+        ax_top.tick_params(colors='#cbd5e1', labelsize=8)
+        ax_top.grid(True, color='#2e4066', linestyle=':', linewidth=0.5)
+        if col == 0:
+            ax_top.set_ylabel('Pressão Elevada (mb)', color='#f8fafc', fontweight='bold', fontsize=9.5)
+
+        # Linha 2: Pseudoadiabático (Tv sem Retenção de Condensado)
+        ax_bot = axes_all[1, col]
+        ax_bot.set_facecolor('#131e3a')
+        m_bot = ax_bot.pcolormesh(X, Y, tdifpseudo, cmap='RdBu_r', shading='gouraud', vmin=-10, vmax=14)
+        c_bot = ax_bot.contour(X, Y, tdifpseudo, levels=np.arange(-8, 16, 2), colors='black', linewidths=0.9)
+        ax_bot.clabel(c_bot, inline=True, fontsize=7, fmt='%1.0f')
+        ax_bot.set_xlim(np.max(porig), np.min(porig))
+        ax_bot.set_ylim(np.max(p), np.min(p))
+        ax_bot.set_title(f"{label}\nPseudoadiabático Tv (Precipitação Instantânea)", color='#fbbf24', fontweight='bold', fontsize=10.5)
+        ax_bot.set_xlabel('Pressão de Origem da Parcela (mb)', color='#f8fafc', fontweight='bold', fontsize=9.5)
+        ax_bot.tick_params(colors='#cbd5e1', labelsize=8)
+        ax_bot.grid(True, color='#2e4066', linestyle=':', linewidth=0.5)
+        if col == 0:
+            ax_bot.set_ylabel('Pressão Elevada (mb)', color='#f8fafc', fontweight='bold', fontsize=9.5)
+
+    # Barra de cores horizontal unificada na base
+    cax = fig_all.add_axes([0.25, 0.04, 0.50, 0.022])
+    cb = fig_all.colorbar(m_bot, cax=cax, orientation='horizontal')
+    cb.set_label('Anomalia Térmica de Flutuabilidade ΔT (K) [Azul: Estável / Frio  |  Vermelho: Convecção / Instável]', 
+                 color='#f8fafc', fontweight='bold', fontsize=9.5)
+    cb.ax.tick_params(colors='#cbd5e1', labelsize=8.5)
+
+    plt.tight_layout(rect=[0.02, 0.08, 0.98, 0.95])
+    out_master = "metpack/fig_3_soundings_emanuel_matrices.png"
+    plt.savefig(out_master, dpi=160, facecolor=fig_all.get_facecolor(), edgecolor='none')
+    plt.close()
+    print(f"Saved master Emanuel tripartite matrix figure: {out_master}")
 
 if __name__ == '__main__':
     generate_synoptic_analysis()
     generate_individual_soundings_and_comparison()
     generate_cap2_thermo_profiles()
     generate_kinematics_hodograph_detail()
-    print("All scientific figures successfully generated with Cartopy and MetPy!")
+    generate_all_soundings_colab_profiles()
+    generate_3_soundings_profiles_comparison()
+    generate_emanuel_matrices_all_cases()
+    print("All scientific figures successfully generated with Cartopy, MetPy and Emanuel Algorithms!")

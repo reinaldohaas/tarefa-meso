@@ -390,15 +390,17 @@ Na Matriz Comparativa Tríplice que estruturamos para os alunos:
 Essa comparação tríplice ilustra com clareza a física da convecção severa: não basta ter apenas CAPE moderado; é a convergência do JBN, o rompimento da tampa de inversão e o cisalhamento rotatório que determinam o evento severo.""")
 
     # --------------------------------------------------------------------------
-    # SLIDE 5: Emanuel (1994) & Temp. Densidade (07 - 10 min)
+    # SLIDE 5: Emanuel (1994) & Temp. Densidade nas 3 Sondagens (07 - 10 min)
     # --------------------------------------------------------------------------
     s5 = prs.slides.add_slide(blank_layout)
     set_slide_background(s5)
-    add_header(s5, "Teoria de Emanuel (1994) & Temperatura de Densidade (Tρ)",
-               "Resultados do wyoming.f / tcon.py - Water Loading (-rl) e Comparação com MIT OCW 12.811",
+    add_header(s5, "Teoria de Emanuel (1994) & Matrizes 2D das Três Sondagens",
+               "Comparação Tríplice no wyoming.py / tcon.py - Water Loading (-rl) e Flutuabilidade (MIT OCW 12.811)",
                "07 - 10 min", 5)
 
-    img_emanuel = 'metpack/tcon_comparacao_emanuel.png'
+    img_emanuel = 'metpack/fig_3_soundings_emanuel_matrices.png'
+    if not os.path.exists(img_emanuel):
+        img_emanuel = 'metpack/tcon_comparacao_emanuel.png'
     if os.path.exists(img_emanuel):
         s5.shapes.add_picture(img_emanuel, Inches(0.8), Inches(1.75), width=Inches(7.2))
 
@@ -409,18 +411,18 @@ Essa comparação tríplice ilustra com clareza a física da convecção severa:
 
     sections_em = [
         ("Fundamentação Teórica - Kerry Emanuel (1994):", [
-            "Referência: Kerry Emanuel (1994), 'Atmospheric Convection', Oxford Univ. Press (Cap. 2 e 6).",
-            "Disciplina de pós-graduação do MIT: MIT OCW 12.811.",
-            "Código de referência da comunidade: wyoming.f / tcon.m reimplementado em Python (wyoming.py / tcon.py)."
+            "Referência: Kerry Emanuel (1994), 'Atmospheric Convection', Oxford Univ. Press (Cap. 4 e 6).",
+            "Disciplina clássica do MIT: MIT OCW 12.811.",
+            "Código de referência: wyoming.f / wyoming.py e matrizes tdifrev / tdifpseudo."
         ], C_CYAN),
-        ("Temperatura de Densidade (Tρ):", [
+        ("Temperatura de Densidade (Tρ) & Arrasto:", [
             "Tρ = T · (1 + rv/ε) / (1 + rv + rl) ≈ Tv · (1 - rl)",
-            "Incorpora o peso da água líquida condensada suspensa na parcela (efeito de Water Loading, -rl)."
+            "Incorpora o peso da água líquida condensada suspensa na parcela (-rl)."
         ], C_AMBER),
-        ("Reversível vs Pseudoadiabático:", [
-            "Reversível (Tρ,rev): Todo o condensado é mantido suspenso. O peso da água reduz o empuxo. CAPE_rev = 3.832 J/kg (origem 925 hPa).",
-            "Pseudoadiabático (Tv,pse): Condensado precipita instantaneamente (rl = 0). Empuxo máximo. CAPE_pse = 4.172 J/kg.",
-            "Diferença por Water Loading: ΔCAPE = 340 J/kg (~8.2% de atenuação da flutuabilidade)."
+        ("Diagnóstico dos 3 Regimes nas Matrizes 2D:", [
+            "12/12 (Estável): Azul em toda a malha. Flutuabilidade negativa, sem suporte a convecção (PA ≈ 23 J/kg).",
+            "23/12 (Neutra): Camada de empuxo positiva moderada rasa (PA = 2.536 J/kg pseudo vs 1.266 J/kg rev).",
+            "24/12 (Instável Severa): Núcleo maciço de empuxo extremo (ΔT > +10 K) de 950 a 400 hPa. No JBN (925 hPa), PA atinge 7.781 J/kg com redução de 1.534 J/kg (-19.7%) por water loading!"
         ], C_EMERALD)
     ]
     for stitle, sbullets, scol in sections_em:
@@ -433,31 +435,33 @@ Essa comparação tríplice ilustra com clareza a física da convecção severa:
         for b in sbullets:
             p_bullet = tf_em.add_paragraph()
             p_bullet.text = f"• {b}"
-            p_bullet.font.size = Pt(9.5)
+            p_bullet.font.size = Pt(9.3)
             p_bullet.font.color.rgb = C_WHITE
             p_bullet.space_before = Pt(2)
 
     set_speaker_notes(s5, """ROTEIRO DO ORADOR (07:00 - 10:00):
 Este slide é de primordial importância para a banca, pois conecta nosso estudo diretamente com o arcabouço teórico de Kerry Emanuel (1994), 'Atmospheric Convection', e o material do curso MIT OCW 12.811.
-À esquerda, temos os gráficos 2D gerados pelo tcon.py a partir das saídas do código wyoming.py/wyoming.f.
-Emanuel demonstrou que na convecção real a temperatura virtual (Tv) não é suficiente para representar a densidade exata da parcela após a condensação, porque as gotas de água líquida condensada permanecem suspensas na corrente ascendente, exercendo um peso adicional para baixo.
+À esquerda, temos os gráficos 2D gerados pelo tcon.py / wyoming.py para as TRÊS radiossondagens simultaneamente.
+A linha superior mostra a ascensão Reversível (temperatura de densidade Tρ com retenção de condensado), enquanto a linha inferior mostra a ascensão Pseudoadiabática (temperatura virtual Tv com precipitação instantânea).
 
-Por isso, ele introduziu formalmente a Temperatura de Densidade (Tρ), que adiciona o termo -rl no denominador: Tρ ≈ Tv * (1 - rl).
-Nos mapas de anomalia de temperatura de densidade:
-O painel esquerdo mostra a ascensão Reversível, onde a água condensada é retida. Para a parcela mais instável em 925 hPa, o CAPE reversível resulta em 3.832 J/kg.
-Já o painel direito mostra o modelo Pseudoadiabático, onde supõe-se que toda chuva precipita imediatamente, resultando em 4.172 J/kg.
-A diferença de 340 J/kg (cerca de 8.2%) representa a perda de energia cinética sofrida pela tempestade puramente pelo arrasto da carga de água (water loading). Em tempestades tropicais e subtropicais com alto conteúdo de água, ignorar o water loading leva a erros severos de superestimação da aceleração ascendente.""")
+Notem o contraste perfeito entre os três regimes:
+1. No caso Estável (12/12), a matriz inteira é dominada por cores azuis (anomalia negativa). Qualquer parcela deslocada é mais fria e mais densa que o ambiente, retornando ao equilíbrio.
+2. No caso Neutro (23/12), surge uma camada rasa de flutuabilidade positiva moderada perto da superfície, com o CAPE caindo pela metade no modo reversível (de 2536 para 1266 J/kg).
+3. No caso Instável Severo (24/12), vemos um núcleo violento de cores quentes (vermelho escuro) estendendo-se de 950 até 400 hPa, com anomalia térmica superior a +10 K!
+Para a parcela de 925 hPa (JBN), o PA pseudoadiabático atinge 7.781 J/kg, mas o reversível cai para 6.247 J/kg. A diferença de 1.534 J/kg (-19.7%) é o freio exercido pelo peso dos hidrometeoros retidos (water loading), essencial para não superestimar a corrente ascendente.""")
 
     # --------------------------------------------------------------------------
-    # SLIDE 6: Variáveis do Cap. 2: θv e Brunt-Väisälä (N^2) (10 - 14 min, Parte 1)
+    # SLIDE 6: Variáveis do Colab / Cap. 2: Comparação das 3 Sondagens (10 - 14 min, Parte 1)
     # --------------------------------------------------------------------------
     s6 = prs.slides.add_slide(blank_layout)
     set_slide_background(s6)
-    add_header(s6, "Variáveis do Capítulo 2: Perfis Térmicos & Frequência de Brunt-Väisälä",
-               "Estabilidade Estática, Ondas de Gravidade na Troposfera e o Efeito Capping Lid (Inversão Tampa)",
+    add_header(s6, "Perfis Verticais do Colab: Comparação das Três Sondagens",
+               "Confronto de θe, Frequência de Brunt-Väisälä (N), Estabilidade Estática (S) e Umidade (r)",
                "10 - 14 min", 6)
 
-    img_p2 = 'metpack/fig_cap2_profiles.png'
+    img_p2 = 'metpack/fig_3_soundings_profiles_comparison.png'
+    if not os.path.exists(img_p2):
+        img_p2 = 'metpack/fig_cap2_profiles.png'
     if os.path.exists(img_p2):
         s6.shapes.add_picture(img_p2, Inches(0.8), Inches(1.75), width=Inches(7.2))
 
@@ -467,20 +471,20 @@ A diferença de 340 J/kg (cerca de 8.2%) representa a perda de energia cinética
     tf_c2.word_wrap = True
 
     sections_c2 = [
-        ("Temperatura Potencial Virtual (θv):", [
-            "θv = θ · (1 + 0.608 q - ql)",
-            "Incorpora a densidade dos gases úmidos, sendo a variável canônica para o empuxo térmico na atmosfera seca e sub-saturada."
+        ("Temperatura Potencial Equivalente (θe):", [
+            "12/12 (Estável): θe_sfc = 324.2 K, perfil quase uniforme, sem instabilidade.",
+            "23/12 (Neutra): θe_sfc = 354.8 K, umedecimento da coluna, mas gradiente vertical fraco.",
+            "24/12 (Severa): Injeção colossal de θe = 377.8 K pelo JBN em 925 hPa com forte gradiente ∂θe/∂z < 0 (instabilidade potencial severa)."
         ], C_CYAN),
-        ("Frequência de Brunt-Väisälä (N²):", [
-            "N² = (g / θv) · (∂θv / ∂z)",
-            "N² > 0: Frequência de oscilação estável de ondas de gravidade (período τ = 2π / N).",
-            "N² < 0: Instabilidade hidrostática pura.",
-            "Camada média (800-400 hPa): N² moderado (~1.2 × 10⁻⁴ s⁻²), permitindo propagação vertical de energia."
+        ("Frequência de Brunt-Väisälä (N) & Capping Lid:", [
+            "N² = (g / θv) · (∂θv / ∂z) quantifica a rigidez de oscilação das ondas de gravidade.",
+            "12/12 & 23/12: Sem inversão expressiva em baixos níveis.",
+            "24/12: Pico agudo de N em 925 hPa (~0.028 s⁻¹) formando o Capping Lid (tampa de panela de pressão que conteve a convecção até o disparo explosivo)."
         ], C_PURPLE),
-        ("O 'Capping Lid' em 925-900 hPa:", [
-            "Pico expressivo de N² (~4.5 × 10⁻⁴ s⁻²) logo acima do topo da CLP.",
-            "Função física de 'tampa de panela de pressão': impede que o ar úmido e quente escape prematuramente em convecções rasas.",
-            "Permite acumular 4.600 J/kg de energia até o forçamento sinótico romper a inversão de forma explosiva."
+        ("Estabilidade Estática (S) & Razão de Mistura (r):", [
+            "12/12: r_max = 11.6 g/kg | PW = 35.1 mm (ar pós-frontal seco).",
+            "23/12: r_max = 19.4 g/kg | PW = 57.0 mm (advecção tropical).",
+            "24/12: r_max = 22.0 g/kg em 925 hPa | PW = 55.3 mm (núcleo extremo de vapor alimentado pelo JBN)."
         ], C_AMBER)
     ]
     for stitle, sbullets, scol in sections_c2:
@@ -493,19 +497,22 @@ A diferença de 340 J/kg (cerca de 8.2%) representa a perda de energia cinética
         for b in sbullets:
             p_bullet = tf_c2.add_paragraph()
             p_bullet.text = f"• {b}"
-            p_bullet.font.size = Pt(9.5)
+            p_bullet.font.size = Pt(9.2)
             p_bullet.font.color.rgb = C_WHITE
             p_bullet.space_before = Pt(2)
 
     set_speaker_notes(s6, """ROTEIRO DO ORADOR (10:00 - 12:00):
-No Capítulo 2 de Kerry Emanuel, a estabilidade atmosférica é formalmente descrita através do perfil vertical de temperatura potencial virtual (θv) e da Frequência de Brunt-Väisälä (N² = g/θv * dθv/dz).
-Nos painéis 1 e 2 à esquerda, vemos essa estrutura para o caso de Porto Alegre.
-A frequência N² quantifica a rigidez com que uma parcela de ar deslocada verticalmente oscila em torno da sua posição de equilíbrio como uma onda de gravidade interna.
+Neste slide, confrontamos os perfis verticais calculados no Google Colab via MetPy para as TRÊS radiossondagens simultaneamente, revelando a assinatura termodinâmica de cada regime.
+No Painel 1, observem o perfil de temperatura potencial equivalente (θe):
+- A curva azul (12/12) reflete a massa de ar pós-frontal estável, com θe de apenas 324 K.
+- A curva amarela (23/12) mostra o ar tropical retornando, com θe em 354 K.
+- A curva vermelha (24/12) é impressionante: o JBN injeta um pulso de θe de 377.8 K em 925 hPa, criando um fortíssimo decaimento com a altitude (∂θe/∂z < 0). Isso define formalmente a Instabilidade Convectiva Potencial extrema.
 
-Prestem especial atenção ao comportamento de N² nos primeiros 1.000 metros:
-Observamos um pico acentuado de N² atingindo 4.5 × 10⁻⁴ s⁻² exatamente na camada entre 925 e 900 hPa. Esse pico marca a famosa inversão térmica conhecida na meteorologia de mesoescala como 'Capping Lid' (a tampa da camada limite).
-A presença do Capping Lid é um ingrediente paradoxal, mas obrigatório, para os maiores surtos de tempestades severas. Se não houvesse essa tampa estável, pequenas cúmulos se formariam desde as primeiras horas da manhã, consumindo gradualmente a umidade e aliviando a energia.
-O Capping Lid funciona como a tampa de uma panela de pressão: ele aprisiona todo o calor e umidade transportados pelo JBN na camada limite até que, no início da tarde, o aquecimento solar e a difluência de 500 hPa rompem a tampa, liberando toda a energia acumulada de uma só vez.""")
+No Painel 2, temos a Frequência de Brunt-Väisälä (N).
+Vejam como no caso severo de 24/12 surge um pico acentuado de N exatamente em 925 hPa. Esse pico marca a famosa inversão térmica conhecida como 'Capping Lid' (a tampa da camada limite).
+Como explicado por Kerry Emanuel no Capítulo 2, o Capping Lid é indispensável para surtos de supercélulas: ele impede que a energia seja liberada prematuramente pela manhã, permitindo que a camada limite acumule vapor e calor até explodir violentamente à tarde.
+
+Nos Painéis 3 e 4, a estabilidade estática S e a razão de mistura r confirmam o quadro: no dia 24/12, a razão de mistura atingiu 22.0 g/kg no nível do Jato, um valor excepcional para latitudes subtropicais.""")
 
     # --------------------------------------------------------------------------
     # SLIDE 7: Razão de Mistura (r), PW e DCAPE (10 - 14 min, Parte 2)
@@ -516,7 +523,11 @@ O Capping Lid funciona como a tampa de uma panela de pressão: ele aprisiona tod
                "Razão de Mistura r(z), Água Precipitável (PW) e Downdraft CAPE (DCAPE) via Resfriamento Evaporativo",
                "10 - 14 min", 7)
 
-    img_diag = 'metpack/diagnostico_mesoescala.png'
+    img_diag = 'metpack/fig_profiles_19951224.png'
+    if not os.path.exists(img_diag):
+        img_diag = 'metpack/fig_cap2_profiles.png'
+    if not os.path.exists(img_diag):
+        img_diag = 'metpack/diagnostico_mesoescala.png'
     if os.path.exists(img_diag):
         s7.shapes.add_picture(img_diag, Inches(0.8), Inches(1.75), width=Inches(7.2))
 

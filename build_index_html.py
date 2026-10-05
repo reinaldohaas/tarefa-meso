@@ -1,4 +1,7 @@
-<!DOCTYPE html>
+import json
+import os
+
+HTML_TEMPLATE = r'''<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -1159,3 +1162,14 @@
     </script>
 </body>
 </html>
+'''
+
+def main():
+    final_html = HTML_TEMPLATE
+    with open('index.html', 'w', encoding='utf-8') as f_out:
+        f_out.write(final_html)
+
+    print(f"Successfully generated index.html without the removed tabs! File size: {len(final_html):,} bytes")
+
+if __name__ == '__main__':
+    main()
