@@ -329,12 +329,28 @@ def run_wyoming(sounding_file='sounding.txt'):
             f_out.write(f" {pl[i]:6.1f}{par[i]:8.1f}{pap[i]:8.1f}{nar[i]:8.1f}{nap[i]:8.1f}"
                         f"{caper[i]:8.1f}{capep[i]:8.1f}{dcape[i]:8.1f}{0.0:8.1f}{0.0:8.1f}\n")
 
-    # Arquivos adicionais para contornos/perfis
+    # Arquivos adicionais para contornos/perfis (ex: tcon.m e tcon.py)
     with open('p.out', 'w') as f_p:
         for pi in p: f_p.write(f"{pi:.2f}\n")
 
     with open('porig.out', 'w') as f_po:
         for pli in pl: f_po.write(f"{pli:.2f}\n")
+
+    # Matrizes de Anomalia Térmica (Linhas: nível elevado j; Colunas: nível de origem i)
+    with open('tdifrev.out', 'w') as f_tr:
+        for j in range(n):
+            f_tr.write(" ".join(f"{tvrdif[i][j]:8.3f}" for i in range(actual_nk)) + "\n")
+
+    with open('tdifpseudo.out', 'w') as f_tp:
+        for j in range(n):
+            f_tp.write(" ".join(f"{tvpdif[i][j]:8.3f}" for i in range(actual_nk)) + "\n")
+
+    # modsound.txt para alimentação direta do skewt.m e skewt.py
+    with open('modsound.txt', 'w') as f_mod:
+        for k in range(n_raw):
+            t_c = ttem[k] - 273.15
+            rh_k = min(1.0, max(0.0, evtem[k] / estem[k])) if estem[k] > 0 else 0.0
+            f_mod.write(f"{ptem[k]:8.2f} {t_c:8.2f} {rh_k:8.4f}\n")
 
     print("\n" + "="*70)
     print(" SUCESSO: Processamento Termodinâmico Concluído (Emanuel 1994)")
@@ -342,6 +358,8 @@ def run_wyoming(sounding_file='sounding.txt'):
     print(" Arquivos gerados:")
     print("   -> cape.out (Tabela com CAPE Reversível e Pseudoadiabático)")
     print("   -> p.out, porig.out")
+    print("   -> tdifrev.out, tdifpseudo.out (Matrizes para tcon.py e tcon.m)")
+    print("   -> modsound.txt (Para skewt.py e skewt.m)")
     print("="*70)
     print(f" Nível de Superfície: {pl[0]:.1f} mb")
     print(f"   PA Pseudoadiabática (Tv) : {pap[0]:.1f} J/kg")

@@ -222,8 +222,13 @@ def generate_meso_plot():
 
     plt.tight_layout(rect=[0, 0, 1, 0.95])
     output_png = 'diagnostico_mesoescala.png'
-    plt.savefig(output_png, dpi=200, facecolor=fig.get_facecolor(), edgecolor='none')
-    print(f"\n-> Gráfico científico de alta resolução salvo com sucesso: {output_png}")
+    try:
+        plt.savefig(output_png, dpi=200, facecolor=fig.get_facecolor(), edgecolor='none')
+        print(f"\n-> Gráfico científico salvo com sucesso: {output_png}")
+    except Exception as e:
+        alt_png = 'diagnostico_meso.png'
+        plt.savefig(alt_png, dpi=200, facecolor=fig.get_facecolor(), edgecolor='none')
+        print(f"\n-> Aviso: {output_png} estava em uso. Salvo como: {alt_png}")
 
 if __name__ == '__main__':
     generate_meso_plot()
