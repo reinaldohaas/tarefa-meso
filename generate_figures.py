@@ -152,75 +152,143 @@ def generate_individual_skewt(metrics):
 
         m = metrics[c['m_key']]
 
-        fig = plt.figure(figsize=(10, 10), dpi=150)
-        skew = SkewT(fig, rotation=45)
+        # Layout Profissional em Largura Dupla: Skew-T a Esquerda, Hodografo e Indices a Direita
+        fig = plt.figure(figsize=(16.5, 10.0), dpi=160)
+        rect_skew = [0.06, 0.08, 0.53, 0.84]
+        skew = SkewT(fig, rotation=45, rect=rect_skew)
 
         # Plotagem dos dados observados
-        skew.plot(p, T, color='#dc2626', linewidth=2.2, label='Temperatura T (°C)')
-        skew.plot(p, Td, color='#16a34a', linewidth=2.2, label='Ponto de Orvalho Td (°C)')
+        skew.plot(p, T, color='#dc2626', linewidth=2.4, label='Temperatura T (°C)')
+        skew.plot(p, Td, color='#16a34a', linewidth=2.4, label='Ponto de Orvalho Td (°C)')
 
         # Barbelas de vento
         mask_wind = p >= 150 * units.hPa
-        skew.plot_barbs(p[mask_wind][::2], u[mask_wind][::2], v[mask_wind][::2], length=6, color='#334155')
+        skew.plot_barbs(p[mask_wind][::2], u[mask_wind][::2], v[mask_wind][::2], length=6.5, color='#334155')
 
         # Linhas de referência termodinâmica
-        skew.plot_dry_adiabats(t0=np.arange(250, 440, 20) * units.kelvin, alpha=0.3, color='#94a3b8', linewidth=0.8)
-        skew.plot_moist_adiabats(t0=np.arange(270, 320, 10) * units.kelvin, alpha=0.3, color='#60a5fa', linewidth=0.8)
-        skew.plot_mixing_lines(alpha=0.3, color='#10b981', linewidth=0.8)
+        skew.plot_dry_adiabats(t0=np.arange(250, 440, 20) * units.kelvin, alpha=0.28, color='#94a3b8', linewidth=0.85)
+        skew.plot_moist_adiabats(t0=np.arange(270, 320, 10) * units.kelvin, alpha=0.28, color='#60a5fa', linewidth=0.85)
+        skew.plot_mixing_lines(alpha=0.28, color='#10b981', linewidth=0.85)
 
         # Trajetória da parcela de superfície
         try:
             prof_sb = mpcalc.parcel_profile(p, T[0], Td[0]).to('degC')
-            skew.plot(p, prof_sb, color='#0f172a', linestyle='--', linewidth=1.8, label='Parcela Superfície (SB)')
+            skew.plot(p, prof_sb, color='#0f172a', linestyle='--', linewidth=2.0, label='Parcela Superfície (SB)')
             skew.shade_cape(p, T, prof_sb, facecolor='#ef4444', alpha=0.25, label='CAPE')
             skew.shade_cin(p, T, prof_sb, facecolor='#3b82f6', alpha=0.25, label='CIN')
         except Exception:
             pass
 
-        # Níveis característicos (LCL, LFC, EL)
+        # Níveis característicos (LCL, LFC, EL) com prevenção de sobreposição
         lcl_p = m.get('lcl_p_hPa')
         lfc_p = m.get('lfc_p_hPa')
         el_p = m.get('el_p_hPa')
 
+        levels_to_plot = []
         if lcl_p:
-            skew.ax.axhline(lcl_p, color='#0284c7', linestyle=':', linewidth=1.2)
-            skew.ax.text(32, lcl_p, f" LCL: {lcl_p:.0f} hPa", color='#0284c7', fontsize=8.5, va='center', fontweight='bold')
+            skew.ax.axhline(lcl_p, color='#0284c7', linestyle=':', linewidth=1.4)
+            levels_to_plot.append(('LCL', lcl_p, '#0284c7'))
         if lfc_p:
-            skew.ax.axhline(lfc_p, color='#eab308', linestyle=':', linewidth=1.2)
-            skew.ax.text(32, lfc_p, f" LFC: {lfc_p:.0f} hPa", color='#b45309', fontsize=8.5, va='center', fontweight='bold')
+            skew.ax.axhline(lfc_p, color='#b45309', linestyle=':', linewidth=1.4)
+            levels_to_plot.append(('LFC', lfc_p, '#b45309'))
         if el_p:
-            skew.ax.axhline(el_p, color='#8b5cf6', linestyle=':', linewidth=1.2)
-            skew.ax.text(32, el_p, f" EL: {el_p:.0f} hPa", color='#7c3aed', fontsize=8.5, va='center', fontweight='bold')
+            skew.ax.axhline(el_p, color='#7c3aed', linestyle=':', linewidth=1.4)
+            levels_to_plot.append(('EL', el_p, '#7c3aed'))
+
+        # Ordenar por pressão decrescente para tratar sobreposições na vertical
+        levels_to_plot.sort(key=lambda item: item[1], reverse=True)
+        prev_p = 9999
+        for name, p_val, col in levels_to_plot:
+            va = 'bottom' if (prev_p - p_val) >= 28 else 'top'
+            skew.ax.text(0.02, p_val, f"{name}: {p_val:.0f} hPa", color=col, fontsize=10.0,
+                         fontweight='bold', va=va, transform=skew.ax.get_yaxis_transform(),
+                         bbox=dict(boxstyle='round,pad=0.22', facecolor='white', alpha=0.9, edgecolor=col, linewidth=0.9))
+            prev_p = p_val
 
         skew.ax.set_ylim(1050, 100)
         skew.ax.set_xlim(-40, 45)
-        skew.ax.set_xlabel('Temperatura (°C)', fontsize=11, fontweight='bold')
-        skew.ax.set_ylabel('Pressão (hPa)', fontsize=11, fontweight='bold')
-        skew.ax.set_title(c['title'], fontsize=12, fontweight='bold', pad=12, color='#0f172a')
-        skew.ax.legend(loc='upper right', fontsize=8.5, framealpha=0.92)
+        skew.ax.set_xlabel('Temperatura (°C)', fontsize=12.5, fontweight='bold')
+        skew.ax.set_ylabel('Pressão (hPa)', fontsize=12.5, fontweight='bold')
+        skew.ax.legend(loc='upper right', fontsize=10.0, framealpha=0.92)
 
-        # Hodógrafo no canto superior esquerdo
-        ax_hodo = fig.add_axes([0.18, 0.62, 0.25, 0.25])
+        fig.suptitle(c['title'], fontsize=14.5, fontweight='bold', y=0.965, color='#0f172a')
+
+        # ----------------------------------------------------------------------
+        # LADO DIREITO SUPERIOR: HODÓGRAFO POLAR DE MESOESCALA
+        # ----------------------------------------------------------------------
+        ax_hodo = fig.add_axes([0.64, 0.52, 0.33, 0.40])
         h = Hodograph(ax_hodo, component_range=40.)
-        h.add_grid(increment=10, color='#cbd5e1', linewidth=0.7)
-        h.plot(u[mask_wind], v[mask_wind], color='#0f172a', linewidth=1.6)
-        ax_hodo.set_title('Hodógrafo (kt)', fontsize=8, fontweight='bold', color='#475569')
+        h.add_grid(increment=10, color='#cbd5e1', linewidth=0.85)
 
-        # Caixa de índices diagnósticos lidos do JSON (Siphon / MetPy & Emanuel)
+        z = df['z'].values * units.meter
+        z_agl = (z - z[0])
+        h.plot_colormapped(u[mask_wind], v[mask_wind], z_agl[mask_wind],
+                           intervals=[0, 1000, 3000, 6000, 12000] * units.meter,
+                           colors=['#dc2626', '#16a34a', '#2563eb', '#64748b'])
+
+        # Bunkers Left-Mover (Hemisfério Sul)
+        lm_u = m.get('bunkers_lm_u_ms')
+        lm_v = m.get('bunkers_lm_v_ms')
+        if lm_u is not None and lm_v is not None:
+            lm_u_kt = lm_u * 1.94384449
+            lm_v_kt = lm_v * 1.94384449
+            ax_hodo.plot(lm_u_kt, lm_v_kt, marker='d', markersize=9, color='#d97706',
+                         markeredgecolor='#0f172a', label='Bunkers LM (HS)')
+            ax_hodo.legend(loc='lower left', fontsize=9.5, framealpha=0.92)
+
+        ax_hodo.set_title('Hodógrafo Polar de Vento Horizontal (kt)', fontsize=12.5, fontweight='bold', color='#1e293b', pad=8)
+
+        # ----------------------------------------------------------------------
+        # LADO DIREITO INFERIOR: PAINEL DIAGNÓSTICO DE ÍNDICES (FONTE GRANDE)
+        # ----------------------------------------------------------------------
+        ax_params = fig.add_axes([0.63, 0.07, 0.35, 0.41])
+        ax_params.axis('off')
+
+        # Caixa de fundo estilizada
+        from matplotlib.patches import FancyBboxPatch
+        box = FancyBboxPatch((0, 0), 1, 1, boxstyle="round,pad=0.03,rounding_size=0.03",
+                             facecolor="#f8fafc", edgecolor="#94a3b8", linewidth=1.5,
+                             transform=ax_params.transAxes)
+        ax_params.add_patch(box)
+
+        # Cabeçalho do Painel
+        ax_params.text(0.05, 0.93, "PARÂMETROS DIAGNÓSTICOS (Siphon / MetPy)",
+                       fontsize=12, fontweight='bold', color='#0f172a', transform=ax_params.transAxes)
+        ax_params.plot([0.05, 0.95], [0.89, 0.89], color='#cbd5e1', linewidth=1.3, transform=ax_params.transAxes)
+
+        # Formatação clara dos dados
+        lfc_str = f"{m.get('lfc_p_hPa'):.0f} hPa" if m.get('lfc_p_hPa') is not None else "N/A"
+        el_str = f"{m.get('el_p_hPa'):.0f} hPa" if m.get('el_p_hPa') is not None else "N/A"
+        k_str = f"{m.get('k_index_C', 0):.1f}°C" if m.get('k_index_C') is not None else "N/A"
+        tt_str = f"{m.get('total_totals_C', 0):.1f} K" if m.get('total_totals_C') is not None else "N/A"
+        sh_str = f"{m.get('showalter_K', 0):.1f} K" if m.get('showalter_K') is not None else "N/A"
+        sw_str = f"{m.get('sweat_index', 0):.1f}" if m.get('sweat_index') is not None else "N/A"
+        li_str = f"{m.get('lifted_index_K', 0):.1f} K" if m.get('lifted_index_K') is not None else "N/A"
         dc_em = m.get('emanuel', {}).get('max_dcape_emanuel_Jkg', 0.0) if isinstance(m.get('emanuel'), dict) else 0.0
-        k_val = f"{m.get('k_index_C', 0):.1f}" if m.get('k_index_C') is not None else "N/A"
-        tt_val = f"{m.get('total_totals_C', 0):.1f}" if m.get('total_totals_C') is not None else "N/A"
-        sh_val = f"{m.get('showalter_K', 0):.1f}" if m.get('showalter_K') is not None else "N/A"
-        sw_val = f"{m.get('sweat_index', 0):.1f}" if m.get('sweat_index') is not None else "N/A"
-        
-        text_indices = (
-            f"PW: {m.get('pw_mm', 0):.1f} mm | K-Index: {k_val}°C | TT: {tt_val} K | Showalter: {sh_val} K | SWEAT: {sw_val}\n"
-            f"SBCAPE: {m.get('sbcape_Jkg', 0):.0f} J/kg (SBCIN: {m.get('sbcin_Jkg', 0):.0f}) | MUCAPE: {m.get('mucape_Jkg', 0):.0f} J/kg (MUCIN: {m.get('mucin_Jkg', 0):.0f})\n"
-            f"Bulk Shear 0-6km: {m.get('bulk_shear_0_6km_ms', 0):.1f} m/s ({m.get('bulk_shear_0_6km_kt', 0):.1f} kt) | SRH 0-3km (LM): {m.get('srh_0_3km_lm_m2s2', 0):.1f} m²/s²\n"
-            f"DCAPE (MetPy): {m.get('dcape_metpy_Jkg', 0):.0f} J/kg | DCAPE Emanuel (máx): {dc_em:.1f} J/kg"
-        )
-        fig.text(0.18, 0.02, text_indices, fontsize=8.2, family='monospace',
-                 bbox=dict(boxstyle='round,pad=0.5', facecolor='#f8fafc', edgecolor='#cbd5e1'))
+        dc_metpy = f"{m.get('dcape_metpy_Jkg', 0):.0f} J/kg" if m.get('dcape_metpy_Jkg') is not None else "N/A"
+
+        p_lines = [
+            ("Água Precipitável (PW):", f"{m.get('pw_mm', 0):.1f} mm"),
+            ("MUCAPE / MUCIN:", f"{m.get('mucape_Jkg', 0):.0f} / {m.get('mucin_Jkg', 0):.0f} J/kg"),
+            ("SBCAPE / SBCIN:", f"{m.get('sbcape_Jkg', 0):.0f} / {m.get('sbcin_Jkg', 0):.0f} J/kg"),
+            ("LCL (Pressão / Temp.):", f"{m.get('lcl_p_hPa', 0):.0f} hPa ({m.get('lcl_t_C', 0):.1f}°C)"),
+            ("LFC / EL:", f"{lfc_str} / {el_str}"),
+            ("K-Index / Total Totals:", f"{k_str} / {tt_str}"),
+            ("Showalter / SWEAT:", f"{sh_str} / {sw_str}"),
+            ("Lifted Index (LI):", f"{li_str}"),
+            ("Bulk Shear 0-6 km:", f"{m.get('bulk_shear_0_6km_ms', 0):.1f} m/s ({m.get('bulk_shear_0_6km_kt', 0):.1f} kt)"),
+            ("SRH 0-3 km (Left-Mover):", f"{m.get('srh_0_3km_lm_m2s2', 0):.1f} m²/s²"),
+            ("Bunkers LM (Vetor):", f"{m.get('bunkers_lm_dir_deg', 0):.0f}° / {m.get('bunkers_lm_spd_kt', 0):.1f} kt"),
+            ("DCAPE (MetPy / Emanuel):", f"{dc_metpy} / {dc_em:.1f} J/kg")
+        ]
+
+        y_pos = 0.83
+        for label_text, val_text in p_lines:
+            ax_params.text(0.05, y_pos, label_text, fontsize=11, fontweight='bold', color='#334155',
+                           transform=ax_params.transAxes, va='center')
+            ax_params.text(0.95, y_pos, val_text, fontsize=11, fontweight='bold', family='monospace',
+                           color='#0f172a', transform=ax_params.transAxes, va='center', ha='right')
+            y_pos -= 0.065
 
         plt.savefig(c['out_fig'], dpi=160, bbox_inches='tight')
         if c['date'] == '19951224':
