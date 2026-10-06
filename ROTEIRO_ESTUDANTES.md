@@ -116,7 +116,7 @@ O notebook `Seminario_plot_sounding_revisado.ipynb` é a opção completa.
 3. Execute as demais células, em ordem. Saem: a tabela de índices do MetPy e a conferência com os índices publicados pelo Wyoming; o Skew-T com hodógrafo (Bunkers LM/RM) e tabela de índices de cada sondagem; os perfis de $\theta$, $\theta_e$, $\theta_{es}$, $N^2$ e $S$ até 200 hPa; as matrizes de flutuabilidade de Emanuel (conjunta e por sondagem) e o resumo de CAPE/DCAPE de Emanuel. As figuras e os valores ficam gravados em `metpack/` (`metricas_notebook.json`).
 
 ### 3.2. Opção B: Linha de comando com o `uv`
-Os mesmos programas do MATLAB (Opção C), em Python, em `metpack/`: `getsounding_wyoming.py`, `skewt.py`, `tcon_emanuel.py` e o script principal `tarefa_sondagens.py`.
+Os mesmos programas do MATLAB (Opção C), em Python, em `metpack/`: `getsounding_wyoming.py`, `skewt.py`, `tcon_emanuel.py`, `wyoming.py` e o script principal `tarefa_sondagens.py`.
 
 O **uv** (`uv.exe` no Windows) é um gerenciador de Python: a cada comando, ele baixa a versão de Python e os pacotes necessários num ambiente isolado, sem mexer no Python do sistema. Instalação ([docs.astral.sh/uv](https://docs.astral.sh/uv/getting-started/installation/)):
 ```powershell
@@ -125,7 +125,7 @@ powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | ie
 # Linux / macOS
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
-O `wyoming.f` precisa do compilador `gfortran` (no Linux, pelo gerenciador de pacotes, por exemplo `sudo apt install gfortran`; no Windows e no macOS, pelo Miniconda, como na Opção A2). Confira com `gfortran --version`.
+Não é preciso compilador Fortran: se houver `gfortran`, o `tcon_emanuel.py` compila e roda o `wyoming.f`; se não houver, usa o `metpack/wyoming.py`, tradução em Python do `wyoming.f` (mesmos resultados, a menos de arredondamento: diferença de até 0,002 K nas matrizes e menor que 1 J/kg na CAPE).
 
 1. Em `metpack/tarefa_sondagens.py`, troque as três sondagens em `CASOS` pelas suas:
    ```python
@@ -231,7 +231,7 @@ Os valores de CAPE de Emanuel obtidos pelo MATLAB (ou pelo `tarefa_sondagens.py`
   - `metpack/calc_metricas.py`: Consolidação de métricas diagnósticas, índices de Wyoming e teste de sensibilidade.
   - `metpack/wyoming.f`: Código clássico de Kerry Emanuel em Fortran.
   - `metpack/tarefa_sondagens.m`, `metpack/getsounding_wyoming.m`, `metpack/figuras_sondagem.m`, `metpack/tcon_emanuel.m`, `metpack/wyoming_emanuel.m`, `metpack/skewt.m`: versão MATLAB (MATLAB Online) dos programas de Kerry Emanuel.
-  - `metpack/tarefa_sondagens.py`, `metpack/getsounding_wyoming.py`, `metpack/tcon_emanuel.py`, `metpack/skewt.py`: os mesmos programas em Python.
+  - `metpack/tarefa_sondagens.py`, `metpack/getsounding_wyoming.py`, `metpack/tcon_emanuel.py`, `metpack/wyoming.py`, `metpack/skewt.py`: os mesmos programas em Python (`wyoming.py` = tradução do `wyoming.f`, usada quando não há `gfortran`).
   - `generate_figures.py`: Geração dos perfis até 200 hPa, Skew-T e hodógrafos.
   - `generate_pptx.py`: Geração da apresentação em PowerPoint.
   - `build_index_html.py`: Compilador do `index.html`.

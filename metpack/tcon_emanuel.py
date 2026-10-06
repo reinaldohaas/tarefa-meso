@@ -7,10 +7,8 @@ sounding.txt gravado por getsounding_wyoming) e desenha as matrizes de flutuabil
 pseudoadiabática, lado a lado e na mesma escala de cores.
 
 Adaptado de tcon.m (K. Emanuel, https://texmex.mit.edu/pub/emanuel/soundings/):
-  - compila o wyoming.f com gfortran (uma vez por execução);
+  - compila o wyoming.f com gfortran; sem gfortran, usa o wyoming.py (tradução em Python do wyoming.f);
   - corte=False (padrão) remove o piso artificial de -4 K do wyoming.f original;
-  - sem gfortran, usa os arquivos p.out, porig.out, tdifrev.out, tdifpseudo.out e cape.out
-    que já estiverem na pasta (por exemplo, gerados pelo notebook).
 
 Uso:
     from tcon_emanuel import tcon_emanuel
@@ -40,8 +38,7 @@ def prepara_wyoming(corte=False):
     gf = shutil.which('gfortran')
     if gf and subprocess.run([gf, '-O2', '-o', exe, usado], capture_output=True).returncode == 0:
         return exe
-    print('Aviso: não foi possível compilar o wyoming.f (gfortran ausente?). '
-          'Serão usados os arquivos .out já existentes na pasta da sondagem.')
+    print('gfortran não encontrado: usando o wyoming.py (tradução em Python do wyoming.f).')
     return None
 
 
@@ -58,6 +55,12 @@ def tcon_emanuel(pasta, titulo=None, corte=False, mostrar=False):
         r = subprocess.run([exe], cwd=pasta, capture_output=True, text=True)
         if r.returncode != 0:
             raise RuntimeError(f'wyoming.f falhou na pasta {pasta}:\n{r.stdout}\n{r.stderr}')
+    else:
+        # sem compilador Fortran: mesma conta pelo wyoming.py (diferenças de arredondamento: ~0,002 K e < 1 J/kg)
+        import io, contextlib
+        from wyoming import run_wyoming
+        with contextlib.redirect_stdout(io.StringIO()):
+            run_wyoming(os.path.join(pasta, 'sounding.txt'), out_dir=pasta, corte=-4.0 if corte else None)
     for s in SAIDAS:
         if not os.path.exists(os.path.join(pasta, s)):
             raise FileNotFoundError(f'{s} não encontrado em {pasta}. Sem compilador Fortran, copie para essa pasta '

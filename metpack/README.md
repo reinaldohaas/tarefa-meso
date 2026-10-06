@@ -18,7 +18,7 @@ Programas de Kerry Emanuel ([texmex.mit.edu/pub/emanuel/soundings](https://texme
 | Original (Emanuel) | MATLAB | Python | Função |
 | :--- | :--- | :--- | :--- |
 | `getsounding.m` | `getsounding_wyoming.m` | `getsounding_wyoming.py` | Baixa a sondagem do Wyoming (wsgi), converte o vento para nós e grava `sounding.txt`, `header.txt` e `modsound.txt` no formato do `wyoming.f`. |
-| `wyoming.f` | `wyoming_emanuel.m` (tradução, sem Fortran) | `wyoming.f` (compilado com gfortran) | Ascensão de parcelas reversível e pseudoadiabática: gera `cape.out`, `p.out`, `porig.out`, `tdifrev.out` e `tdifpseudo.out`. |
+| `wyoming.f` | `wyoming_emanuel.m` (tradução, sem Fortran) | `wyoming.f` (com gfortran) ou `wyoming.py` (tradução, sem gfortran) | Ascensão de parcelas reversível e pseudoadiabática: gera `cape.out`, `p.out`, `porig.out`, `tdifrev.out` e `tdifpseudo.out`. |
 | `tcon.m` | `tcon_emanuel.m` | `tcon_emanuel.py` | Calcula (MATLAB: `wyoming_emanuel.m`; Python: `wyoming.f`) e desenha as matrizes de flutuabilidade, sem o piso artificial de −4 K. |
 | `skewt.m` | `skewt.m` | `skewt.py` | Diagrama Skew-T de Emanuel: `skewt(p, T, UR 0-1)`. |
 | `skew_sounding.m` | `figuras_sondagem.m` | — | Skew-T com barbelas (`windbarb.m`), hodógrafo com Bunkers LM/RM e perfis de $\theta$, $\theta_e$, $\theta_{es}$ (`thermo_td.m`), $N^2$ e $S$. |
@@ -56,7 +56,7 @@ Em ambientes tropicais ou subtropicais quentes e úmidos, o termo $-r_l$ (reten�
 
 ## 3. Como rodar
 
-**Python** (com o uv; precisa do `gfortran` para o `wyoming.f`), na pasta do repositório:
+**Python** (com o uv; usa o `wyoming.f` se houver `gfortran`, senão o `wyoming.py`), na pasta do repositório:
 ```powershell
 uv run --with numpy --with matplotlib python metpack/tarefa_sondagens.py
 ```

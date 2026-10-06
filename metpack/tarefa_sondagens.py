@@ -9,7 +9,7 @@ Baseado nos programas de Kerry Emanuel em https://texmex.mit.edu/pub/emanuel/sou
 
 Como usar:
   1. Troque as três sondagens em CASOS pelas SUAS (estação e data).
-  2. Rode (precisa do gfortran para o wyoming.f):
+  2. Rode (usa o wyoming.f se houver gfortran; senão, o wyoming.py):
        uv run --with numpy --with matplotlib python metpack/tarefa_sondagens.py
   3. Para cada caso, na pasta emanuel_AAAAMMDD_HH ficam skewt.png e matrizes_emanuel.png,
      e na tela aparecem a fonte dos dados e as CAPE reversível e pseudoadiabática.
