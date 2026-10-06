@@ -458,7 +458,7 @@ def main():
 
     # 2. Diagnóstico de 12/12/1995 (Oficial)
     diag_12 = calc_diagnostics(df_12, "19951212")
-    emanuel_12 = parse_emanuel_cape_out('metpack/19951212_cape.out')
+    emanuel_12 = parse_emanuel_cape_out('emanuel_19951212_12/cape.out')   # saída do wyoming.f gravada pelo notebook
     diag_12['emanuel'] = emanuel_12
     ind_12 = parse_wyoming_indices_html(indices_files['19951212'])
     diag_12['indices_wyoming'] = ind_12
@@ -466,7 +466,7 @@ def main():
 
     # 3. Diagnóstico de 22/12/1995 (Oficial)
     diag_22 = calc_diagnostics(df_22, "19951222")
-    emanuel_22 = parse_emanuel_cape_out('metpack/19951222_cape.out')
+    emanuel_22 = parse_emanuel_cape_out('emanuel_19951222_12/cape.out')   # saída do wyoming.f gravada pelo notebook
     diag_22['emanuel'] = emanuel_22
     ind_22 = parse_wyoming_indices_html(indices_files['19951222'])
     diag_22['indices_wyoming'] = ind_22
@@ -474,7 +474,7 @@ def main():
 
     # 4. Diagnóstico de 24/12/1995 (Oficial - Sondagem Completa como publicada)
     diag_24_raw = calc_diagnostics(df_24, "19951224_raw")
-    emanuel_24 = parse_emanuel_cape_out('metpack/19951224_cape.out')
+    emanuel_24 = parse_emanuel_cape_out('emanuel_19951224_12/cape.out')   # saída do wyoming.f gravada pelo notebook
     diag_24_raw['emanuel'] = emanuel_24
     ind_24 = parse_wyoming_indices_html(indices_files['19951224'])
     diag_24_raw['indices_wyoming'] = ind_24
@@ -511,7 +511,9 @@ def main():
             for k_m, k_nb in mapa.items():
                 if I.get(k_nb) is not None:
                     diag[k_m] = round(float(I[k_nb]), 1)
-            if isinstance(diag.get('emanuel'), dict):
+            if not isinstance(diag.get('emanuel'), dict):
+                diag['emanuel'] = {}
+            if True:
                 for k_m, k_nb in mapa_em.items():
                     if k_nb in nbm[dkey]['emanuel']:
                         diag['emanuel'][k_m] = nbm[dkey]['emanuel'][k_nb]

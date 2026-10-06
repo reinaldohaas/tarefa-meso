@@ -5,31 +5,32 @@
 
 ---
 
-## 0. Diretriz Didática para os Alunos (FSC7116 - UFSC)
+## 0. Diretriz Didática para os Alunos
 
-### ⚠️ Requisito Obrigatório para Apresentação aos Previsores da Defesa Civil de SC (Orientação: Prof. Dr. Reinaldo Haas):
-Cada aluno ou grupo de trabalho **DEVE ESCOLHER OBRIGATORIAMENTE TRÊS RADIOSSONDAGENS ATMOSFÉRICAS REAIS DISTINTAS**, contemplando os três estados fundamentais da troposfera:
-
-1. **Atmosfera ESTÁVEL:** Perfil dominado por estratificação térmica estável, ar seco em altitude, CAPE baixo/nulo, estabilidade estática profunda ($N^2 > 0$) e ausência de convecção profunda. *(Exemplo: 12/12/1995)*.
-2. **Atmosfera NEUTRA:** Perfil com umidade e equilíbrio convectivo, exibindo flutuabilidade moderada. *(Exemplo: 22/12/1995)*.
-3. **Atmosfera INSTÁVEL:** Perfil com acúmulo de energia convectiva, vento intenso em baixos níveis, cisalhamento vertical profundo e helicidade relativa à tempestade ciclônica (SRH negativa no Hemisfério Sul com o vetor Bunkers Left-Mover). *(Exemplo: 24/12/1995)*.
-
-> **Flexibilidade de Escolha:** As 3 sondagens podem ser da **mesma estação em datas diferentes** (como no nosso caso modelo de Porto Alegre - SBPA em dez/1995) **OU de estações e regiões geográficas diferentes** na América do Sul via Universidade de Wyoming.
+Cada aluno ou dupla escolhe **três radiossondagens próprias** (datas e/ou estações diferentes das do exemplo), uma para cada regime: estável, neutro e instável. Os casos de Porto Alegre (SBPA 83971) em 12/12, 22/12 e 24/12/1995 são apenas o exemplo resolvido. Veja `ROTEIRO_ESTUDANTES.md`.
 
 ---
 
-## 1. Visão Geral e Mapeamento MATLAB/Fortran $\iff$ Python
+## 1. Conteúdo da pasta
 
-Este pacote reúne rotinas para aquisição, processamento numérico, cálculo de flutuabilidade convectiva e visualização de radiossondagens da atmosfera. 
+Programas de Kerry Emanuel ([texmex.mit.edu/pub/emanuel/soundings](https://texmex.mit.edu/pub/emanuel/soundings/)) adaptados à interface atual do Wyoming, em MATLAB e em Python, com os mesmos nomes e os mesmos passos:
 
-Todas as rotinas clássicas foram rigorosamente transpostas para **Python 3** moderno, garantindo compatibilidade numérica exata com os originais em MATLAB e Fortran:
+| Original (Emanuel) | MATLAB | Python | Função |
+| :--- | :--- | :--- | :--- |
+| `getsounding.m` | `getsounding_wyoming.m` | `getsounding_wyoming.py` | Baixa a sondagem do Wyoming (wsgi), converte o vento para nós e grava `sounding.txt`, `header.txt` e `modsound.txt` no formato do `wyoming.f`. |
+| `wyoming.f` | `wyoming.f` | `wyoming.f` | Ascensão de parcelas reversível e pseudoadiabática: gera `cape.out`, `p.out`, `porig.out`, `tdifrev.out` e `tdifpseudo.out`. |
+| `tcon.m` | `tcon_emanuel.m` | `tcon_emanuel.py` | Compila e roda o `wyoming.f` (sem o piso artificial de −4 K) e desenha as matrizes de flutuabilidade. |
+| `skewt.m` | `skewt.m` | `skewt.py` | Diagrama Skew-T de Emanuel: `skewt(p, T, UR 0-1)`. |
+| — | `tarefa_sondagens.m` | `tarefa_sondagens.py` | Script principal: roda as três sondagens de `CASOS`. |
 
-| Rotina Original | Equivalente em Python | Função Principal |
-| :--- | :--- | :--- |
-| **`getsounding.m`** | **`getsounding.py`** | Baixa a radiossondagem da Universidade de Wyoming (endpoint moderno WSGI ou local) e gera `sounding.txt`, `header.txt` e `modsound.txt`. |
-| **`wyoming.f`** | **`wyoming.py`** | Executa a ascensão de parcelas de Kerry Emanuel a cada 5 hPa, calculando CAPE Reversível ($T_\rho$), CAPE Pseudoadiabático ($T_v$), CIN e DCAPE. Gera `cape.out`, `tdifrev.out`, `tdifpseudo.out`, `p.out` e `porig.out`. |
-| **`skewt.m`** | **`skewt.py`** | Gera o diagrama termodinâmico Skew-T / Log-P com adiabáticas secas ($\theta$), saturadas ($\theta_e$), isohígras ($q_s$) e perfil observado oblíquo. |
-| **`tcon.m`** | **`tcon.py`** | Orquestra a execução de `wyoming.py`, plota o Skew-T e gera os mapas de contorno 2D `pcolor`/`contour` de anomalia de temperatura de densidade ($p_{\text{orig}} \times p_{\text{elevada}}$). |
+Os arquivos `getsounding.m` e `tcon.m` são os originais de Emanuel, mantidos só como referência (o endereço do Wyoming que eles usam não existe mais).
+
+Outros arquivos:
+- `calc_metricas.py`, `metricas.json`, `metricas_notebook.json`: valores do exemplo usados pelo site e pelos slides (vêm do notebook `Seminario_plot_sounding_revisado.ipynb`).
+- `sounding_AAAAMMDD_12Z.txt` e `indices_AAAAMMDD_12Z.txt`: cópias das páginas do Wyoming para os três casos do exemplo (usadas quando o Wyoming não responde).
+- `*.png`: figuras do site e dos slides.
+- `mapas/`: contornos do Natural Earth para os mapas.
+- Rotinas auxiliares de termodinâmica em MATLAB (`thermo_*.m`, `brunt_*.m`, `theta_*.m`, `convert_humidity/` etc.), descritas em `Leiame.txt`.
 
 ---
 
@@ -52,62 +53,25 @@ Em ambientes tropicais ou subtropicais quentes e úmidos, o termo $-r_l$ (reten�
 
 ---
 
-## 3. Instruções de Execução via Terminal (com `uv`)
+## 3. Como rodar
 
-Como o gerenciador `uv` gerencia o ambiente Python de forma isolada, não é necessário instalar compiladores nem configurar o PATH do Windows.
-
-### Passo 3.1: Obter uma Sondagem (`getsounding.py`)
+**Python** (com o uv; precisa do `gfortran` para o `wyoming.f`), na pasta do repositório:
 ```powershell
-cd C:\Users\haas\github\tarefa-meso\metpack
-& "$HOME\.local\bin\uv.exe" run getsounding.py 83971 1995 12 24 12
+uv run --with numpy --with matplotlib python metpack/tarefa_sondagens.py
 ```
+Para cada caso de `CASOS`, a pasta `emanuel_AAAAMMDD_HH` recebe `skewt.png`, `matrizes_emanuel.png` e as saídas do `wyoming.f`.
 
-### Passo 3.2: Processar a Termodinâmica de Emanuel (`wyoming.py`)
-```powershell
-& "$HOME\.local\bin\uv.exe" run wyoming.py
-# Inspecione os resultados
-Get-Content cape.out -Head 25
-```
+**MATLAB Online**: envie a pasta `metpack/` para o MATLAB Drive, abra `tarefa_sondagens.m`, troque `CASOS` e clique em Run.
 
-### Passo 3.3: Gerar os Gráficos 2D do `tcon.py` (Substituto de `tcon.m`)
-```powershell
-& "$HOME\.local\bin\uv.exe" run --with matplotlib tcon.py
-# Visualize as figuras geradas
-Start-Process tcon_1_skewt.png
-Start-Process tcon_2_tdifrev.png
-Start-Process tcon_3_tdifpseudo.png
-Start-Process tcon_comparacao_emanuel.png
-```
-
-### Passo 3.4: Gerar as Figuras Científicas do Seminário (`generate_figures.py`)
-Gera os gráficos de alta resolução baseados nas rotinas do Google Colab do Prof. Reinaldo Haas:
-```powershell
-cd C:\Users\haas\github\tarefa-meso
-& "$HOME\.local\bin\uv.exe" run --with metpy --with pandas --with matplotlib generate_figures.py
-```
-Figuras geradas em `metpack/` (as marcadas "gerados pelo notebook" vêm do `Seminario_plot_sounding_revisado.ipynb`):
-- `fig_sounding_1_estavel.png`, `fig_sounding_2_neutra.png`, `fig_sounding_3_instavel.png`: Skew-T + hodógrafo (com Bunkers LM/RM) + tabela de índices do MetPy, gerados pelo notebook.
-- `fig_3_soundings_skewt.png`: Comparação das 3 sondagens (12/12 estável, 22/12 moderado, 24/12 severo).
-- `fig_cap2_profiles.png`: Perfis verticais do Cap. 2 de Emanuel ($\theta/\theta_e/\theta_s$, Brunt-Väisälä $N$, estabilidade $S$, razão de mistura $r$) com topo em 200 hPa.
-- `fig_kinematics_hodograph.png`: Hodógrafo polar com Bunkers Left-Mover e Right-Mover no Hemisfério Sul, cisalhamento 0–6 km e SRH 0–3 km.
-
-### Passo 3.5: Gerar a Apresentação em PowerPoint (`generate_pptx.py`)
-Gera o arquivo `apresentacao_meso.pptx` estritamente sincronizado com o roteiro de 20 minutos (10 slides) para apresentação aos previsores da Defesa Civil de SC:
-```powershell
-cd C:\Users\haas\github\tarefa-meso
-& "$HOME\.local\bin\uv.exe" run --with python-pptx generate_pptx.py
-Start-Process apresentacao_meso.pptx
-```
+**Notebook** (índices do MetPy, perfis, hodógrafo e figuras do site): `Seminario_plot_sounding_revisado.ipynb`. Depois dele, `calc_metricas.py`, `generate_figures.py`, `build_index_html.py` e `generate_pptx.py` atualizam o site e os slides (ver `README.md` na raiz).
 
 ---
 
-## 4. Estrutura dos Arquivos de Saída
+## 4. Saídas do `wyoming.f`
 
-* **`apresentacao_meso.pptx`**: Apresentação oficial completa em formato PowerPoint (16:9 widescreen, 10 slides, figuras embutidas, roteiro cronometrado e script falado completo nas notas do orador).
-* **`cape.out`**: Tabela com as 20 camadas de origem na baixa troposfera, contendo PA reversível, PA pseudoadiabático, NA (CIN), CAPE reversível, CAPE pseudoadiabático e DCAPE.
-* **`p.out`**: Vetor com os níveis de pressão verticais interpolados a cada 5 hPa.
-* **`porig.out`**: Vetor com os níveis de pressão de origem da parcela.
-* **`tdifrev.out`**: Matriz 2D de anomalias térmicas reversíveis ($\Delta T_\rho$ em K) para cada par $(p_{\text{origem}}, p_{\text{elevada}})$.
-* **`tdifpseudo.out`**: Matriz 2D de anomalias térmicas pseudoadiabáticas ($\Delta T_v$ em K).
-* **`modsound.txt`**: Perfil tratado da sondagem ($P$, $T$, $RH$).
-
+* **`cape.out`**: para cada nível de origem, área positiva e negativa (reversível e pseudoadiabática), CAPE reversível, CAPE pseudoadiabática e DCAPE.
+* **`p.out`**: níveis de pressão para os quais a parcela é elevada.
+* **`porig.out`**: níveis de pressão de origem da parcela.
+* **`tdifrev.out`**: matriz de diferença de temperatura de densidade parcela − ambiente, ascensão reversível (K).
+* **`tdifpseudo.out`**: a mesma matriz para a ascensão pseudoadiabática (K).
+* **`modsound.txt`**: perfil usado (P, T, UR).

@@ -62,20 +62,22 @@ O código clássico `metpack/wyoming.f` de Kerry Emanuel (1994) requer um format
    - `1X, F6.1`: Pressão ($P$, em hPa) ocupando as primeiras 7 colunas;
    - `9X, F5.1`: Pula 9 colunas e lê a Temperatura ($T$, em °C);
    - `2X, F5.1`: Pula 2 colunas e lê a Temperatura do Ponto de Orvalho ($T_d$, em °C).
-Um erro clássico ocorre ao passar o HTML bruto ou saídas do `html2text`, que quebram o alinhamento de colunas, causando erro de execução no Fortran (`Bad integer/real for item in list input`). O script `metpack/prepare_soundings.py` gera exatamente o arquivo no formato que o `wyoming.f` espera.
-
-### 2.3. Porte Python Nativo (`metpack/wyoming.py`)
-Para executar os algoritmos de Emanuel (1994) em Python puro no Google Colab ou terminal, utilize o script `metpack/wyoming.py`:
-- Suporta o corte térmico de segurança `corte=None|-4.0` documentado para reproduzir o original `TRDBAR/TPDBAR = MAX(valor, -4.0)`;
-- Calcula as matrizes de anomalia térmica de densidade ($T_\rho$, `tdifrev.out`) e flutuabilidade pseudoadiabática ($T_v$, `tdifpseudo.out`);
-- A comparação coluna a coluna (`cape.out`) e célula a célula com o `wyoming.f` compilado em gfortran atesta concordância quase perfeita (diferença máxima de CAPE $\le 0.6\text{ J/kg}$ e de matriz $\le 0.0020\text{ K}$).
-```bash
-python metpack/wyoming.py
-```
+Um erro clássico ocorre ao passar o HTML bruto ou saídas do `html2text`, que quebram o alinhamento de colunas, causando erro de execução no Fortran (`Bad integer/real for item in list input`). O notebook e os programas `metpack/getsounding_wyoming.py` / `getsounding_wyoming.m` gravam o `sounding.txt` exatamente no formato que o `wyoming.f` espera.
 
 ---
 
 ## 3. ⚙️ Execução Prática do Ambiente Computacional
+
+### 3.0. Ferramentas: o que são e onde baixar
+Escolha **uma** das opções A, B ou C abaixo. Todas precisam de internet para baixar as suas sondagens do Wyoming.
+
+| Ferramenta | O que é | Onde baixar / acessar | Usada em |
+| :--- | :--- | :--- | :--- |
+| **Google Colab** | Jupyter no navegador, no Google; não instala nada no computador. | [colab.research.google.com](https://colab.research.google.com) (conta Google) | Opção A |
+| **uv** (`uv.exe` no Windows) | Gerenciador de Python: baixa a versão de Python e os pacotes de cada comando sozinho, sem instalar nada no Python do sistema. | [docs.astral.sh/uv](https://docs.astral.sh/uv/getting-started/installation/). Windows (PowerShell): `powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 \| iex"`; Linux/macOS: `curl -LsSf https://astral.sh/uv/install.sh \| sh` | Opção B |
+| **Miniconda** | Distribuição mínima do conda: cria ambientes com Python, pacotes e também o compilador Fortran. Alternativa ao uv. | [anaconda.com/docs/getting-started/miniconda](https://www.anaconda.com/docs/getting-started/miniconda/install/overview) (ou o Miniforge, que já vem com o canal conda-forge: [conda-forge.org/download](https://conda-forge.org/download/)) | Opção B |
+| **MATLAB Online** | MATLAB no navegador, com o MATLAB Drive para guardar os arquivos. | [matlab.mathworks.com](https://matlab.mathworks.com) (conta MathWorks). Com licença da instituição, uso completo; sem ela, a versão básica gratuita tem limite de 20 h por mês e sessões de 15 min de cálculo contínuo. | Opção C |
+| **gfortran** | Compilador Fortran, necessário para rodar o `wyoming.f` de Emanuel fora do Colab. | Pelo conda: `conda install -c conda-forge gfortran` (Linux/macOS) ou `conda install -c conda-forge m2w64-gcc-fortran` (Windows); confira com `gfortran --version`. | Opções B e C |
 
 ### 3.1. Opção A: Execução no Google Colab
 1. Abra o notebook oficial da disciplina: [Seminario_plot_sounding_revisado.ipynb](https://colab.research.google.com/github/reinaldohaas/tarefa-meso/blob/master/Seminario_plot_sounding_revisado.ipynb).
@@ -93,7 +95,7 @@ python metpack/wyoming.py
 
 ### 3.2. Opção B: Python local com `uv` (mesmos passos do MATLAB)
 Os mesmos programas do MATLAB (item 3.3) em Python, em `metpack/`: `getsounding_wyoming.py`, `skewt.py`, `tcon_emanuel.py` e o script principal `tarefa_sondagens.py`.
-1. Instale o [uv](https://github.com/astral-sh/uv) e um compilador Fortran (`gfortran`, para o `wyoming.f`).
+1. Instale o uv ou o Miniconda e o `gfortran` (item 3.0).
 2. Em `metpack/tarefa_sondagens.py`, troque as três sondagens em `CASOS` pelas suas:
    ```python
    CASOS = [
@@ -102,9 +104,15 @@ Os mesmos programas do MATLAB (item 3.3) em Python, em `metpack/`: `getsounding_
        ('INSTÁVEL',   XXXXX, (AAAA, MM, DD, HH)),
    ]
    ```
-3. Rode:
+3. Rode, com o uv:
    ```powershell
    uv run --with numpy --with matplotlib python metpack/tarefa_sondagens.py
+   ```
+   ou com o Miniconda (uma vez cria o ambiente; depois só `conda activate tarefa`):
+   ```powershell
+   conda create -n tarefa -c conda-forge python=3.12 numpy matplotlib metpy siphon requests jupyter
+   conda activate tarefa
+   python metpack/tarefa_sondagens.py
    ```
 4. Para cada caso, na pasta `emanuel_AAAAMMDD_HH` ficam `skewt.png` e `matrizes_emanuel.png`; na tela aparecem a fonte dos dados e as CAPE reversível e pseudoadiabática (superfície e máxima).
 
@@ -195,9 +203,7 @@ Os valores de CAPE de Emanuel obtidos pelo MATLAB (ou pelo `tarefa_sondagens.py`
 - **Dashboard Web:** `index.html` (aba de comparação tríplice com tabelas e perfis até 200 hPa, e aba de roteiro pedagógico).
 - **Scripts de Processamento:**
   - `metpack/calc_metricas.py`: Consolidação de métricas diagnósticas, índices de Wyoming e teste de sensibilidade.
-  - `metpack/wyoming.py`: Algoritmo de Emanuel em Python puro (suporta `corte=None|-4.0`).
   - `metpack/wyoming.f`: Código clássico de Kerry Emanuel em Fortran.
-  - `metpack/tcon.py`: Geração das matrizes 2D de diferença térmica de Emanuel.
   - `metpack/tarefa_sondagens.m`, `metpack/getsounding_wyoming.m`, `metpack/tcon_emanuel.m`, `metpack/skewt.m`: versão MATLAB (MATLAB Online) dos programas de Kerry Emanuel.
   - `metpack/tarefa_sondagens.py`, `metpack/getsounding_wyoming.py`, `metpack/tcon_emanuel.py`, `metpack/skewt.py`: os mesmos programas em Python.
   - `generate_figures.py`: Geração dos perfis até 200 hPa, Skew-T e hodógrafos.

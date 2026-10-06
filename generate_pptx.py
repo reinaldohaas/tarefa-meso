@@ -432,7 +432,7 @@ Apresentamos ambos os resultados lado a lado com transparência técnica para di
         ("Fundamentação Teórica - Kerry Emanuel (1994):", [
             "Referência: Kerry Emanuel (1994), 'Atmospheric Convection', Oxford Univ. Press (Cap. 4 e 6).",
             "Disciplina de referência: MIT OCW 12.811.",
-            "Algoritmo: rotinas wyoming.f / tcon.py calculando matrizes tdifrev (Tρ) e tdifpseudo (Tv)."
+            "Algoritmo: rotinas wyoming.f / tcon_emanuel.py calculando matrizes tdifrev (Tρ) e tdifpseudo (Tv)."
         ], C_CYAN),
         ("Temperatura de Densidade (Tρ) & Water Loading:", [
             "Tρ = T · (1 + rv/ε) / (1 + rv + rl) ≈ Tv · (1 - rl)",
@@ -460,7 +460,7 @@ Apresentamos ambos os resultados lado a lado com transparência técnica para di
 
     set_speaker_notes(s5, f"""ROTEIRO DO ORADOR (07:00 - 10:00):
 Este slide conecta o estudo ao arcabouço teórico de Kerry Emanuel (1994) e do curso MIT OCW 12.811.
-À esquerda, temos os gráficos 2D gerados pelas rotinas wyoming.f / tcon.py para as três radiossondagens.
+À esquerda, temos os gráficos 2D gerados pelas rotinas wyoming.f / tcon_emanuel.py para as três radiossondagens.
 A linha superior mostra a ascensão Reversível (temperatura de densidade Tρ com retenção de condensado), enquanto a linha inferior mostra a ascensão Pseudoadiabática (Tv com precipitação instantânea).
 
 Os dados do arquivo cape.out confirmam:
@@ -789,7 +789,7 @@ Ressaltamos para os previsores da Defesa Civil a importância de utilizar produt
 
     p_closet = tf_ref.add_paragraph()
     p_closet.text = "Agradeço ao Professor Dr. Reinaldo Haas pela orientação acadêmica e aos previsores da Defesa Civil de SC pela atenção técnica dispensada.\n\n" \
-                    "O código-fonte completo (wyoming.py, tcon.py, calc_metricas.py, plot_sat_ir.py, generate_figures.py e tutorial interativo) encontra-se disponível no repositório GitHub:\n" \
+                    "O código-fonte completo (notebook, wyoming.f, tarefa_sondagens.py/.m, calc_metricas.py, generate_figures.py e tutorial interativo) encontra-se disponível no repositório GitHub:\n" \
                     "https://github.com/reinaldohaas/tarefa-meso\n\n" \
                     "Estou à disposição para as perguntas e considerações técnicas dos previsores da Defesa Civil de SC."
     p_closet.font.size = Pt(9.5)

@@ -51,11 +51,16 @@ tarefa-meso/
 └── metpack/                     # Módulo de processamento meteorológico
     ├── metricas.json            # Fonte única de verdade de todas as métricas calculadas
     ├── calc_metricas.py         # Script que calcula métricas e grava o metricas.json
-    ├── wyoming.py               # Algoritmo de Kerry Emanuel (1994) para parcelas e CAPE
-    ├── wyoming.f                # Código-fonte original em Fortran 77 (referência teórica)
-    ├── tcon.py                  # Script de renderização das matrizes 2D de Emanuel
-    ├── getsounding.py           # Utilitário de download de sondagens do Wyoming
-    └── *.png                    # Figuras oficiais geradas pelos scripts
+    ├── metricas_notebook.json   # Valores gravados pelo notebook (fonte dos números do site e dos slides)
+    ├── wyoming.f                # Programa de Kerry Emanuel (Fortran 77) para parcelas e CAPE
+    ├── tarefa_sondagens.py / .m # Script principal em Python / MATLAB (troque CASOS pelas suas sondagens)
+    ├── getsounding_wyoming.py / .m  # Baixa a sondagem do Wyoming e grava o sounding.txt do wyoming.f
+    ├── tcon_emanuel.py / .m     # Roda o wyoming.f e desenha as matrizes de flutuabilidade
+    ├── skewt.py / skewt.m       # Diagrama Skew-T de Emanuel
+    ├── getsounding.m, tcon.m    # Originais de Kerry Emanuel (texmex.mit.edu), só como referência
+    ├── sounding_*_12Z.txt, indices_*_12Z.txt  # Cópias das sondagens do exemplo (Wyoming)
+    ├── *.m (thermo_*, brunt_*, ...)  # Rotinas auxiliares de termodinâmica em MATLAB (ver Leiame.txt)
+    └── *.png                    # Figuras do site e dos slides
 ```
 
 ---
@@ -72,9 +77,6 @@ uv run --with metpy --with siphon --with requests --with matplotlib --with nbcon
 
 # 1. Montar metpack/metricas.json (usa os valores do notebook)
 uv run --with metpy --with pandas --with numpy python metpack/calc_metricas.py
-
-# 2. (Opcional) Matrizes 2D de Emanuel pelo script Python avulso
-uv run --with matplotlib --with numpy python metpack/tcon.py
 
 # 3. Gerar as figuras complementares (painel triplo, Cap. 2, hodógrafo com Bunkers LM/RM)
 uv run --with metpy --with cartopy --with matplotlib --with numpy python generate_figures.py
