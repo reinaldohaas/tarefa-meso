@@ -318,6 +318,9 @@
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/></svg>
                     Abrir no Google Colab (Seminario_plot_sounding_revisado.ipynb)
                 </a>
+                <a class="colab-button" href="https://github.com/reinaldohaas/tarefa-meso/blob/master/ROTEIRO_ESTUDANTES.md" target="_blank" style="margin-left:8px;">
+                    Roteiro do estudante (instruções e as três formas de rodar)
+                </a>
             </div>
         </div>
     </header>
@@ -1297,15 +1300,35 @@
                 </ul>
             </div>
 
-            <div class="block-title">Roteiro Passo a Passo de Execução:</div>
-            <ol style="color:#334155; font-size:0.95rem; line-height:1.7;">
-                <li>Abra o notebook oficial da disciplina: <a href="https://colab.research.google.com/github/reinaldohaas/tarefa-meso/blob/master/Seminario_plot_sounding_revisado.ipynb" target="_blank" style="color:#0284c7; font-weight:700;">Seminario_plot_sounding_revisado.ipynb</a>.</li>
-                <li>Na célula <code>CASOS</code> do notebook, troque o código da estação e a data das três sondagens do exemplo pelas suas.</li>
-                <li>Execute o download automático dos dados via endpoint WSGI da Universidade de Wyoming.</li>
-                <li>Processe os perfis verticais (\(\theta, \theta_e, \theta_{es}, N^2, S, r\)), Skew-T, hodógrafos e matrizes 2D de Kerry Emanuel.</li>
-                <li>Alternativa em MATLAB Online: rode <code>metpack/tarefa_sondagens.m</code> (programas de Kerry Emanuel adaptados; ver ROTEIRO_ESTUDANTES.md, item 3.3).</li>
-                <li>Gere a apresentação formal em PowerPoint (10 slides em 16:9 widescreen) para apresentação aos previsores da Defesa Civil de SC sob orientação do Prof. Dr. Reinaldo Haas.</li>
-            </ol>
+            <div class="how-to-read" style="border-left-color:#0284c7; background:#f0f9ff;">
+                <strong>Leia o roteiro:</strong> todas as instruções (escolha das sondagens, as três formas de rodar, downloads,
+                o que apresentar e critérios de avaliação) estão no
+                <a href="https://github.com/reinaldohaas/tarefa-meso/blob/master/ROTEIRO_ESTUDANTES.md" target="_blank" style="color:#0284c7; font-weight:700;">ROTEIRO_ESTUDANTES.md</a>.
+            </div>
+
+            <div class="block-title">Três formas de rodar (escolha uma; detalhes no item 3 do roteiro):</div>
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr><th style="text-align:left;">Opção</th><th>Onde roda</th><th style="text-align:left;">O que produz</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td style="text-align:left;"><strong>A. Notebook Jupyter</strong>:
+                            <a href="https://colab.research.google.com/github/reinaldohaas/tarefa-meso/blob/master/Seminario_plot_sounding_revisado.ipynb" target="_blank" style="color:#0284c7; font-weight:700;">abrir no Colab</a>
+                            ou em qualquer IDE com Jupyter (VS Code, JupyterLab, PyCharm…)</td>
+                            <td>Navegador ou seu computador</td>
+                            <td style="text-align:left;">Tudo: índices do MetPy e conferência com o Wyoming, Skew-T com hodógrafo, perfis até 200 hPa e matrizes de Emanuel</td></tr>
+                        <tr><td style="text-align:left;"><strong>B. Linha de comando com o <code>uv</code></strong>: <code>metpack/tarefa_sondagens.py</code></td>
+                            <td>Seu computador</td>
+                            <td style="text-align:left;">Skew-T e matrizes de Emanuel</td></tr>
+                        <tr><td style="text-align:left;"><strong>C. MATLAB Online</strong>: <code>metpack/tarefa_sondagens.m</code></td>
+                            <td>Navegador</td>
+                            <td style="text-align:left;">Skew-T e matrizes de Emanuel</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <p style="color:#334155; font-size:0.95rem;">Em todas, troque as três sondagens do exemplo em <code>CASOS</code> pelas suas.
+            Depois, prepare as apresentações descritas nos itens 4 e 5 do roteiro.</p>
 
             <div class="how-to-read" style="border-left-color: #10b981; background: #f0fdf4;">
                 <strong style="color: #065f46;">Critérios de Avaliação Científica:</strong>

@@ -18,22 +18,23 @@ Este repositório é um tutorial prático e reprodutível para análise termodin
 2. **Atmosfera Neutra:** Perfil com umedecimento progressivo da troposfera e flutuabilidade moderada. *(Exemplo do tutorial: Porto Alegre — SBPA 83971 em 22/12/1995 12Z)*.
 3. **Atmosfera Instável:** Perfil com elevado empuxo térmico, gradiente vertical de $\theta_e$ decrescente com a altura, forte influxo úmido em baixos níveis e suporte cinemático. *(Exemplo do tutorial: Porto Alegre — SBPA 83971 em 24/12/1995 12Z)*.
 
-> **Importante:** Todos os números de diagnóstico (CAPE, CIN, cisalhamento, SRH, PW, DCAPE) são calculados dinamicamente pelos scripts a partir dos dados do Wyoming e centralizados em `metpack/metricas.json`. Para consultar os valores exatos de diagnóstico, tabelas de conferência e matrizes de Emanuel, consulte o [Tutorial Interativo (index.html)](https://reinaldohaas.github.io/tarefa-meso/) ou o arquivo `metpack/metricas.json`.
+> **Importante:** os casos de Porto Alegre (dezembro de 1995) são só o **exemplo resolvido**. Cada aluno ou dupla troca as três sondagens pelas suas; presumivelmente, a instável é a mais próxima do evento severo escolhido para o trabalho de fim de curso. Os valores citados devem sair da sua execução.
 
 ---
 
-## 📋 Passos para o Estudante
+## 📋 Para o Estudante: leia o ROTEIRO
 
-1. **Escolha das Três Sondagens:**  
-   Selecione 3 radiossondagens reais no [Banco de Dados da Universidade de Wyoming](https://weather.uwyo.edu/upperair/sounding.html) contemplando os 3 regimes (estável, neutra e instável). As sondagens podem ser da mesma estação em datas distintas ou de estações diferentes na América do Sul.
-2. **Download dos Dados Completos:**  
-   Baixe o formato vertical (`TEXT:LIST`) e os índices oficiais (`INDICES`) para cada data selecionada e armazene na pasta `metpack/`.
-3. **Cálculo dos Diagnósticos e Conferência:**  
-   Execute os scripts de cálculo termodinâmico (MetPy e rotinas de Kerry Emanuel 1994) para gerar as métricas e comparar com os índices oficiais publicados pelo Wyoming.
-4. **Geração das Figuras Didáticas:**  
-   Gere os diagramas Skew-T individuais e comparativos, perfis verticais de $\theta_e, N^2, S, r$ até 200 hPa, hodógrafo com convenções do Hemisfério Sul (Bunkers Left-Mover) e matrizes 2D de Emanuel ($T_\rho$ vs $T_v$).
-5. **Preparação da Apresentação Final:**  
-   Compile a apresentação de 10 slides (20 minutos) no formato estabelecido para defesa técnica perante os previsores da Defesa Civil de Santa Catarina.
+**Todas as instruções estão no [ROTEIRO_ESTUDANTES.md](https://github.com/reinaldohaas/tarefa-meso/blob/master/ROTEIRO_ESTUDANTES.md)**: escolha das sondagens, as três formas de rodar, o que apresentar e os critérios de avaliação.
+
+Resumo das três formas de rodar (detalhes, downloads e comandos no item 3 do ROTEIRO):
+
+| Opção | Onde roda | O que produz |
+| :--- | :--- | :--- |
+| **A. Notebook Jupyter** — [abrir no Colab](https://colab.research.google.com/github/reinaldohaas/tarefa-meso/blob/master/Seminario_plot_sounding_revisado.ipynb) ou em qualquer IDE com Jupyter (VS Code, JupyterLab, PyCharm…) | Navegador ou seu computador | Tudo: índices do MetPy e conferência com o Wyoming, Skew-T com hodógrafo, perfis até 200 hPa e matrizes de Emanuel |
+| **B. Linha de comando com o `uv`** — `metpack/tarefa_sondagens.py` | Seu computador | Skew-T e matrizes de Emanuel |
+| **C. MATLAB Online** — `metpack/tarefa_sondagens.m` | Navegador | Skew-T e matrizes de Emanuel |
+
+Em todas, troque as três sondagens do exemplo em `CASOS` pelas suas.
 
 ---
 
@@ -65,11 +66,9 @@ tarefa-meso/
 
 ---
 
-## 🛠️ Comandos de Execução com `uv`
+## 🛠️ Para manter o site e os slides (professor)
 
-Para executar todo o pipeline sem necessidade de instalar dependências globais:
-
-O notebook `Seminario_plot_sounding_revisado.ipynb` é a fonte única dos dados, dos valores e das figuras principais: ele grava em `metpack/` as figuras Skew-T (com hodógrafo e Bunkers LM/RM), os perfis até 200 hPa, as matrizes de Emanuel (conjunta e por sondagem) e o arquivo `metricas_notebook.json`. Os scripts abaixo usam esses valores, por isso o notebook deve ser executado primeiro (precisa do `gfortran`).
+Não é necessário para os alunos. O notebook `Seminario_plot_sounding_revisado.ipynb` é a fonte dos dados, dos valores e das figuras principais do exemplo: ele grava em `metpack/` as figuras e o `metricas_notebook.json`. Depois dele, os scripts abaixo atualizam o `metricas.json`, as figuras complementares, o `index.html` e o `apresentacao_meso.pptx` (precisa do `gfortran`):
 
 ```powershell
 # 0. Executar o notebook (grava figuras e metpack/metricas_notebook.json)
@@ -78,13 +77,13 @@ uv run --with metpy --with siphon --with requests --with matplotlib --with nbcon
 # 1. Montar metpack/metricas.json (usa os valores do notebook)
 uv run --with metpy --with pandas --with numpy python metpack/calc_metricas.py
 
-# 3. Gerar as figuras complementares (painel triplo, Cap. 2, hodógrafo com Bunkers LM/RM)
+# 2. Gerar as figuras complementares (painel triplo, Cap. 2, hodógrafo com Bunkers LM/RM)
 uv run --with metpy --with cartopy --with matplotlib --with numpy python generate_figures.py
 
-# 4. Gerar o tutorial web para GitHub Pages
+# 3. Gerar o tutorial web para GitHub Pages
 uv run python build_index_html.py
 
-# 5. Gerar a apresentação em PowerPoint (10 slides / 20 min)
+# 4. Gerar a apresentação em PowerPoint (10 slides / 20 min)
 uv run --with python-pptx python generate_pptx.py
 ```
 
