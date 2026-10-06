@@ -57,6 +57,7 @@ tarefa-meso/
     ├── tarefa_sondagens.py / .m # Script principal em Python / MATLAB (troque CASOS pelas suas sondagens)
     ├── getsounding_wyoming.py / .m  # Baixa a sondagem do Wyoming e grava o sounding.txt do wyoming.f
     ├── tcon_emanuel.py / .m     # Roda o wyoming.f e desenha as matrizes de flutuabilidade
+    ├── wyoming_emanuel.m        # Tradução do wyoming.f para MATLAB (MATLAB Online, sem Fortran)
     ├── skewt.py / skewt.m       # Diagrama Skew-T de Emanuel
     ├── getsounding.m, tcon.m    # Originais de Kerry Emanuel (texmex.mit.edu), só como referência
     ├── sounding_*_12Z.txt, indices_*_12Z.txt  # Cópias das sondagens do exemplo (Wyoming)

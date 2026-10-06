@@ -3,7 +3,8 @@
 % (getsounding.m, skewt.m, tcon.m e wyoming.f), adaptados para a interface atual do Wyoming:
 %   getsounding_wyoming.m  - baixa a sondagem e grava sounding.txt para o wyoming.f
 %   skewt.m                - diagrama Skew-T de Emanuel: skewt(p, T, UR 0-1)
-%   tcon_emanuel.m         - roda o wyoming.f e desenha as matrizes de flutuabilidade
+%   tcon_emanuel.m         - calcula e desenha as matrizes de flutuabilidade (como o tcon.m)
+%   wyoming_emanuel.m      - tradução em MATLAB do wyoming.f (não precisa de compilador Fortran)
 %
 % Como usar no MATLAB Online (https://matlab.mathworks.com):
 %   1. Envie a pasta metpack do repositório para o MATLAB Drive (ou use "Open in MATLAB Online").

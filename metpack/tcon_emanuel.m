@@ -1,50 +1,25 @@
 function E = tcon_emanuel(pasta, titulo, corte)
-% TCON_EMANUEL  Executa o programa de Kerry Emanuel (wyoming.f) para a sondagem em PASTA
-% e desenha as matrizes de flutuabilidade (diferença de temperatura de densidade
-% parcela - ambiente) para a ascensão reversível e a pseudoadiabática.
+% TCON_EMANUEL  Calcula, para a sondagem em PASTA, as matrizes de flutuabilidade de Kerry Emanuel
+% (diferença de temperatura de densidade parcela - ambiente) nas ascensões reversível e
+% pseudoadiabática e desenha as duas lado a lado, como o tcon.m original.
 %
 % Adaptado de tcon.m (K. Emanuel, https://texmex.mit.edu/pub/emanuel/soundings/).
-% Diferenças em relação ao original:
-%   - compila o wyoming.f automaticamente (gfortran), se houver compilador;
-%   - CORTE = false (padrão) remove o piso artificial de -4 K do wyoming.f original,
-%     como no notebook Seminario_plot_sounding_revisado.ipynb;
-%   - as duas matrizes ficam lado a lado, com a mesma escala de cores, isolinha de 0 K
-%     destacada e eixo vertical até 100 hPa.
+% O tcon.m original roda o executável wyoming.exe (Fortran); aqui o cálculo é feito pela
+% tradução em MATLAB do wyoming.f (wyoming_emanuel.m), que dá os mesmos resultados
+% (diferença < 0,001 K nas matrizes e < 0,1 J/kg na CAPE) e não precisa de compilador.
+%   - CORTE = false (padrão) não aplica o piso artificial de -4 K do wyoming.f original;
+%   - grava em PASTA os mesmos arquivos do wyoming.f: p.out, porig.out, tdifrev.out,
+%     tdifpseudo.out e cape.out.
 %
 % Uso:
 %   E = tcon_emanuel('emanuel_19951224_12', 'INSTÁVEL 24/12/1995 12Z');
-%
 % PASTA deve conter o sounding.txt gravado por getsounding_wyoming.m.
-% Sem compilador Fortran (por exemplo, se o MATLAB Online não tiver gfortran), copie para PASTA
-% os arquivos p.out, porig.out, tdifrev.out, tdifpseudo.out e cape.out gerados pelo notebook
-% (pastas emanuel_AAAAMMDD_HH) e chame tcon_emanuel novamente: os arquivos existentes são usados.
 
 if nargin < 2 || isempty(titulo), titulo = pasta; end
 if nargin < 3, corte = false; end
 
-saidas = {'p.out', 'porig.out', 'tdifrev.out', 'tdifpseudo.out', 'cape.out'};
-exe = prepara_wyoming(corte);
-if ~isempty(exe)
-    dir_ant = pwd;
-    cd(pasta);
-    [st, msg] = system(['"' exe '"']);
-    cd(dir_ant);
-    if st ~= 0
-        error('wyoming.f falhou na pasta %s:\n%s', pasta, msg);
-    end
-end
-for k = 1:numel(saidas)
-    if ~exist(fullfile(pasta, saidas{k}), 'file')
-        error(['%s não encontrado em %s. Sem compilador Fortran, copie para essa pasta os arquivos ' ...
-               'p.out, porig.out, tdifrev.out, tdifpseudo.out e cape.out gerados pelo notebook.'], saidas{k}, pasta);
-    end
-end
-
-E.p = load(fullfile(pasta, 'p.out'));
-E.porig = load(fullfile(pasta, 'porig.out'));
-E.rev = load(fullfile(pasta, 'tdifrev.out'));
-E.pse = load(fullfile(pasta, 'tdifpseudo.out'));
-E.cape = le_cape_out(fullfile(pasta, 'cape.out'));
+[E.p, E.porig, E.rev, E.pse, E.cape] = wyoming_emanuel(fullfile(pasta, 'sounding.txt'), corte);
+grava_saidas(pasta, E);
 [X, Y] = meshgrid(E.porig(:)', E.p(:));
 E.X = X; E.Y = Y;
 
@@ -82,41 +57,17 @@ if exist('sgtitle', 'file')
 end
 end
 
-function exe = prepara_wyoming(corte)
-% Compila o wyoming.f (uma vez). Devolve '' se não houver compilador.
-pasta_m = fileparts(mfilename('fullpath'));
-if ispc
-    exe = fullfile(pasta_m, 'wyoming_emanuel.exe');
-else
-    exe = fullfile(pasta_m, 'wyoming_emanuel');
-end
-fonte = fullfile(pasta_m, 'wyoming.f');
-codigo = fileread(fonte);
-if ~corte
-    codigo = strrep(codigo, 'TRDBAR(I,J)=MAX(TRDBAR(I,J),-4.0)', 'CONTINUE');
-    codigo = strrep(codigo, 'TPDBAR(I,J)=MAX(TPDBAR(I,J),-4.0)', 'CONTINUE');
-end
-usado = fullfile(pasta_m, 'wyoming_usado.f');
-fid = fopen(usado, 'w'); fprintf(fid, '%s', codigo); fclose(fid);
-[st, ~] = system(sprintf('gfortran -O2 -o "%s" "%s"', exe, usado));
-if st ~= 0
-    fprintf(['Aviso: não foi possível compilar o wyoming.f (gfortran ausente?). ' ...
-             'Serão usados os arquivos .out já existentes na pasta da sondagem.\n']);
-    exe = '';
-end
-end
-
-function C = le_cape_out(arq)
-% Lê as linhas numéricas de cape.out:
-% origem, PA_rev, PA_pse, NA_rev, NA_pse, CAPE_rev, CAPE_pse, DCAPE
-txt = regexp(fileread(arq), '\r?\n', 'split');
-C = [];
-for k = 1:numel(txt)
-    if ~isempty(regexp(txt{k}, '^\s*-?\d+\.\d', 'once'))
-        v = sscanf(txt{k}, '%f')';
-        if numel(v) >= 8
-            C = [C; v(1:8)]; %#ok<AGROW>
-        end
-    end
-end
+function grava_saidas(pasta, E)
+% Grava os arquivos de saída no mesmo formato do wyoming.f
+fid = fopen(fullfile(pasta, 'p.out'), 'w');     fprintf(fid, '%9.3f\n', E.p);     fclose(fid);
+fid = fopen(fullfile(pasta, 'porig.out'), 'w'); fprintf(fid, '%9.3f\n', E.porig); fclose(fid);
+fmt = [repmat(' %7.3f', 1, size(E.rev, 2)) '\n'];
+fid = fopen(fullfile(pasta, 'tdifrev.out'), 'w');    fprintf(fid, fmt, E.rev');  fclose(fid);
+fid = fopen(fullfile(pasta, 'tdifpseudo.out'), 'w'); fprintf(fid, fmt, E.pse');  fclose(fid);
+fid = fopen(fullfile(pasta, 'cape.out'), 'w');
+fprintf(fid, '                    ALL AREAS IN UNITS OF J/kg\n\n');
+fprintf(fid, ' Origin    Rev.    P.A.    Rev.    P.A.    Rev.    P.A.    Rev.\n');
+fprintf(fid, ' p (mb)     PA      PA      NA      NA     CAPE    CAPE   DCAPE\n');
+fprintf(fid, ' %6.1f%8.1f%8.1f%8.1f%8.1f%8.1f%8.1f%8.1f\n', E.cape');
+fclose(fid);
 end

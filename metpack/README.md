@@ -18,8 +18,8 @@ Programas de Kerry Emanuel ([texmex.mit.edu/pub/emanuel/soundings](https://texme
 | Original (Emanuel) | MATLAB | Python | Função |
 | :--- | :--- | :--- | :--- |
 | `getsounding.m` | `getsounding_wyoming.m` | `getsounding_wyoming.py` | Baixa a sondagem do Wyoming (wsgi), converte o vento para nós e grava `sounding.txt`, `header.txt` e `modsound.txt` no formato do `wyoming.f`. |
-| `wyoming.f` | `wyoming.f` | `wyoming.f` | Ascensão de parcelas reversível e pseudoadiabática: gera `cape.out`, `p.out`, `porig.out`, `tdifrev.out` e `tdifpseudo.out`. |
-| `tcon.m` | `tcon_emanuel.m` | `tcon_emanuel.py` | Compila e roda o `wyoming.f` (sem o piso artificial de −4 K) e desenha as matrizes de flutuabilidade. |
+| `wyoming.f` | `wyoming_emanuel.m` (tradução, sem Fortran) | `wyoming.f` (compilado com gfortran) | Ascensão de parcelas reversível e pseudoadiabática: gera `cape.out`, `p.out`, `porig.out`, `tdifrev.out` e `tdifpseudo.out`. |
+| `tcon.m` | `tcon_emanuel.m` | `tcon_emanuel.py` | Calcula (MATLAB: `wyoming_emanuel.m`; Python: `wyoming.f`) e desenha as matrizes de flutuabilidade, sem o piso artificial de −4 K. |
 | `skewt.m` | `skewt.m` | `skewt.py` | Diagrama Skew-T de Emanuel: `skewt(p, T, UR 0-1)`. |
 | — | `tarefa_sondagens.m` | `tarefa_sondagens.py` | Script principal: roda as três sondagens de `CASOS`. |
 
