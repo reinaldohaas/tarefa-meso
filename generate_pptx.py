@@ -154,7 +154,7 @@ def build_presentation():
 
     p_tut2 = tf_tut.add_paragraph()
     p_tut2.text = "Cada aluno ou grupo DEVE selecionar OBRIGATORIAMENTE TRÊS RADIOSSONDAGENS REAIS DISTINTAS contemplando 3 regimes atmosféricos:\n" \
-                  "1) Atmosfera ESTÁVEL   |   2) Atmosfera de TRANSIÇÃO   |   3) Atmosfera INSTÁVEL\n" \
+                  "1) Atmosfera ESTÁVEL   |   2) Atmosfera NEUTRA   |   3) Atmosfera INSTÁVEL\n" \
                   "Trabalho final apresentado perante a equipe de meteorologistas e previsores da Defesa Civil de Santa Catarina (DCSC)."
     p_tut2.font.size = Pt(9.5)
     p_tut2.font.color.rgb = C_WHITE
@@ -176,7 +176,7 @@ def build_presentation():
     p_sub.space_before = Pt(4)
 
     cards_data = [
-        ("📍 3 Casos Analisados", f"1. Estável: 12/12/1995 12Z\n2. Transição: 22/12/1995 12Z\n3. Instável: 24/12/1995 12Z\nEstação: SBPA (Porto Alegre)", C_CYAN),
+        ("📍 3 Casos Analisados", f"1. Estável: 12/12/1995 12Z\n2. Neutra: 22/12/1995 12Z\n3. Instável: 24/12/1995 12Z\nEstação: SBPA (Porto Alegre)", C_CYAN),
         ("⚡ Diagnóstico Auditado", f"• Flutuabilidade e CAPE/CIN\n• Emanuel Tρ e Water Loading\n• Freq. Brunt-Väisälä N² e Estabilidade\n• Cisalhamento e Bunkers LM", C_ROSE),
         ("📚 Arcabouço Teórico", "• Kerry Emanuel (1994)\n• MIT OCW 12.811\n• MetPy (Algoritmos Oficiais)\n• Wyoming Sounding Archive", C_EMERALD)
     ]
@@ -294,12 +294,12 @@ Em 925 hPa, registrou-se vento de {m24_raw['wind_925_spd_kt']:.0f} nós ({m24_ra
 A confirmação dos padrões sinóticos em escala continental na América do Sul será realizada via reanálise oficial em grade.""")
 
     # --------------------------------------------------------------------------
-    # SLIDE 3: As 3 Sondagens - Estável (12/12) vs Transição (22/12)
+    # SLIDE 3: As 3 Sondagens - Estável (12/12) vs Neutra (22/12)
     # --------------------------------------------------------------------------
     s3 = prs.slides.add_slide(blank_layout)
     set_slide_background(s3)
-    add_header(s3, "As Três Sondagens & Três Análises: Estável (12/12) vs Transição (22/12)",
-               "Diagnóstico Físico dos Primeiros Casos: Atmosfera Estável e Caso de Transição em Auditoria",
+    add_header(s3, "As Três Sondagens & Três Análises: Estável (12/12) vs Neutra (22/12)",
+               "Diagnóstico Físico dos Primeiros Casos: Atmosfera Estável e Caso Neutro em Auditoria",
                "03 - 07 min", 3)
 
     img_3s = 'metpack/fig_3_soundings_complete_analysis.png'
@@ -318,12 +318,12 @@ A confirmação dos padrões sinóticos em escala continental na América do Sul
             f"Emanuel (1994): CAPE reversível = {m12['emanuel']['surface_cape_rev_Jkg']:.1f} J/kg; pseudo = {m12['emanuel']['surface_cape_pseudo_Jkg']:.1f} J/kg.",
             f"Cinemática: Cisalhamento 0-6 km = {m12['bulk_shear_0_6km_ms']:.1f} m/s ({m12['bulk_shear_0_6km_kt']:.1f} kt); SRH 0-3km LM = {m12['srh_0_3km_lm_m2s2']:.1f} m²/s²."
         ], C_CYAN),
-        ("ANÁLISE 2: Caso de Transição / Mod. Instável (22/12/1995 12Z)", [
+        ("ANÁLISE 2: Caso Neutro / Mod. Instável (22/12/1995 12Z)", [
             "Perfil Observado: Coluna troposférica mais úmida e aquecida em relação ao caso estável.",
             f"Termodinâmica Auditada: SBCAPE = {m22['sbcape_Jkg']:.1f} J/kg; MUCAPE = {m22['mucape_Jkg']:.1f} J/kg; SBCIN = {m22['sbcin_Jkg']:.1f} J/kg; PW = {m22['pw_mm']:.1f} mm.",
             f"Emanuel (1994): CAPE reversível = {m22['emanuel']['surface_cape_rev_Jkg']:.1f} J/kg; pseudo = {m22['emanuel']['surface_cape_pseudo_Jkg']:.1f} J/kg; DCAPE máx = {m22['emanuel']['max_dcape_emanuel_Jkg']:.1f} J/kg.",
             f"Cinemática: Cisalhamento 0-6 km = {m22['bulk_shear_0_6km_ms']:.1f} m/s ({m22['bulk_shear_0_6km_kt']:.1f} kt); SRH 0-3km LM = {m22['srh_0_3km_lm_m2s2']:.1f} m²/s².",
-            f"Nota de Classificação: Regime autêntico de transição: empuxo moderado (SBCAPE = {m22['sbcape_Jkg']:.0f} J/kg) com expressiva inibição convectiva (SBCIN = {m22['sbcin_Jkg']:.1f} J/kg) que impede convecção espontânea sem forçamento dinâmico."
+            f"Nota de Classificação: Regime neutro: empuxo moderado (SBCAPE = {m22['sbcape_Jkg']:.0f} J/kg) com expressiva inibição convectiva (SBCIN = {m22['sbcin_Jkg']:.1f} J/kg) que impede convecção espontânea sem forçamento dinâmico."
         ], C_AMBER)
     ]
     for stitle, sbullets, scol in sections_s3:
@@ -347,8 +347,8 @@ Na ANÁLISE 1 (12/12/1995 12Z - Estável):
 A atmosfera observada exibe forte ar seco em médios níveis. O SBCAPE calculado é de apenas {m12['sbcape_Jkg']:.1f} J/kg e MUCAPE de {m12['mucape_Jkg']:.1f} J/kg, com água precipitável de {m12['pw_mm']:.1f} mm.
 A estratificação estável inibe convecção profunda.
 
-Na ANÁLISE 2 (22/12/1995 12Z - Transição):
-A sondagem de 22/12 representa a transição ideal entre o regime estável e o severo. O SBCAPE e MUCAPE são de {m22['sbcape_Jkg']:.1f} J/kg, acompanhados por moderada inibição convectiva (SBCIN = {m22['sbcin_Jkg']:.1f} J/kg) e água precipitável de {m22['pw_mm']:.1f} mm. O cisalhamento 0-6 km é de {m22['bulk_shear_0_6km_ms']:.1f} m/s. Trata-se de um caso clássico de equilíbrio condicional.""")
+Na ANÁLISE 2 (22/12/1995 12Z - Neutra):
+A sondagem de 22/12 representa o regime neutro, intermediário entre o estável e o instável. O SBCAPE e MUCAPE são de {m22['sbcape_Jkg']:.1f} J/kg, acompanhados por moderada inibição convectiva (SBCIN = {m22['sbcin_Jkg']:.1f} J/kg) e água precipitável de {m22['pw_mm']:.1f} mm. O cisalhamento 0-6 km é de {m22['bulk_shear_0_6km_ms']:.1f} m/s. Trata-se de um caso clássico de equilíbrio condicional.""")
 
     # --------------------------------------------------------------------------
     # SLIDE 4: As 3 Sondagens - Atmosfera Instável (24/12) & Matriz Comparativa
@@ -359,7 +359,7 @@ A sondagem de 22/12 representa a transição ideal entre o regime estável e o s
                "Diagnóstico Físico: Sondagem Completa Oficial vs Teste de Sensibilidade (Sem Níveis de 925 hPa)",
                "03 - 07 min", 4)
 
-    img_skew = 'metpack/fig_colab_severe_skewt.png'
+    img_skew = 'metpack/fig_sounding_3_instavel.png'
     if os.path.exists(img_skew):
         s4.shapes.add_picture(img_skew, Inches(0.8), Inches(1.75), width=Inches(7.2))
 
@@ -382,7 +382,7 @@ A sondagem de 22/12 representa a transição ideal entre o regime estável e o s
         ], C_CYAN),
         ("MATRIZ COMPARATIVA DOS TRÊS CASOS (OFICIAL):", [
             f"• Estável (12/12): SBCAPE = {m12['sbcape_Jkg']:.1f} J/kg | Shear 0-6km = {m12['bulk_shear_0_6km_ms']:.1f} m/s",
-            f"• Transição (22/12): SBCAPE = {m22['sbcape_Jkg']:.1f} J/kg | Shear 0-6km = {m22['bulk_shear_0_6km_ms']:.1f} m/s",
+            f"• Neutra (22/12): SBCAPE = {m22['sbcape_Jkg']:.1f} J/kg | Shear 0-6km = {m22['bulk_shear_0_6km_ms']:.1f} m/s",
             f"• Instável (24/12): SBCAPE = {m24_raw['sbcape_Jkg']:.1f} J/kg | Shear 0-6km = {m24_raw['bulk_shear_0_6km_ms']:.1f} m/s"
         ], C_AMBER)
     ]
@@ -419,7 +419,7 @@ Apresentamos ambos os resultados lado a lado com transparência técnica para di
 
     img_emanuel = 'metpack/fig_3_soundings_emanuel_matrices.png'
     if not os.path.exists(img_emanuel):
-        img_emanuel = 'metpack/tcon_comparacao_emanuel.png'
+        img_emanuel = 'metpack/emanuel_19951224.png'
     if os.path.exists(img_emanuel):
         s5.shapes.add_picture(img_emanuel, Inches(0.8), Inches(1.75), width=Inches(7.2))
 
@@ -440,7 +440,7 @@ Apresentamos ambos os resultados lado a lado com transparência técnica para di
         ], C_AMBER),
         ("Resultados Auditados nas Três Sondagens:", [
             f"12/12 (Estável): Tρ negativo em quase toda a coluna. CAPE rev = {m12['emanuel']['surface_cape_rev_Jkg']:.1f} J/kg; pseudo = {m12['emanuel']['surface_cape_pseudo_Jkg']:.1f} J/kg.",
-            f"22/12 (Transição): Camada de empuxo positiva moderada. CAPE rev = {m22['emanuel']['surface_cape_rev_Jkg']:.1f} J/kg; pseudo = {m22['emanuel']['surface_cape_pseudo_Jkg']:.1f} J/kg.",
+            f"22/12 (Neutra): Camada de empuxo positiva moderada. CAPE rev = {m22['emanuel']['surface_cape_rev_Jkg']:.1f} J/kg; pseudo = {m22['emanuel']['surface_cape_pseudo_Jkg']:.1f} J/kg.",
             f"24/12 (Instável): Na superfície, CAPE rev = {m24_raw['emanuel']['surface_cape_rev_Jkg']:.1f} J/kg vs pseudo = {m24_raw['emanuel']['surface_cape_pseudo_Jkg']:.1f} J/kg. No pico de 925 hPa, atinge {m24_raw['emanuel']['max_cape_rev_Jkg']:.1f} J/kg (rev) e {m24_raw['emanuel']['max_cape_pseudo_Jkg']:.1f} J/kg (pseudo)."
         ], C_EMERALD)
     ]

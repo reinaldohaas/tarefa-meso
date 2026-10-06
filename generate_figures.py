@@ -7,7 +7,7 @@ Regras de Integridade Científica e Tutoriais:
 2. Nenhuma interpretação fixada em gráfico: sem caixas/setas/faixas de "tampa", "capping lid", "inversão", "pico".
 3. Fundo branco, paleta consistente e acessível a daltônicos para as 3 sondagens:
    - 12/12/1995 (Estável): Azul (#1f77b4)
-   - 22/12/1995 (Transição): Âmbar (#d97706)
+   - 22/12/1995 (Neutra): Âmbar (#d97706)
    - 24/12/1995 (Instável): Vermelho (#dc2626)
 4. Perfis verticais até 200 hPa:
    - Painéis θ, θe, θes com mesmos eixos.
@@ -35,7 +35,7 @@ plt.rcParams['axes.linewidth'] = 1.0
 
 # Cores padronizadas para as três sondagens
 COLOR_12 = '#1f77b4'  # Azul - 12/12 Estável
-COLOR_22 = '#d97706'  # Âmbar - 22/12 Transição
+COLOR_22 = '#d97706'  # Âmbar - 22/12 Neutra
 COLOR_24 = '#dc2626'  # Vermelho - 24/12 Instável
 COLOR_SENS = '#7c3aed' # Roxo - 24/12 Sensibilidade
 
@@ -127,7 +127,7 @@ def generate_individual_skewt(metrics):
         {
             'date': '19951222',
             'm_key': '19951222',
-            'title': 'Radiossondagem SBPA — 22/12/1995 12Z (Atmosfera de Transição)',
+            'title': 'Radiossondagem SBPA — 22/12/1995 12Z (Atmosfera Neutra)',
             'color': COLOR_22,
             'out_fig': 'metpack/fig_sounding_2_neutra.png'
         },
@@ -305,7 +305,7 @@ def generate_tripartite_skewt_panel(metrics):
     dates = ['19951212', '19951222', '19951224']
     titles = [
         '12/12/1995 12Z (Estável)',
-        '22/12/1995 12Z (Transição)',
+        '22/12/1995 12Z (Neutra)',
         '24/12/1995 12Z (Instável)'
     ]
     m_keys = ['19951212', '19951222', '19951224_raw']
@@ -366,7 +366,7 @@ def generate_perfis_theta_triplice(metrics):
     """
     cases = [
         ('19951212', '12/12/1995 12Z (Estável)', COLOR_12),
-        ('19951222', '22/12/1995 12Z (Transição)', COLOR_22),
+        ('19951222', '22/12/1995 12Z (Neutra)', COLOR_22),
         ('19951224', '24/12/1995 12Z (Instável)', COLOR_24)
     ]
 
@@ -436,12 +436,12 @@ def generate_3_soundings_profiles_comparison(metrics):
     """
     cases = [
         ('19951212', '12/12/1995 (Estável)', COLOR_12, '-'),
-        ('19951222', '22/12/1995 (Transição)', COLOR_22, '--'),
+        ('19951222', '22/12/1995 (Neutra)', COLOR_22, '--'),
         ('19951224', '24/12/1995 (Instável)', COLOR_24, '-')
     ]
 
     fig, axes = plt.subplots(1, 4, figsize=(18, 7.5), dpi=150)
-    fig.suptitle("Diagnóstico Comparativo Vertical de Estabilidade Troposférica (Superfície até 200 hPa)\nSBPA Porto Alegre: Estável (12/12/1995), Transição (22/12/1995) e Instável (24/12/1995)",
+    fig.suptitle("Diagnóstico Comparativo Vertical de Estabilidade Troposférica (Superfície até 200 hPa)\nSBPA Porto Alegre: Estável (12/12/1995), Neutra (22/12/1995) e Instável (24/12/1995)",
                  fontsize=13, fontweight='bold', color='#0f172a', y=0.98)
 
     yticks = [1000, 925, 850, 700, 600, 500, 400, 300, 200]
@@ -633,7 +633,7 @@ def generate_all_soundings_colab_profiles(metrics):
     """Gera o quarteto de perfis individuais para cada uma das 3 sondagens."""
     cases = [
         ('19951212', '12/12/1995 12Z (Estável)', 'metpack/fig_profiles_19951212.png', '19951212'),
-        ('19951222', '22/12/1995 12Z (Transição)', 'metpack/fig_profiles_19951222.png', '19951222'),
+        ('19951222', '22/12/1995 12Z (Neutra)', 'metpack/fig_profiles_19951222.png', '19951222'),
         ('19951224', '24/12/1995 12Z (Instável)', 'metpack/fig_profiles_19951224.png', '19951224_raw')
     ]
 
@@ -773,6 +773,11 @@ def generate_kinematics_hodograph(metrics):
     lm_dir = m.get('bunkers_lm_dir_deg', 0.0)
     ax.plot(lm_u, lm_v, 'D', color='#f59e0b', markersize=9, 
             label=f'Bunkers Left-Mover ({lm_u:.1f}, {lm_v:.1f}) m/s [{lm_spd_kt:.1f} kt de {lm_dir:.0f}°]')
+    # Vetor Bunkers Right-Mover
+    rm_u = m.get('bunkers_rm_u_ms', 0.0)
+    rm_v = m.get('bunkers_rm_v_ms', 0.0)
+    ax.plot(rm_u, rm_v, 's', color='#dc2626', markersize=9, markeredgecolor='#0f172a',
+            label=f'Bunkers Right-Mover ({rm_u:.1f}, {rm_v:.1f}) m/s [{np.hypot(rm_u, rm_v) * 1.943844:.1f} kt]')
 
     # Vetor de cisalhamento bulk 0-6 km
     idx_6k = np.argmin(np.abs(z_km - 6.0))
@@ -798,7 +803,7 @@ def generate_kinematics_hodograph(metrics):
     ax.set_ylim(-40, 40)
     ax.set_xlabel("Componente Zonal U (m/s)", fontsize=11, fontweight='bold')
     ax.set_ylabel("Componente Meridional V (m/s)", fontsize=11, fontweight='bold')
-    ax.set_title("Hodógrafo do Vento Horizontal & Vetor Bunkers (Hemisfério Sul)\nSBPA Porto Alegre — 24/12/1995 12Z", 
+    ax.set_title("Hodógrafo do Vento Horizontal & Vetores de Bunkers LM/RM (Hemisfério Sul)\nSBPA Porto Alegre — 24/12/1995 12Z", 
                  fontsize=12, fontweight='bold', color='#0f172a', pad=12)
     ax.legend(loc='upper right', fontsize=8.5, framealpha=0.92)
 
@@ -821,7 +826,7 @@ def generate_emanuel_matrices(metrics):
     """
     cases = [
         ('19951212', '12/12/1995 (Estável)'),
-        ('19951222', '22/12/1995 (Transição)'),
+        ('19951222', '22/12/1995 (Neutra)'),
         ('19951224', '24/12/1995 (Instável)')
     ]
 
@@ -924,14 +929,16 @@ def generate_emanuel_matrices(metrics):
 def main():
     print("=== INICIANDO GERAÇÃO DE FIGURAS CIENTÍFICAS (REVISÃO 3) ===")
     metrics = load_metrics()
-    generate_individual_skewt(metrics)
+    # As figuras abaixo agora são geradas pelo notebook Seminario_plot_sounding_revisado.ipynb
+    # (fonte única dos dados e valores) e gravadas em metpack/:
+    #   fig_sounding_1_estavel.png, fig_sounding_2_neutra.png, fig_sounding_3_instavel.png,
+    #   fig_perfis_theta_triplice.png, fig_3_soundings_profiles_comparison.png,
+    #   fig_3_soundings_emanuel_matrices.png e emanuel_AAAAMMDD.png.
+    # Por isso generate_individual_skewt, generate_perfis_theta_triplice, generate_3_soundings_profiles_comparison,
+    # generate_all_soundings_colab_profiles e generate_emanuel_matrices não são mais chamadas aqui.
     generate_tripartite_skewt_panel(metrics)
-    generate_perfis_theta_triplice(metrics)
-    generate_3_soundings_profiles_comparison(metrics)
     generate_cap2_thermo_profiles(metrics)
-    generate_all_soundings_colab_profiles(metrics)
     generate_kinematics_hodograph(metrics)
-    generate_emanuel_matrices(metrics)
     print("=== TODAS AS FIGURAS CIENTÍFICAS FORAM REGERADAS COM SUCESSO! ===")
 
 if __name__ == '__main__':

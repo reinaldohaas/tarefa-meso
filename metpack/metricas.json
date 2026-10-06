@@ -6,8 +6,8 @@
       "dz_m": 252.0,
       "dT_C": 4.7,
       "gamma_K_km": -18.65,
-      "dtheta_dz_K_km": 28.72,
-      "dtheta_e_K": 19.03,
+      "dtheta_dz_K_km": 28.97,
+      "dtheta_e_K": 19.1,
       "is_superadiabatic": false,
       "is_large_dthe": true
     },
@@ -17,8 +17,8 @@
       "dz_m": 136.0,
       "dT_C": -2.4,
       "gamma_K_km": 17.65,
-      "dtheta_dz_K_km": -7.81,
-      "dtheta_e_K": -9.53,
+      "dtheta_dz_K_km": -8.09,
+      "dtheta_e_K": -9.6,
       "is_superadiabatic": true,
       "is_large_dthe": false
     },
@@ -28,8 +28,8 @@
       "dz_m": 593.0,
       "dT_C": -10.6,
       "gamma_K_km": 17.88,
-      "dtheta_dz_K_km": -8.39,
-      "dtheta_e_K": -31.51,
+      "dtheta_dz_K_km": -8.43,
+      "dtheta_e_K": -31.5,
       "is_superadiabatic": true,
       "is_large_dthe": true
     },
@@ -39,8 +39,8 @@
       "dz_m": 16.0,
       "dT_C": -0.2,
       "gamma_K_km": 12.5,
-      "dtheta_dz_K_km": -3.69,
-      "dtheta_e_K": 2.27,
+      "dtheta_dz_K_km": 0.0,
+      "dtheta_e_K": 2.3,
       "is_superadiabatic": true,
       "is_large_dthe": false
     },
@@ -51,7 +51,7 @@
       "dT_C": 2.0,
       "gamma_K_km": -2.29,
       "dtheta_dz_K_km": 21.19,
-      "dtheta_e_K": 18.51,
+      "dtheta_e_K": 18.5,
       "is_superadiabatic": false,
       "is_large_dthe": true
     },
@@ -61,8 +61,8 @@
       "dz_m": 764.0,
       "dT_C": 1.4,
       "gamma_K_km": -1.83,
-      "dtheta_dz_K_km": 22.82,
-      "dtheta_e_K": 17.44,
+      "dtheta_dz_K_km": 22.77,
+      "dtheta_e_K": 17.5,
       "is_superadiabatic": false,
       "is_large_dthe": true
     },
@@ -72,8 +72,8 @@
       "dz_m": 707.0,
       "dT_C": 2.4,
       "gamma_K_km": -3.39,
-      "dtheta_dz_K_km": 27.67,
-      "dtheta_e_K": 19.57,
+      "dtheta_dz_K_km": 27.72,
+      "dtheta_e_K": 19.5,
       "is_superadiabatic": false,
       "is_large_dthe": true
     },
@@ -83,8 +83,8 @@
       "dz_m": 1393.0,
       "dT_C": 2.4,
       "gamma_K_km": -1.72,
-      "dtheta_dz_K_km": 25.32,
-      "dtheta_e_K": 35.29,
+      "dtheta_dz_K_km": 25.34,
+      "dtheta_e_K": 35.3,
       "is_superadiabatic": false,
       "is_large_dthe": true
     },
@@ -94,8 +94,8 @@
       "dz_m": 637.0,
       "dT_C": 4.2,
       "gamma_K_km": -6.59,
-      "dtheta_dz_K_km": 37.84,
-      "dtheta_e_K": 24.14,
+      "dtheta_dz_K_km": 37.83,
+      "dtheta_e_K": 24.2,
       "is_superadiabatic": false,
       "is_large_dthe": true
     },
@@ -105,8 +105,8 @@
       "dz_m": 994.0,
       "dT_C": 4.2,
       "gamma_K_km": -4.23,
-      "dtheta_dz_K_km": 33.68,
-      "dtheta_e_K": 33.53,
+      "dtheta_dz_K_km": 33.7,
+      "dtheta_e_K": 33.5,
       "is_superadiabatic": false,
       "is_large_dthe": true
     },
@@ -116,8 +116,8 @@
       "dz_m": 1674.0,
       "dT_C": -0.4,
       "gamma_K_km": 0.24,
-      "dtheta_dz_K_km": 24.39,
-      "dtheta_e_K": 40.83,
+      "dtheta_dz_K_km": 24.37,
+      "dtheta_e_K": 40.8,
       "is_superadiabatic": false,
       "is_large_dthe": true
     },
@@ -127,8 +127,8 @@
       "dz_m": 399.0,
       "dT_C": 2.4,
       "gamma_K_km": -6.02,
-      "dtheta_dz_K_km": 42.28,
-      "dtheta_e_K": 16.92,
+      "dtheta_dz_K_km": 42.36,
+      "dtheta_e_K": 16.9,
       "is_superadiabatic": false,
       "is_large_dthe": true
     }
@@ -138,19 +138,19 @@
       "dz_m": 136.0,
       "dT_C": -2.4,
       "gamma_K_km": 17.65,
-      "dtheta_dz_K_km": -7.81,
-      "dtheta_e_K": -9.53
+      "dtheta_dz_K_km": -8.09,
+      "dtheta_e_K": -9.6
     },
     "camada_910_850": {
       "dz_m": 593.0,
       "dT_C": -10.6,
       "gamma_K_km": 17.88,
-      "dtheta_dz_K_km": -8.39,
-      "dtheta_e_K": -31.51
+      "dtheta_dz_K_km": -8.43,
+      "dtheta_e_K": -31.5
     }
   },
   "19951212": {
-    "pw_mm": 35.12,
+    "pw_mm": 35.1,
     "lcl_p_hPa": 968.3,
     "lcl_t_C": 15.6,
     "sbcape_Jkg": 15.7,
@@ -159,15 +159,15 @@
     "mucin_Jkg": -159.0,
     "mlcape_Jkg": 2.7,
     "mlcin_Jkg": -4.8,
-    "lfc_p_hPa": 961.8,
+    "lfc_p_hPa": 968.3,
     "el_p_hPa": 892.2,
-    "lifted_index_K": 2.58,
+    "lifted_index_K": 2.6,
     "k_index_C": 22.3,
     "total_totals_C": 42.8,
     "cross_totals_C": 17.9,
     "vertical_totals_C": 24.9,
     "showalter_K": 4.2,
-    "sweat_index": 118.8,
+    "sweat_index": 98.4,
     "dcape_metpy_Jkg": 642.9,
     "bulk_shear_0_1km_ms": 0.53,
     "bulk_shear_0_1km_kt": 1.0,
@@ -193,7 +193,7 @@
     "wind_925_dir_deg": 160.0,
     "t_925_C": 12.8,
     "td_925_C": 11.7,
-    "theta_e_925_K": 319.27177382750534,
+    "theta_e_925_K": 319.3,
     "emanuel": {
       "surface_p_hPa": 1014.0,
       "surface_cape_rev_Jkg": 16.9,
@@ -308,10 +308,11 @@
         "value": 35.1,
         "unit": "millimeter"
       }
-    }
+    },
+    "sweat_index_kt": 118.8
   },
   "19951222": {
-    "pw_mm": 43.89,
+    "pw_mm": 43.9,
     "lcl_p_hPa": 882.1,
     "lcl_t_C": 18.3,
     "sbcape_Jkg": 836.0,
@@ -322,13 +323,13 @@
     "mlcin_Jkg": -286.0,
     "lfc_p_hPa": 710.2,
     "el_p_hPa": 238.6,
-    "lifted_index_K": -3.53,
+    "lifted_index_K": -3.5,
     "k_index_C": 34.9,
     "total_totals_C": 48.4,
     "cross_totals_C": 18.7,
     "vertical_totals_C": 29.7,
-    "showalter_K": -0.6,
-    "sweat_index": 161.6,
+    "showalter_K": -0.5,
+    "sweat_index": 148.4,
     "dcape_metpy_Jkg": 1338.5,
     "bulk_shear_0_1km_ms": 6.42,
     "bulk_shear_0_1km_kt": 12.5,
@@ -354,18 +355,18 @@
     "wind_925_dir_deg": 10.0,
     "t_925_C": 25.4,
     "td_925_C": 16.4,
-    "theta_e_925_K": 343.79191677486045,
+    "theta_e_925_K": 343.8,
     "emanuel": {
       "surface_p_hPa": 1006.0,
-      "surface_cape_rev_Jkg": -107.9,
-      "surface_cape_pseudo_Jkg": 503.2,
+      "surface_cape_rev_Jkg": -107.7,
+      "surface_cape_pseudo_Jkg": 503.4,
       "surface_cin_rev_Jkg": 273.9,
       "surface_cin_pseudo_Jkg": 233.8,
       "surface_dcape_emanuel_Jkg": 0.0,
-      "max_cape_rev_Jkg": -107.9,
-      "max_cape_pseudo_Jkg": 503.2,
+      "max_cape_rev_Jkg": -107.7,
+      "max_cape_pseudo_Jkg": 503.4,
       "max_cape_p_hPa": 1006.0,
-      "max_dcape_emanuel_Jkg": 195.5,
+      "max_dcape_emanuel_Jkg": 195.4,
       "max_dcape_p_hPa": 905.0
     },
     "indices_wyoming": {
@@ -469,10 +470,11 @@
         "value": 43.9,
         "unit": "millimeter"
       }
-    }
+    },
+    "sweat_index_kt": 161.6
   },
   "19951224_raw": {
-    "pw_mm": 55.35,
+    "pw_mm": 55.3,
     "lcl_p_hPa": 988.4,
     "lcl_t_C": 22.9,
     "sbcape_Jkg": 1861.9,
@@ -483,13 +485,13 @@
     "mlcin_Jkg": 0.0,
     "lfc_p_hPa": 854.3,
     "el_p_hPa": 189.9,
-    "lifted_index_K": -4.75,
+    "lifted_index_K": -4.7,
     "k_index_C": 37.3,
     "total_totals_C": 45.1,
     "cross_totals_C": 20.4,
     "vertical_totals_C": 24.7,
     "showalter_K": 0.5,
-    "sweat_index": 254.6,
+    "sweat_index": 205.0,
     "dcape_metpy_Jkg": 1096.8,
     "bulk_shear_0_1km_ms": 19.74,
     "bulk_shear_0_1km_kt": 38.4,
@@ -515,16 +517,16 @@
     "wind_925_dir_deg": 60.0,
     "t_925_C": 30.0,
     "td_925_C": 25.0,
-    "theta_e_925_K": 377.78025399478383,
+    "theta_e_925_K": 377.8,
     "emanuel": {
       "surface_p_hPa": 1009.0,
-      "surface_cape_rev_Jkg": 402.0,
-      "surface_cape_pseudo_Jkg": 1479.7,
+      "surface_cape_rev_Jkg": 402.4,
+      "surface_cape_pseudo_Jkg": 1480.2,
       "surface_cin_rev_Jkg": 206.1,
       "surface_cin_pseudo_Jkg": 187.9,
       "surface_dcape_emanuel_Jkg": 0.0,
-      "max_cape_rev_Jkg": 6247.2,
-      "max_cape_pseudo_Jkg": 7781.5,
+      "max_cape_rev_Jkg": 6247.8,
+      "max_cape_pseudo_Jkg": 7782.1,
       "max_cape_p_hPa": 925.0,
       "max_dcape_emanuel_Jkg": 60.7,
       "max_dcape_p_hPa": 905.0
@@ -630,7 +632,8 @@
         "value": 55.4,
         "unit": "millimeter"
       }
-    }
+    },
+    "sweat_index_kt": 254.6
   },
   "19951224_sensibilidade": {
     "pw_mm": 50.75,
@@ -676,7 +679,7 @@
     "wind_925_dir_deg": 69.0,
     "t_925_C": 22.2,
     "td_925_C": 20.7,
-    "theta_e_925_K": 344.63034088657434,
+    "theta_e_925_K": 344.6,
     "emanuel": "Teste de sensibilidade com níveis de 925 hPa removidos da ascensão",
     "indices_wyoming": null
   },
@@ -724,7 +727,7 @@
     "wind_925_dir_deg": 69.0,
     "t_925_C": 22.2,
     "td_925_C": 20.7,
-    "theta_e_925_K": 344.63034088657434,
+    "theta_e_925_K": 344.6,
     "emanuel": "Teste de sensibilidade com níveis de 925 hPa removidos da ascensão",
     "indices_wyoming": null
   },
@@ -739,10 +742,10 @@
     },
     "19951222": {
       "data": "22/12/1995",
-      "regime": "Transição",
+      "regime": "Neutra",
       "wyoming_Jkg": 1352.5,
       "metpy_Jkg": 1338.5,
-      "emanuel_max_Jkg": 195.5,
+      "emanuel_max_Jkg": 195.4,
       "emanuel_max_p_hPa": 905.0
     },
     "19951224_raw": {
@@ -770,9 +773,9 @@
           "indice": "PW (Água Precipitável)",
           "unidade": "mm",
           "wyoming": 35.1,
-          "metpy": 35.12,
-          "siphon_metpy": 35.12,
-          "diferenca": 0.02
+          "metpy": 35.1,
+          "siphon_metpy": 35.1,
+          "diferenca": 0.0
         },
         {
           "indice": "MUCAPE (Most Unstable CAPE)",
@@ -818,8 +821,8 @@
           "indice": "LFC Pressão (LFCP)",
           "unidade": "hPa",
           "wyoming": null,
-          "metpy": 961.8,
-          "siphon_metpy": 961.8,
+          "metpy": 968.3,
+          "siphon_metpy": 968.3,
           "diferenca": null
         },
         {
@@ -871,20 +874,28 @@
           "diferenca": 0.0
         },
         {
-          "indice": "SWEAT Index (SWET)",
+          "indice": "SWEAT Index (SWET) — vento em m/s, como o notebook",
           "unidade": "adimensional",
           "wyoming": 98.4,
+          "metpy": 98.4,
+          "siphon_metpy": 98.4,
+          "diferenca": 0.0
+        },
+        {
+          "indice": "SWEAT com vento em nós (definição de Miller)",
+          "unidade": "adimensional",
+          "wyoming": null,
           "metpy": 118.8,
           "siphon_metpy": 118.8,
-          "diferenca": 20.4
+          "diferenca": null
         },
         {
           "indice": "Lifted Index (LFVT/LIFT)",
           "unidade": "K",
           "wyoming": 2.5,
-          "metpy": 2.58,
-          "siphon_metpy": 2.58,
-          "diferenca": 0.08
+          "metpy": 2.6,
+          "siphon_metpy": 2.6,
+          "diferenca": 0.1
         },
         {
           "indice": "DCAPE (Downdraft CAPE)",
@@ -903,9 +914,9 @@
           "indice": "PW (Água Precipitável)",
           "unidade": "mm",
           "wyoming": 43.9,
-          "metpy": 43.89,
-          "siphon_metpy": 43.89,
-          "diferenca": -0.01
+          "metpy": 43.9,
+          "siphon_metpy": 43.9,
+          "diferenca": 0.0
         },
         {
           "indice": "MUCAPE (Most Unstable CAPE)",
@@ -999,25 +1010,33 @@
           "indice": "Showalter Index (SHOW)",
           "unidade": "K",
           "wyoming": -0.5,
-          "metpy": -0.6,
-          "siphon_metpy": -0.6,
-          "diferenca": -0.1
+          "metpy": -0.5,
+          "siphon_metpy": -0.5,
+          "diferenca": 0.0
         },
         {
-          "indice": "SWEAT Index (SWET)",
+          "indice": "SWEAT Index (SWET) — vento em m/s, como o notebook",
           "unidade": "adimensional",
           "wyoming": 148.3,
+          "metpy": 148.4,
+          "siphon_metpy": 148.4,
+          "diferenca": 0.1
+        },
+        {
+          "indice": "SWEAT com vento em nós (definição de Miller)",
+          "unidade": "adimensional",
+          "wyoming": null,
           "metpy": 161.6,
           "siphon_metpy": 161.6,
-          "diferenca": 13.3
+          "diferenca": null
         },
         {
           "indice": "Lifted Index (LFVT/LIFT)",
           "unidade": "K",
           "wyoming": -3.1,
-          "metpy": -3.53,
-          "siphon_metpy": -3.53,
-          "diferenca": -0.43
+          "metpy": -3.5,
+          "siphon_metpy": -3.5,
+          "diferenca": -0.4
         },
         {
           "indice": "DCAPE (Downdraft CAPE)",
@@ -1036,9 +1055,9 @@
           "indice": "PW (Água Precipitável)",
           "unidade": "mm",
           "wyoming": 55.4,
-          "metpy": 55.35,
-          "siphon_metpy": 55.35,
-          "diferenca": -0.05
+          "metpy": 55.3,
+          "siphon_metpy": 55.3,
+          "diferenca": -0.1
         },
         {
           "indice": "MUCAPE (Most Unstable CAPE)",
@@ -1137,20 +1156,28 @@
           "diferenca": 0.0
         },
         {
-          "indice": "SWEAT Index (SWET)",
+          "indice": "SWEAT Index (SWET) — vento em m/s, como o notebook",
           "unidade": "adimensional",
           "wyoming": 204.9,
+          "metpy": 205.0,
+          "siphon_metpy": 205.0,
+          "diferenca": 0.1
+        },
+        {
+          "indice": "SWEAT com vento em nós (definição de Miller)",
+          "unidade": "adimensional",
+          "wyoming": null,
           "metpy": 254.6,
           "siphon_metpy": 254.6,
-          "diferenca": 49.7
+          "diferenca": null
         },
         {
           "indice": "Lifted Index (LFVT/LIFT)",
           "unidade": "K",
           "wyoming": -5.2,
-          "metpy": -4.75,
-          "siphon_metpy": -4.75,
-          "diferenca": 0.45
+          "metpy": -4.7,
+          "siphon_metpy": -4.7,
+          "diferenca": 0.5
         },
         {
           "indice": "DCAPE (Downdraft CAPE)",

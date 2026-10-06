@@ -487,6 +487,38 @@ def main():
     out_json['19951224_sensibilidade'] = diag_24_sens
     out_json['19951224_qc'] = diag_24_sens
 
+    # Valores do notebook Seminario_plot_sounding_revisado.ipynb (fonte única dos números do site e dos slides).
+    # O notebook grava metpack/metricas_notebook.json; aqui esses valores substituem os calculados acima,
+    # para que notebook, site e slides mostrem exatamente os mesmos números.
+    arq_nb = 'metpack/metricas_notebook.json'
+    if os.path.exists(arq_nb):
+        with open(arq_nb, encoding='utf-8') as f:
+            nbm = json.load(f)
+        mapa = {'pw_mm': 'PWAT (mm)', 'lcl_p_hPa': 'LCL (hPa)', 'sbcape_Jkg': 'SBCAPE (J/kg)', 'sbcin_Jkg': 'SBCIN (J/kg)',
+                'mucape_Jkg': 'MUCAPE (J/kg)', 'mucin_Jkg': 'MUCIN (J/kg)', 'mlcape_Jkg': 'MLCAPE (J/kg)', 'mlcin_Jkg': 'MLCIN (J/kg)',
+                'lfc_p_hPa': 'LFC (hPa)', 'el_p_hPa': 'EL (hPa)', 'lifted_index_K': 'LI (K)', 'k_index_C': 'K Index (°C)',
+                'total_totals_C': 'Total Totals (°C)', 'showalter_K': 'Showalter (K)', 'sweat_index': 'SWEAT',
+                'sweat_index_kt': 'SWEAT (vento em nós)', 'dcape_metpy_Jkg': 'DCAPE (J/kg)',
+                'bulk_shear_0_1km_kt': 'Shear 0-1 km (kt)', 'bulk_shear_0_6km_kt': 'Shear 0-6 km (kt)',
+                'srh_0_1km_lm_m2s2': 'SRH 0-1 km LM (m²/s²)', 'srh_0_3km_lm_m2s2': 'SRH 0-3 km LM (m²/s²)'}
+        mapa_em = {'surface_cape_rev_Jkg': 'CAPE reversível superfície (J/kg)', 'surface_cape_pseudo_Jkg': 'CAPE pseudoadiabática superfície (J/kg)',
+                   'max_cape_rev_Jkg': 'CAPE reversível máxima (J/kg)', 'max_cape_pseudo_Jkg': 'CAPE pseudoadiabática máxima (J/kg)',
+                   'max_cape_p_hPa': 'Nível de origem da CAPE máxima (hPa)', 'max_dcape_emanuel_Jkg': 'DCAPE máxima Emanuel (J/kg)'}
+        for dkey, diag in (('19951212', diag_12), ('19951222', diag_22), ('19951224', diag_24_raw)):
+            if dkey not in nbm:
+                continue
+            I = nbm[dkey]['indices_metpy']
+            for k_m, k_nb in mapa.items():
+                if I.get(k_nb) is not None:
+                    diag[k_m] = round(float(I[k_nb]), 1)
+            if isinstance(diag.get('emanuel'), dict):
+                for k_m, k_nb in mapa_em.items():
+                    if k_nb in nbm[dkey]['emanuel']:
+                        diag['emanuel'][k_m] = nbm[dkey]['emanuel'][k_nb]
+        print(f"-> Valores do notebook aplicados a partir de {arq_nb}")
+    else:
+        print(f"AVISO: {arq_nb} não encontrado; rode o notebook antes para que site e notebook tenham os mesmos valores.")
+
     # Comparativo Padronizado dos Três Métodos de DCAPE
     out_json['dcape_comparativo'] = {
         '19951212': {
@@ -499,7 +531,7 @@ def main():
         },
         '19951222': {
             'data': '22/12/1995',
-            'regime': 'Transição',
+            'regime': 'Neutra',
             'wyoming_Jkg': (ind_22.get('DCAPE', {}).get('value') if ind_22 else None),
             'metpy_Jkg': diag_22.get('dcape_metpy_Jkg'),
             'emanuel_max_Jkg': (emanuel_22.get('max_dcape_emanuel_Jkg') if emanuel_22 else None),
@@ -541,7 +573,8 @@ def main():
             ('Cross Totals (CTOT)', 'K', w.get('CTOT', {}).get('value'), diag.get('cross_totals_C')),
             ('Vertical Totals (VTOT)', 'K', w.get('VTOT', {}).get('value'), diag.get('vertical_totals_C')),
             ('Showalter Index (SHOW)', 'K', w.get('SHOW', {}).get('value'), diag.get('showalter_K')),
-            ('SWEAT Index (SWET)', 'adimensional', w.get('SWET', {}).get('value'), diag.get('sweat_index')),
+            ('SWEAT Index (SWET) — vento em m/s, como o notebook', 'adimensional', w.get('SWET', {}).get('value'), diag.get('sweat_index')),
+            ('SWEAT com vento em nós (definição de Miller)', 'adimensional', None, diag.get('sweat_index_kt')),
             ('Lifted Index (LFVT/LIFT)', 'K', w.get('LFVT', {}).get('value'), diag.get('lifted_index_K')),
             ('DCAPE (Downdraft CAPE)', 'J/kg', w.get('DCAPE', {}).get('value'), diag.get('dcape_metpy_Jkg'))
         ]
@@ -571,7 +604,7 @@ def main():
     print("\n" + "="*95)
     print("TABELA DE CONFERÊNCIA EXAUSTIVA: WYOMING OFICIAL vs METPY")
     print("="*95)
-    for dt, diag in [('12/12/1995 (Estável)', diag_12), ('22/12/1995 (Transição)', diag_22), ('24/12/1995 (Instável)', diag_24_raw)]:
+    for dt, diag in [('12/12/1995 (Estável)', diag_12), ('22/12/1995 (Neutra)', diag_22), ('24/12/1995 (Instável)', diag_24_raw)]:
         w = diag.get('indices_wyoming', {})
         print(f"\n--- DATA: {dt} ---")
         print(f"{'Índice':<28} | {'Unidade':<12} | {'Wyoming':<12} | {'MetPy':<15} | {'Diferença':<12}")

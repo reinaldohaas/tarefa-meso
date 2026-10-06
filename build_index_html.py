@@ -533,10 +533,10 @@ def generate_html():
                 <div class="figure-caption">Figura 1: Diagrama Skew-T / Log-P com Hodógrafo Polar (lado superior direito) e Painel de Diagnósticos Físicos Completos Ampliado (lado inferior direito). SBCAPE = 16 J/kg, SBCIN = 0 J/kg, Shear 0-6 km = 13.7 m/s (26.6 kt). Clique para ampliar.</div>
             </div>
 
-            <!-- SONDAGEM 2: TRANSIÇÃO -->
+            <!-- SONDAGEM 2: NEUTRA -->
             <div class="figure-wrapper" style="max-width: 1040px; margin: 24px auto;">
-                <h3 style="color: #0d9488; margin-bottom: 8px;">2.2 Sondagem 2: 22/12/1995 12Z (SBPA) — Atmosfera de Transição</h3>
-                <img src="metpack/fig_sounding_2_neutra.png" alt="Sondagem 2 Transição 22/12/1995 12Z" onclick="openModal(this.src)">
+                <h3 style="color: #0d9488; margin-bottom: 8px;">2.2 Sondagem 2: 22/12/1995 12Z (SBPA) — Atmosfera Neutra</h3>
+                <img src="metpack/fig_sounding_2_neutra.png" alt="Sondagem 2 Neutra 22/12/1995 12Z" onclick="openModal(this.src)">
                 <div class="figure-caption">Figura 2: Diagrama Skew-T / Log-P com Hodógrafo Polar (lado superior direito) e Painel de Diagnósticos Físicos Completos Ampliado (lado inferior direito). MUCAPE = 836 J/kg, SBCAPE = 836 J/kg, SBCIN = -222 J/kg, PW = 43.9 mm, Shear 0-6 km = 2.8 m/s (5.5 kt). Clique para ampliar.</div>
             </div>
 
@@ -586,7 +586,7 @@ def generate_html():
                         <tr>
                             <th style="text-align:left;">Parâmetro Diagnóstico</th>
                             <th style="color:var(--color-c12);">12/12/1995 12Z<br>(Estável)</th>
-                            <th style="color:var(--color-c22);">22/12/1995 12Z<br>(Transição)</th>
+                            <th style="color:var(--color-c22);">22/12/1995 12Z<br>(Neutra)</th>
                             <th style="color:var(--color-c24);">24/12/1995 12Z<br>(Oficial Completa)</th>
                             <th style="color:var(--color-sens);">24/12/1995 12Z<br>(Sensibilidade sem 925)</th>
                         </tr>
@@ -622,7 +622,7 @@ def generate_html():
             <div class="how-to-read">
                 <strong>Como ler e interpretar os dados de conferência:</strong>
                 <ul>
-                    <li><strong>Índices Clássicos com Concordância Exata (\(\Delta = 0.0\)):</strong> Os índices K (KINX), Total Totals (TOTL), Cross Totals (CTOT), Vertical Totals (VTOT), Showalter (SHOW) e Água Precipitável (PWAT) calculados via MetPy coincidem com os dados oficiais publicados pela Universidade de Wyoming nas 3 sondagens. Já o índice SWEAT, recalculado com velocidade em nós (conforme a formulação original de Miller 1972), difere dos valores do Wyoming devido ao uso de velocidades em m/s na rotina do servidor remoto.</li>
+                    <li><strong>Índices Clássicos com Concordância Exata (\(\Delta = 0.0\)):</strong> Os índices K (KINX), Total Totals (TOTL), Cross Totals (CTOT), Vertical Totals (VTOT), Showalter (SHOW) e Água Precipitável (PWAT) calculados via MetPy coincidem com os dados oficiais publicados pela Universidade de Wyoming nas 3 sondagens. O SWEAT do notebook é calculado com a velocidade do vento em m/s (a função <code>mpcalc.sweat_index</code> usa só o número da velocidade) e coincide com o valor publicado pelo Wyoming; com o vento em nós, como na definição original de Miller (1972), o valor é maior (linha "SWEAT com vento em nós").</li>
                     <li><strong>MUCAPE Extremo em 24/12/1995:</strong> O Wyoming registra 7808,7 J/kg e o cálculo via MetPy resulta em 7810,0 J/kg (\(\Delta = +1,3\text{ J/kg}\), precisão de 99,98%), confirmando a captura idêntica da parcela mais instável em 925 hPa.</li>
                     <li><strong>Diferença entre SBCAPE e MUCAPE:</strong> Em 24/12, a parcela de superfície possui SBCAPE de 1862 J/kg com forte inibição (SBCIN = -186 J/kg), enquanto o MUCAPE atinge 7810 J/kg com CIN nulo (0 J/kg), caracterizando uma convecção elevada de extrema violência.</li>
                     <li><strong>Três Métodos de DCAPE:</strong> Kerry Emanuel (1994) avalia a descida de parcela individual camada a camada com microfísica detalhada; MetPy integra a descida a partir da camada de mínimo \(\theta_e\); e Wyoming utiliza formulação empírica de coluna.</li>
@@ -632,7 +632,7 @@ def generate_html():
             <div class="student-questions">
                 <strong>Perguntas para o estudante responder:</strong>
                 <ol>
-                    <li>Por que os índices termodinâmicos padrão (K, TT, Showalter e PW) apresentam concordância exata entre MetPy e Wyoming, enquanto o SWEAT diverge quando calculado estritamente com velocidades em nós (Miller 1972) em vez de m/s?</li>
+                    <li>Por que os índices termodinâmicos padrão (K, TT, Showalter e PW) apresentam concordância exata entre MetPy e Wyoming, e por que o SWEAT só coincide com o Wyoming quando o vento entra em m/s, e não em nós como na definição de Miller (1972)?</li>
                     <li>Em 24/12/1995, compare o MUCAPE oficial (7808,7 J/kg) com o valor do teste de sensibilidade sem o nível de 925 hPa (1860 J/kg). Qual a justificativa física para a presença do Jato de Baixos Níveis (JBN) com vento de 44 nós em 925 hPa?</li>
                 </ol>
             </div>
@@ -729,8 +729,29 @@ def generate_html():
 
             <div class="figure-wrapper">
                 <img src="metpack/fig_3_soundings_emanuel_matrices.png" alt="Matrizes de Emanuel" onclick="openModal(this.src)">
-                <div class="figure-caption">Matrizes 2D de Kerry Emanuel (1994) nas Três Sondagens — Escala Simétrica \(\pm 15\text{ K}\) com Isolinha de 0 K Destacada — Clique para ampliar</div>
+                <div class="figure-caption">Matrizes 2D de Kerry Emanuel (1994) nas Três Sondagens — mesma escala simétrica de cores para as seis matrizes (definida pelos dados), isolinha de 0 K destacada, sem o corte artificial em −4 K — Clique para ampliar</div>
             </div>
+
+            <h3 style="margin-top: 28px;">6.1 Matrizes de flutuabilidade por sondagem</h3>
+            <div class="explanation-text">
+                As mesmas matrizes, uma figura por sondagem (geradas pelo notebook a partir do <code>wyoming.f</code>). Escolha o caso:
+            </div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap; margin: 10px 0 14px;">
+                <button type="button" class="emanuel-tab" onclick="mostraEmanuel('19951212', this)" style="padding:6px 14px; border-radius:6px; border:1px solid #94a3b8; background:#e2e8f0; cursor:pointer;">Estável — 12/12/1995</button>
+                <button type="button" class="emanuel-tab" onclick="mostraEmanuel('19951222', this)" style="padding:6px 14px; border-radius:6px; border:1px solid #94a3b8; background:#ffffff; cursor:pointer;">Neutra — 22/12/1995</button>
+                <button type="button" class="emanuel-tab" onclick="mostraEmanuel('19951224', this)" style="padding:6px 14px; border-radius:6px; border:1px solid #94a3b8; background:#ffffff; cursor:pointer;">Instável — 24/12/1995</button>
+            </div>
+            <div class="figure-wrapper">
+                <img id="img-emanuel-caso" src="metpack/emanuel_19951212.png" alt="Matrizes de Emanuel por sondagem" onclick="openModal(this.src)">
+                <div class="figure-caption" id="cap-emanuel-caso">Ascensão reversível (esquerda) e pseudoadiabática (direita) — Clique para ampliar</div>
+            </div>
+            <script>
+                function mostraEmanuel(data, botao) {
+                    document.getElementById('img-emanuel-caso').src = 'metpack/emanuel_' + data + '.png';
+                    document.querySelectorAll('.emanuel-tab').forEach(function (b) { b.style.background = '#ffffff'; });
+                    botao.style.background = '#e2e8f0';
+                }
+            </script>
 
             <div class="how-to-read">
                 <strong>Como ler:</strong>
@@ -738,7 +759,7 @@ def generate_html():
                     <li>Eixo horizontal = nível de pressão de origem da parcela (\(p_{\text{origem}}\), em hPa); eixo vertical = nível para o qual a parcela é elevada (\(p_{\text{elevada}}\), em hPa).</li>
                     <li>Tons vermelhos = flutuabilidade positiva (\(\Delta T > 0\), aceleração ascendente); tons azuis = flutuabilidade negativa (\(\Delta T < 0\), inibição).</li>
                     <li>A isolinha preta espessa contínua representa exatamente \(\Delta T = 0\text{ K}\), marcando a fronteira de flutuabilidade neutra.</li>
-                    <li>Todas as 6 subfiguras utilizam rigorosamente a mesma escala simétrica de cores (\(-15\text{ a }+15\text{ K}\)), permitindo comparação visual direta.</li>
+                    <li>Todas as matrizes (figura conjunta e figuras por sondagem) usam a mesma escala simétrica de cores, permitindo comparação visual direta.</li>
                 </ul>
             </div>
 
@@ -758,14 +779,14 @@ def generate_html():
             </div>
             <div class="explanation-text">
                 Cada estudante ou dupla deve selecionar <strong>três radiossondagens reais distintas</strong> no acervo da Universidade de Wyoming, 
-                representando os três regimes atmosféricos da troposfera: Estável, Transição e Instável.
+                representando os três regimes atmosféricos da troposfera: Estável, Neutra e Instável.
             </div>
 
             <div class="how-to-read">
                 <strong>Critérios para Escolha das Três Sondagens:</strong>
                 <ul>
                     <li><strong>Sondagem Estável:</strong> Inversão térmica ou isotermia em baixos níveis, ar seco em altitude, \(N^2 > 0\) profundo e CAPE próximo de zero (\(< 50\text{ J/kg}\)).</li>
-                    <li><strong>Sondagem de Transição:</strong> Camada limite com umidade moderada, instabilidade potencial (\(\partial\theta_e/\partial z < 0\)) com CIN moderado e sem cisalhamento extremo.</li>
+                    <li><strong>Sondagem Neutra:</strong> Camada limite com umidade moderada, instabilidade potencial (\(\partial\theta_e/\partial z < 0\)) com CIN moderado e sem cisalhamento extremo.</li>
                     <li><strong>Sondagem Instável:</strong> Camada limite quente e úmida, forte gradiente vertical de \(\theta_e\), elevado CAPE (\(> 1500\text{ J/kg}\)) e cisalhamento vertical organizado.</li>
                 </ul>
             </div>

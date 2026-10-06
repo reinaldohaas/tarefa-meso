@@ -15,7 +15,7 @@
 Este repositório é um tutorial prático e reprodutível para análise termodinâmica e cinemática de radiossondagens observadas na América do Sul. A tarefa consiste em diagnosticar comparativamente **três regimes atmosféricos observados distintos**:
 
 1. **Atmosfera Estável:** Perfil com inversão ou forte estabilidade térmica, inibição de flutuabilidade positiva e ausência de convecção profunda. *(Exemplo do tutorial: Porto Alegre — SBPA 83971 em 12/12/1995 12Z)*.
-2. **Atmosfera de Transição:** Perfil com umedecimento progressivo da troposfera e flutuabilidade moderada. *(Exemplo do tutorial: Porto Alegre — SBPA 83971 em 22/12/1995 12Z)*.
+2. **Atmosfera Neutra:** Perfil com umedecimento progressivo da troposfera e flutuabilidade moderada. *(Exemplo do tutorial: Porto Alegre — SBPA 83971 em 22/12/1995 12Z)*.
 3. **Atmosfera Instável:** Perfil com elevado empuxo térmico, gradiente vertical de $\theta_e$ decrescente com a altura, forte influxo úmido em baixos níveis e suporte cinemático. *(Exemplo do tutorial: Porto Alegre — SBPA 83971 em 24/12/1995 12Z)*.
 
 > **Importante:** Todos os números de diagnóstico (CAPE, CIN, cisalhamento, SRH, PW, DCAPE) são calculados dinamicamente pelos scripts a partir dos dados do Wyoming e centralizados em `metpack/metricas.json`. Para consultar os valores exatos de diagnóstico, tabelas de conferência e matrizes de Emanuel, consulte o [Tutorial Interativo (index.html)](https://reinaldohaas.github.io/tarefa-meso/) ou o arquivo `metpack/metricas.json`.
@@ -25,7 +25,7 @@ Este repositório é um tutorial prático e reprodutível para análise termodin
 ## 📋 Passos para o Estudante
 
 1. **Escolha das Três Sondagens:**  
-   Selecione 3 radiossondagens reais no [Banco de Dados da Universidade de Wyoming](https://weather.uwyo.edu/upperair/sounding.html) contemplando os 3 regimes (estável, transição e instável). As sondagens podem ser da mesma estação em datas distintas ou de estações diferentes na América do Sul.
+   Selecione 3 radiossondagens reais no [Banco de Dados da Universidade de Wyoming](https://weather.uwyo.edu/upperair/sounding.html) contemplando os 3 regimes (estável, neutra e instável). As sondagens podem ser da mesma estação em datas distintas ou de estações diferentes na América do Sul.
 2. **Download dos Dados Completos:**  
    Baixe o formato vertical (`TEXT:LIST`) e os índices oficiais (`INDICES`) para cada data selecionada e armazene na pasta `metpack/`.
 3. **Cálculo dos Diagnósticos e Conferência:**  
@@ -64,14 +64,19 @@ tarefa-meso/
 
 Para executar todo o pipeline sem necessidade de instalar dependências globais:
 
+O notebook `Seminario_plot_sounding_revisado.ipynb` é a fonte única dos dados, dos valores e das figuras principais: ele grava em `metpack/` as figuras Skew-T (com hodógrafo e Bunkers LM/RM), os perfis até 200 hPa, as matrizes de Emanuel (conjunta e por sondagem) e o arquivo `metricas_notebook.json`. Os scripts abaixo usam esses valores, por isso o notebook deve ser executado primeiro (precisa do `gfortran`).
+
 ```powershell
-# 1. Calcular todas as métricas oficiais (atualiza metpack/metricas.json)
+# 0. Executar o notebook (grava figuras e metpack/metricas_notebook.json)
+uv run --with metpy --with siphon --with requests --with matplotlib --with nbconvert --with ipykernel jupyter nbconvert --to notebook --execute --inplace Seminario_plot_sounding_revisado.ipynb
+
+# 1. Montar metpack/metricas.json (usa os valores do notebook)
 uv run --with metpy --with pandas --with numpy python metpack/calc_metricas.py
 
-# 2. Gerar as matrizes 2D de Kerry Emanuel (1994)
+# 2. (Opcional) Matrizes 2D de Emanuel pelo script Python avulso
 uv run --with matplotlib --with numpy python metpack/tcon.py
 
-# 3. Gerar todas as figuras científicas (Skew-T, perfis até 200 hPa, hodógrafo)
+# 3. Gerar as figuras complementares (painel triplo, Cap. 2, hodógrafo com Bunkers LM/RM)
 uv run --with metpy --with cartopy --with matplotlib --with numpy python generate_figures.py
 
 # 4. Gerar o tutorial web para GitHub Pages
