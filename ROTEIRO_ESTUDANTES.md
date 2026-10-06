@@ -68,21 +68,39 @@ Um erro clássico ocorre ao passar o HTML bruto ou saídas do `html2text`, que q
 
 ## 3. ⚙️ Execução Prática do Ambiente Computacional
 
-### 3.0. Ferramentas: o que são e onde baixar
-Escolha **uma** das opções A, B ou C abaixo. Todas precisam de internet para baixar as suas sondagens do Wyoming.
+Há **três opções**; escolha uma. Todas precisam de internet para baixar as suas sondagens do Wyoming. Para as opções que rodam no seu computador, baixe antes o repositório: `git clone https://github.com/reinaldohaas/tarefa-meso.git` ou, no GitHub, **Code → Download ZIP**.
 
-| Ferramenta | O que é | Onde baixar / acessar | Usada em |
-| :--- | :--- | :--- | :--- |
-| **Google Colab** | Jupyter no navegador, no Google; não instala nada no computador. | [colab.research.google.com](https://colab.research.google.com) (conta Google) | Opção A |
-| **uv** (`uv.exe` no Windows) | Gerenciador de Python: baixa a versão de Python e os pacotes de cada comando sozinho, sem instalar nada no Python do sistema. | [docs.astral.sh/uv](https://docs.astral.sh/uv/getting-started/installation/). Windows (PowerShell): `powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 \| iex"`; Linux/macOS: `curl -LsSf https://astral.sh/uv/install.sh \| sh` | Opção B |
-| **Miniconda** | Distribuição mínima do conda: cria ambientes com Python, pacotes e também o compilador Fortran. Alternativa ao uv. | [anaconda.com/docs/getting-started/miniconda](https://www.anaconda.com/docs/getting-started/miniconda/install/overview) (ou o Miniforge, que já vem com o canal conda-forge: [conda-forge.org/download](https://conda-forge.org/download/)) | Opção B |
-| **MATLAB Online** | MATLAB no navegador, com o MATLAB Drive para guardar os arquivos. | [matlab.mathworks.com](https://matlab.mathworks.com) (conta MathWorks). Com licença da instituição, uso completo; sem ela, a versão básica gratuita tem limite de 20 h por mês e sessões de 15 min de cálculo contínuo. | Opção C |
-| **gfortran** | Compilador Fortran, necessário para rodar o `wyoming.f` de Emanuel fora do Colab. | Pelo conda: `conda install -c conda-forge gfortran` (Linux/macOS) ou `conda install -c conda-forge m2w64-gcc-fortran` (Windows); confira com `gfortran --version`. | Opções B e C |
+| Opção | Onde roda | O que produz |
+| :--- | :--- | :--- |
+| **A. Notebook Jupyter** (Colab ou qualquer IDE com Jupyter) | Navegador (Colab) ou seu computador | Tudo: índices do MetPy e conferência com o Wyoming, Skew-T com hodógrafo (Bunkers LM/RM), perfis de $\theta$, $\theta_e$, $\theta_{es}$, $N^2$ e $S$ até 200 hPa e matrizes de Emanuel |
+| **B. Linha de comando com o `uv`** | Seu computador | Skew-T de Emanuel e matrizes de Emanuel (mesmos passos do MATLAB) |
+| **C. MATLAB Online** | Navegador | Skew-T de Emanuel e matrizes de Emanuel (programas originais adaptados) |
 
-### 3.1. Opção A: Execução no Google Colab
-1. Abra o notebook oficial da disciplina: [Seminario_plot_sounding_revisado.ipynb](https://colab.research.google.com/github/reinaldohaas/tarefa-meso/blob/master/Seminario_plot_sounding_revisado.ipynb).
-2. Execute as células sequencialmente para instalar o `metpy` e `siphon` e compilar o modelo de Kerry Emanuel (`wyoming.f`).
-3. Na célula `CASOS`, troque estação e data pelas suas três sondagens:
+### 3.1. Opção A: Notebook Jupyter (Google Colab ou qualquer IDE que rode Jupyter)
+O notebook `Seminario_plot_sounding_revisado.ipynb` é a opção completa.
+
+**A1. No Google Colab** (nada a instalar; precisa de conta Google). O Colab é o Jupyter no navegador e já tem o `gfortran`:
+1. Abra: [Seminario_plot_sounding_revisado.ipynb no Colab](https://colab.research.google.com/github/reinaldohaas/tarefa-meso/blob/master/Seminario_plot_sounding_revisado.ipynb).
+2. Siga os passos comuns abaixo.
+
+**A2. Em uma IDE no seu computador** (VS Code com a extensão Jupyter, JupyterLab, PyCharm, Antigravity ou outra que abra arquivos `.ipynb`). É preciso um ambiente Python com os pacotes e o compilador Fortran `gfortran` (para o `wyoming.f`). Duas formas de criar esse ambiente:
+- **Miniconda** — distribuição mínima do conda, que instala Python, pacotes e também o `gfortran`. Baixe em [anaconda.com/docs/getting-started/miniconda](https://www.anaconda.com/docs/getting-started/miniconda/install/overview) (ou use o Miniforge, que já vem com o canal conda-forge: [conda-forge.org/download](https://conda-forge.org/download/)). Depois, no terminal do conda (Anaconda Prompt no Windows):
+  ```powershell
+  conda create -n tarefa -c conda-forge python=3.12 numpy pandas matplotlib metpy siphon requests jupyter ipykernel
+  conda activate tarefa
+  conda install -c conda-forge gfortran            # Linux/macOS
+  conda install -c conda-forge m2w64-gcc-fortran   # Windows
+  gfortran --version                               # confere o compilador
+  ```
+  Na IDE, abra o notebook e escolha o kernel/ambiente **tarefa**.
+- **uv** (ver Opção B): abre o JupyterLab já com os pacotes, sem criar ambiente fixo (o `gfortran` precisa estar instalado no sistema):
+  ```powershell
+  uv run --with numpy --with pandas --with matplotlib --with metpy --with siphon --with requests --with jupyter jupyter lab Seminario_plot_sounding_revisado.ipynb
+  ```
+
+**Passos comuns (A1 e A2):**
+1. Execute as primeiras células (pacotes e compilação do `wyoming.f`).
+2. Na célula `CASOS`, troque estação e data pelas suas três sondagens:
    ```python
    CASOS = [
        dict(regime='ESTÁVEL',  station='XXXXX', date=datetime(AAAA, MM, DD, HH), src='FM35'),
@@ -91,12 +109,21 @@ Escolha **uma** das opções A, B ou C abaixo. Todas precisam de internet para b
    ]
    ```
    As cópias de reserva em `metpack/` existem só para o exemplo; para as suas datas o notebook precisa de internet (Siphon/Wyoming). Confira no site do Wyoming o valor de `src` disponível para a sua data.
-4. Execute as rotinas de cálculo para gerar as tabelas comparativas (MetPy vs. Wyoming), diagramas Skew-T, perfis até 200 hPa e matrizes de flutuabilidade de Emanuel.
+3. Execute as demais células, em ordem. Saem: a tabela de índices do MetPy e a conferência com os índices publicados pelo Wyoming; o Skew-T com hodógrafo (Bunkers LM/RM) e tabela de índices de cada sondagem; os perfis de $\theta$, $\theta_e$, $\theta_{es}$, $N^2$ e $S$ até 200 hPa; as matrizes de flutuabilidade de Emanuel (conjunta e por sondagem) e o resumo de CAPE/DCAPE de Emanuel. As figuras e os valores ficam gravados em `metpack/` (`metricas_notebook.json`).
 
-### 3.2. Opção B: Python local com `uv` (mesmos passos do MATLAB)
-Os mesmos programas do MATLAB (item 3.3) em Python, em `metpack/`: `getsounding_wyoming.py`, `skewt.py`, `tcon_emanuel.py` e o script principal `tarefa_sondagens.py`.
-1. Instale o uv ou o Miniconda e o `gfortran` (item 3.0).
-2. Em `metpack/tarefa_sondagens.py`, troque as três sondagens em `CASOS` pelas suas:
+### 3.2. Opção B: Linha de comando com o `uv`
+Os mesmos programas do MATLAB (Opção C), em Python, em `metpack/`: `getsounding_wyoming.py`, `skewt.py`, `tcon_emanuel.py` e o script principal `tarefa_sondagens.py`.
+
+O **uv** (`uv.exe` no Windows) é um gerenciador de Python: a cada comando, ele baixa a versão de Python e os pacotes necessários num ambiente isolado, sem mexer no Python do sistema. Instalação ([docs.astral.sh/uv](https://docs.astral.sh/uv/getting-started/installation/)):
+```powershell
+# Windows (PowerShell)
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+# Linux / macOS
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+O `wyoming.f` precisa do compilador `gfortran` (no Linux, pelo gerenciador de pacotes, por exemplo `sudo apt install gfortran`; no Windows e no macOS, pelo Miniconda, como na Opção A2). Confira com `gfortran --version`.
+
+1. Em `metpack/tarefa_sondagens.py`, troque as três sondagens em `CASOS` pelas suas:
    ```python
    CASOS = [
        ('ESTÁVEL',    XXXXX, (AAAA, MM, DD, HH)),
@@ -104,22 +131,13 @@ Os mesmos programas do MATLAB (item 3.3) em Python, em `metpack/`: `getsounding_
        ('INSTÁVEL',   XXXXX, (AAAA, MM, DD, HH)),
    ]
    ```
-3. Rode, com o uv:
+2. Na pasta do repositório, rode:
    ```powershell
    uv run --with numpy --with matplotlib python metpack/tarefa_sondagens.py
    ```
-   ou com o Miniconda (uma vez cria o ambiente; depois só `conda activate tarefa`):
-   ```powershell
-   conda create -n tarefa -c conda-forge python=3.12 numpy matplotlib metpy siphon requests jupyter
-   conda activate tarefa
-   python metpack/tarefa_sondagens.py
-   ```
-4. Para cada caso, na pasta `emanuel_AAAAMMDD_HH` ficam `skewt.png` e `matrizes_emanuel.png`; na tela aparecem a fonte dos dados e as CAPE reversível e pseudoadiabática (superfície e máxima).
+3. Para cada caso, na pasta `emanuel_AAAAMMDD_HH` ficam `skewt.png`, `matrizes_emanuel.png` e as saídas do `wyoming.f`; na tela aparecem a fonte dos dados e as CAPE reversível e pseudoadiabática (superfície e máxima).
 
-Para os índices do MetPy, os perfis de $\theta$, $N^2$ e $S$ e o hodógrafo, use o notebook (Opção A); ele também roda localmente:
-```powershell
-uv run --with metpy --with siphon --with requests --with matplotlib --with jupyter jupyter lab Seminario_plot_sounding_revisado.ipynb
-```
+Os índices do MetPy, os perfis de $\theta$, $N^2$ e $S$ e o hodógrafo saem do notebook (Opção A).
 
 ### 3.3. Opção C: MATLAB Online (programas originais de Kerry Emanuel)
 Os programas em MATLAB de Kerry Emanuel ([texmex.mit.edu/pub/emanuel/soundings](https://texmex.mit.edu/pub/emanuel/soundings/): `getsounding.m`, `skewt.m`, `tcon.m`, `wyoming.f` e `instructions.pdf`) foram adaptados em `metpack/` para a interface atual do Wyoming:
@@ -131,7 +149,9 @@ Os programas em MATLAB de Kerry Emanuel ([texmex.mit.edu/pub/emanuel/soundings](
 | `skewt.m` | `skewt.m` (sem mudança) | `skewt(p, T, UR/100)`. |
 | — | `tarefa_sondagens.m` | Script principal: roda as três sondagens de `CASOS`. |
 
-Passos no [MATLAB Online](https://matlab.mathworks.com) (é preciso uma conta MathWorks):
+O **MATLAB Online** é o MATLAB no navegador, com o MATLAB Drive para guardar os arquivos. Acesse [matlab.mathworks.com](https://matlab.mathworks.com) com uma conta MathWorks: com licença da instituição o uso é completo; sem ela, a versão básica gratuita tem limite de 20 h por mês e sessões de 15 min de cálculo contínuo.
+
+Passos:
 1. Envie a pasta `metpack/` do repositório para o MATLAB Drive (Upload) e abra `metpack/tarefa_sondagens.m`.
 2. Em `CASOS`, troque estação e data pelas suas três sondagens (o exemplo é Porto Alegre, dezembro de 1995):
    ```matlab
