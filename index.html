@@ -516,28 +516,30 @@
             </div>
             <div class="explanation-text">
                 O diagrama Skew-T / Log-P plota a temperatura (\(T\)) e o ponto de orvalho (\(T_d\)) ao longo do perfil vertical de pressão. 
-                A inclinação oblíqua das isotermas permite avaliar a energia potencial disponível para convecção (CAPE, área positiva onde a parcela 
-                é mais quente que o ambiente) e a inibição convectiva (CIN, área negativa abaixo do LFC). Apresentamos uma figura dedicada por sondagem.
+                A inclinação oblíqua das isotermas permite avaliar a energia potencial disponível para convecção (CAPE) e a inibição convectiva (CIN). 
+                Cada sondagem é apresentada abaixo individualmente em sua própria linha em alta resolução, contendo o diagrama Skew-T completo, 
+                seu respectivo hodógrafo polar de vento e a caixa de dados termodinâmicos e cinemáticos calculados.
             </div>
 
-            <div class="gallery-grid">
-                <div class="figure-wrapper">
-                    <img src="metpack/fig_sounding_1_estavel.png" alt="Skew-T 12/12/1995" onclick="openModal(this.src)">
-                    <div class="figure-caption">Sondagem 1: 12/12/1995 12Z (Atmosfera Estável) — Clique para ampliar</div>
-                </div>
-                <div class="figure-wrapper">
-                    <img src="metpack/fig_sounding_2_neutra.png" alt="Skew-T 23/12/1995" onclick="openModal(this.src)">
-                    <div class="figure-caption">Sondagem 2: 23/12/1995 12Z (Atmosfera de Transição) — Clique para ampliar</div>
-                </div>
-                <div class="figure-wrapper">
-                    <img src="metpack/fig_sounding_3_instavel.png" alt="Skew-T 24/12/1995" onclick="openModal(this.src)">
-                    <div class="figure-caption">Sondagem 3: 24/12/1995 12Z (Atmosfera Instável) — Clique para ampliar</div>
-                </div>
+            <!-- SONDAGEM 1: ESTÁVEL -->
+            <div class="figure-wrapper" style="max-width: 880px; margin: 24px auto;">
+                <h3 style="color: #0284c7; margin-bottom: 8px;">2.1 Sondagem 1: 12/12/1995 12Z — Atmosfera Estável (Pós-Frontal)</h3>
+                <img src="metpack/fig_sounding_1_estavel.png" alt="Sondagem 1 Estável 12/12/1995 12Z" onclick="openModal(this.src)">
+                <div class="figure-caption">Figura 1: Diagrama Skew-T / Log-P com Hodógrafo Polar (canto superior esquerdo) e Caixa de Diagnósticos Físicos Completos (base). SBCAPE = 18 J/kg, SBCIN = -0 J/kg, Shear 0-6 km = 13.7 m/s (26.6 kt). Clique para ampliar.</div>
             </div>
 
-            <div class="figure-wrapper">
-                <img src="metpack/fig_3_soundings_complete_analysis.png" alt="Painel Tríplice Skew-T" onclick="openModal(this.src)">
-                <div class="figure-caption">Painel Comparativo dos Três Diagramas Skew-T lado a lado — Clique para ampliar</div>
+            <!-- SONDAGEM 2: TRANSIÇÃO -->
+            <div class="figure-wrapper" style="max-width: 880px; margin: 24px auto;">
+                <h3 style="color: #0d9488; margin-bottom: 8px;">2.2 Sondagem 2: 23/12/1995 12Z — Atmosfera de Transição / Neutra</h3>
+                <img src="metpack/fig_sounding_2_neutra.png" alt="Sondagem 2 Transição 23/12/1995 12Z" onclick="openModal(this.src)">
+                <div class="figure-caption">Figura 2: Diagrama Skew-T / Log-P com Hodógrafo Polar e Caixa de Diagnósticos Físicos Completos. SBCAPE = 566 J/kg, SBCIN = -12 J/kg, PW = 44.5 mm, Shear 0-6 km = 10.3 m/s. Clique para ampliar.</div>
+            </div>
+
+            <!-- SONDAGEM 3: INSTÁVEL -->
+            <div class="figure-wrapper" style="max-width: 880px; margin: 24px auto;">
+                <h3 style="color: #dc2626; margin-bottom: 8px;">2.3 Sondagem 3: 24/12/1995 12Z — Atmosfera Severamente Instável (Enchente de Natal)</h3>
+                <img src="metpack/fig_sounding_3_instavel.png" alt="Sondagem 3 Instável 24/12/1995 12Z" onclick="openModal(this.src)">
+                <div class="figure-caption">Figura 3: Diagrama Skew-T / Log-P com Hodógrafo Polar e Caixa de Diagnósticos Físicos Completos. MUCAPE = 4646 J/kg, Capping Lid em 925 hPa, Shear 0-6 km = 28.7 m/s (55.8 kt), SRH 0-3 km = 245 m²/s². Clique para ampliar.</div>
             </div>
 
             <div class="how-to-read">
