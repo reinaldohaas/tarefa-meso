@@ -91,23 +91,26 @@ python metpack/wyoming.py
    As cópias de reserva em `metpack/` existem só para o exemplo; para as suas datas o notebook precisa de internet (Siphon/Wyoming). Confira no site do Wyoming o valor de `src` disponível para a sua data.
 4. Execute as rotinas de cálculo para gerar as tabelas comparativas (MetPy vs. Wyoming), diagramas Skew-T, perfis até 200 hPa e matrizes de flutuabilidade de Emanuel.
 
-### 3.2. Opção B: Execução Local com `uv` (Recomendada)
-O gerenciador de ambientes [uv](https://github.com/astral-sh/uv) permite rodar os scripts sem conflitos de dependências:
+### 3.2. Opção B: Python local com `uv` (mesmos passos do MATLAB)
+Os mesmos programas do MATLAB (item 3.3) em Python, em `metpack/`: `getsounding_wyoming.py`, `skewt.py`, `tcon_emanuel.py` e o script principal `tarefa_sondagens.py`.
+1. Instale o [uv](https://github.com/astral-sh/uv) e um compilador Fortran (`gfortran`, para o `wyoming.f`).
+2. Em `metpack/tarefa_sondagens.py`, troque as três sondagens em `CASOS` pelas suas:
+   ```python
+   CASOS = [
+       ('ESTÁVEL',    XXXXX, (AAAA, MM, DD, HH)),
+       ('NEUTRA',     XXXXX, (AAAA, MM, DD, HH)),
+       ('INSTÁVEL',   XXXXX, (AAAA, MM, DD, HH)),
+   ]
+   ```
+3. Rode:
+   ```powershell
+   uv run --with numpy --with matplotlib python metpack/tarefa_sondagens.py
+   ```
+4. Para cada caso, na pasta `emanuel_AAAAMMDD_HH` ficam `skewt.png` e `matrizes_emanuel.png`; na tela aparecem a fonte dos dados e as CAPE reversível e pseudoadiabática (superfície e máxima).
+
+Para os índices do MetPy, os perfis de $\theta$, $N^2$ e $S$ e o hodógrafo, use o notebook (Opção A); ele também roda localmente:
 ```powershell
-# 0. Executar o notebook com as suas sondagens (grava figuras e metpack/metricas_notebook.json; precisa do gfortran)
-uv run --with metpy --with siphon --with requests --with matplotlib --with nbconvert --with ipykernel jupyter nbconvert --to notebook --execute --inplace Seminario_plot_sounding_revisado.ipynb
-
-# 1. Montar metpack/metricas.json com os valores do notebook
-uv run --with metpy --with pandas --with numpy python metpack/calc_metricas.py
-
-# 2. Figuras complementares (painel triplo, Cap. 2, hodógrafo com Bunkers LM/RM)
-uv run --with metpy --with cartopy --with matplotlib --with numpy python generate_figures.py
-
-# 3. Gerar a apresentação em PowerPoint (10 slides)
-uv run --with python-pptx python generate_pptx.py
-
-# 4. Compilar o tutorial web (index.html)
-uv run python build_index_html.py
+uv run --with metpy --with siphon --with requests --with matplotlib --with jupyter jupyter lab Seminario_plot_sounding_revisado.ipynb
 ```
 
 ### 3.3. Opção C: MATLAB Online (programas originais de Kerry Emanuel)
@@ -133,7 +136,7 @@ Passos no [MATLAB Online](https://matlab.mathworks.com) (é preciso uma conta Ma
 3. Clique em **Run**. Para cada caso saem o Skew-T de Emanuel e as matrizes de flutuabilidade; no Command Window aparecem a fonte dos dados e as CAPE reversível e pseudoadiabática (superfície e máxima).
 4. Se o MATLAB Online não tiver compilador Fortran (`gfortran`), o `tcon_emanuel.m` avisa. Nesse caso, rode o notebook (Opção A) com as mesmas sondagens e copie para a pasta `emanuel_AAAAMMDD_HH` de cada caso os arquivos `p.out`, `porig.out`, `tdifrev.out`, `tdifpseudo.out` e `cape.out`; ao rodar de novo, o MATLAB usa esses arquivos.
 
-Os valores de CAPE de Emanuel obtidos pelo MATLAB devem ser iguais aos do notebook para as mesmas sondagens (é o mesmo `wyoming.f` com a mesma entrada); confira e comente qualquer diferença.
+Os valores de CAPE de Emanuel obtidos pelo MATLAB (ou pelo `tarefa_sondagens.py`) devem ser iguais aos do notebook para as mesmas sondagens (é o mesmo `wyoming.f` com a mesma entrada); confira e comente qualquer diferença.
 
 ---
 
@@ -185,33 +188,7 @@ Os valores de CAPE de Emanuel obtidos pelo MATLAB devem ser iguais aos do notebo
 
 ---
 
-## 6. 🧠 Perguntas Típicas dos Previsores da Defesa Civil de SC e Como Responder
-
-> As datas e os valores citados nesta seção são do exemplo do tutorial (SBPA, dezembro de 1995). Na sua apresentação, use as suas três sondagens e os valores da sua execução.
-
-### Pergunta 1: *"Por que o CAPE no modo reversível de Kerry Emanuel é significativamente menor que no modo pseudoadiabático tradicional?"*
-> **Resposta do Aluno:**  
-> "No processo pseudoadiabático clássico, assume-se que toda a água condensada precipita instantaneamente ($r_l = 0$), permitindo que a parcela atinja sua flutuabilidade máxima puramente em função da temperatura virtual ($T_v$). No entanto, Kerry Emanuel (1994, Cap. 4 e 6) modela a termodinâmica reversível com a conservação da entropia úmida total, onde os hidrometeoros condensados permanecem suspensos na parcela ascendente. A presença dessa água líquida adiciona uma carga gravitacional de arrasto (termo $-r_l$ na aceleração vertical de flutuabilidade), reduzindo a temperatura de densidade da parcela ($T_\rho = T_v (1 - r_l)$). Consequentemente, a aceleração líquida diminui. No nosso caso de 24/12 na superfície, o CAPE reversível de Kerry Emanuel é de $402.0\text{ J/kg}$ contra $1479.7\text{ J/kg}$ no modo pseudoadiabático."
-
----
-
-### Pergunta 2: *"Qual é o significado físico da camada quente e úmida em 925 hPa na sondagem de 24/12/1995 para a parcela mais instável?"*
-> **Resposta do Aluno:**  
-> "Na sondagem observada completa de 24/12/1995 12Z, o nível de 925 hPa registra $T = 30.0\text{ }^\circ\text{C}$ e $T_d = 25.0\text{ }^\circ\text{C}$ ($\theta_e = 377.8\text{ K}$). O diagnóstico de gradientes verticais revela que as camadas imediatamente superiores apresentam gradientes superadiabáticos: 925→910.5 hPa ($\Gamma = 17.65\text{ K/km}$) e 910.5→850 hPa ($\Gamma = 17.88\text{ K/km}$), com decréscimo de $\theta$ com a altura ($d\theta/dz = -8.1\text{ e } -8.4\text{ K/km}$) e forte descontinuidade de $\theta_e$. Essa camada excepcionalmente quente e úmida fornece à parcela mais instável (MUCAPE) uma energia de $7810.0\text{ J/kg}$ no MetPy e $7781.5\text{ J/kg}$ no algoritmo de Emanuel (1994). Por outro lado, ao realizarmos um teste de sensibilidade sem esses níveis específicos, o MUCAPE resulta em $1860.1\text{ J/kg}$, enquanto o SBCAPE permanece estável em $1860.1\text{ J/kg}$. Em vez de descartar os dados sumariamente ou forçar uma narrativa, apresentamos ambos os resultados lado a lado, demonstrando a sensibilidade do diagnóstico convectivo à amostragem vertical e à parcela de teste."
-
----
-
-### Pergunta 3: *"Por que no Hemisfério Sul a helicidade relevante é negativa e associada ao Left-Mover de Bunkers?"*
-> **Resposta do Aluno:**  
-> "Em tempestades convectivas e supercélulas, a rotação do mesociclone não se origina diretamente da força de Coriolis (cujo número de Rossby para a escala do mesociclone de ~5 km é $Ro \sim 10$ a $100$), mas sim do **tombamento (*tilting*) da vorticidade horizontal associada ao cisalhamento ambiental vertical** pela corrente ascendente convectiva:
-> $$\vec{\omega}_h = \hat{k} \times \frac{\partial \vec{V}}{\partial z}$$
-> No Hemisfério Sul, o cisalhamento com hodógrafo curvado no sentido anti-horário gera gradientes dinâmicos de pressão que favorecem a célula que se desvia para a esquerda do vento médio (Bunkers Left-Mover, LM). Pela formulação matemática da helicidade relativa à tempestade:
-> $$\text{SRH} = \int_0^h (\vec{V} - \vec{c}) \cdot \left(\hat{k} \times \frac{\partial \vec{V}}{\partial z}\right) dz$$
-> onde $\vec{c}$ é o vetor de deslocamento da tempestade, a rotação ciclônica no Hemisfério Sul resulta estritamente em valores **negativos**. Na sondagem observada de 24/12, o vetor Bunkers Left-Mover é de $11.4\text{ kt}$ de $048^\circ$, gerando $\text{SRH } 0-3\text{ km} = -123.3\text{ m}^2/\text{s}^2$ com cisalhamento bulk 0–6 km de $12.6\text{ m/s}$ ($24.5\text{ kt}$)."
-
----
-
-## 7. 📦 Recursos Prontos Disponíveis no Repositório
+## 6. 📦 Recursos Prontos Disponíveis no Repositório
 - **Métricas do exemplo do tutorial:** `metpack/metricas.json` e `metpack/metricas_notebook.json` (valores das sondagens de Porto Alegre, dezembro de 1995; os seus valores saem da sua execução).
 - **Notebook Oficial da Disciplina:** [Seminario_plot_sounding_revisado.ipynb](https://colab.research.google.com/github/reinaldohaas/tarefa-meso/blob/master/Seminario_plot_sounding_revisado.ipynb) (processamento via Siphon/MetPy, conferência com Wyoming e modelagem de parcelas de Emanuel).
 - **Apresentação PPTX Formatada:** `apresentacao_meso.pptx` (10 slides 16:9 widescreen gerados por script, com notas de orador completas para os previsores da Defesa Civil de SC).
@@ -222,6 +199,7 @@ Os valores de CAPE de Emanuel obtidos pelo MATLAB devem ser iguais aos do notebo
   - `metpack/wyoming.f`: Código clássico de Kerry Emanuel em Fortran.
   - `metpack/tcon.py`: Geração das matrizes 2D de diferença térmica de Emanuel.
   - `metpack/tarefa_sondagens.m`, `metpack/getsounding_wyoming.m`, `metpack/tcon_emanuel.m`, `metpack/skewt.m`: versão MATLAB (MATLAB Online) dos programas de Kerry Emanuel.
+  - `metpack/tarefa_sondagens.py`, `metpack/getsounding_wyoming.py`, `metpack/tcon_emanuel.py`, `metpack/skewt.py`: os mesmos programas em Python.
   - `generate_figures.py`: Geração dos perfis até 200 hPa, Skew-T e hodógrafos.
   - `generate_pptx.py`: Geração da apresentação em PowerPoint.
   - `build_index_html.py`: Compilador do `index.html`.
