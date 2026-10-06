@@ -41,10 +41,26 @@ NA = 800
 NK = 20
 NS = 1000
 
-def run_wyoming(sounding_file='sounding.txt', out_prefix='', out_dir=None):
+def run_wyoming(sounding_file='sounding.txt', out_prefix='', out_dir=None, corte=None):
+    """
+    Executa a transposição exata em Python 3 do modelo de convecção de Kerry Emanuel (1994),
+    correspondente ao programa Fortran wyoming.f.
+
+    Parâmetros:
+    - sounding_file: arquivo da radiossondagem no formato da Universidade de Wyoming.
+    - out_prefix: prefixo para os arquivos de saída.
+    - out_dir: diretório de destino.
+    - corte: None (sem corte nas matrizes de anomalia) ou -4.0 (corte do original wyoming.f:
+             TRDBAR/TPDBAR = MAX(valor, -4.0)). Padrão: None.
+    """
     if not os.path.exists(sounding_file):
-        print(f"Erro: Arquivo '{sounding_file}' não encontrado no diretório atual.")
-        return None
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        alt = os.path.join(base_dir, sounding_file)
+        if os.path.exists(alt):
+            sounding_file = alt
+        else:
+            print(f"Erro: Arquivo '{sounding_file}' não encontrado.")
+            return None
 
     # -----------------------------------------------------------------------
     # 1. LEITURA DA SONDAGEM BRUTA DE WYOMING
@@ -191,6 +207,8 @@ def run_wyoming(sounding_file='sounding.txt', out_prefix='', out_dir=None):
         spd = CPD * math.log(tg) - RD * math.log(p[i] - eg) + alv1 * rg / tg
         tvd[i] = tg * (1.0 + rg / EPS) / (1.0 + rg) - t[i] * (1.0 + r[i] / EPS) / (1.0 + r[i])
         if p[i] < 100.0: tvd[i] = 0.0
+        rg_wb = rg
+        tg_wb = tg
 
         # Pressão do NCL (LCL) segundo Kerry Emanuel
         rh = r[i] / rs
@@ -262,6 +280,41 @@ def run_wyoming(sounding_file='sounding.txt', out_prefix='', out_dir=None):
                 rg0 = rg
                 tg0 = tg
                 sum_cw = cpw
+
+        # 3.3. Descida da Corrente Descendente (Downdraft - Emanuel 1994, linhas 285-325 do wyoming.f)
+        if i > 0:
+            sum2 = 0.0
+            rgd0 = rg_wb
+            tgd0 = tg_wb
+            for j in range(i - 1, -1, -1):
+                rs_j = EPS * es[j] / (p[j] - es[j])
+                alv_j = ALV0 - CPVMCL * (t[j] - 273.15)
+                slp = (CPD + rs_j * CL + alv_j * alv_j * rs_j / (RV * t[j] * t[j])) / t[j]
+                tg = t[j]
+                rg = rs_j
+                for _ in range(20):
+                    cpw = sum2 + CL * 0.5 * (rgd0 + rg) * (math.log(tg) - math.log(tgd0))
+                    em = rg * p[j] / (EPS + rg)
+                    alv_k = ALV0 - CPVMCL * (tg - 273.15)
+                    spg = CPD * math.log(tg) - RD * math.log(p[j] - em) + cpw + alv_k * rg / tg
+                    tg = tg + (spd - spg) / slp
+                    tc = tg - 273.15
+                    enew = 6.112 * math.exp(17.67 * tc / (243.5 + tc))
+                    rg = EPS * enew / (p[j] - enew)
+
+                sum2 = cpw
+                tgd0 = tg
+                rgd0 = rg
+                tlp[i][j] = tg
+                tlvp[i][j] = tg * (1.0 + rg / EPS) / (1.0 + rg)
+                tvpdif[i][j] = tlvp[i][j] - t[j] * (1.0 + r[j] / EPS) / (1.0 + r[j])
+                if p[i] < 100.0:
+                    tvpdif[i][j] = 0.0
+                tvpdif[i][j] = min(tvpdif[i][j], 0.0)
+                tlr[i][j] = t[j]
+                tlvr[i][j] = t[j]
+                tvrdif[i][j] = 0.0
+                lw[i][j] = 0.0
 
     # -----------------------------------------------------------------------
     # 4. INTEGRAÇÃO DE CAPE, CIN (NA/PA) E DCAPE
@@ -359,22 +412,28 @@ def run_wyoming(sounding_file='sounding.txt', out_prefix='', out_dir=None):
         with open(os.path.join(target_dir, 'porig.out'), 'w') as f_po:
             for pli in pl: f_po.write(f"{pli:.2f}\n")
 
+    def apply_corte(val):
+        if corte is not None:
+            return max(val, corte)
+        return val
+
     # Matrizes de Anomalia Térmica (Linhas: nível elevado j; Colunas: nível de origem i)
+    # wyoming.f (linhas 505-535) armazena as anomalias para j >= i (ascensão convectiva da parcela)
     with open(get_path('tdifrev.out'), 'w') as f_tr:
         for j in range(n):
-            f_tr.write(" ".join(f"{tvrdif[i][j]:8.3f}" for i in range(actual_nk)) + "\n")
+            f_tr.write(" ".join(f"{apply_corte(tvrdif[i][j] if j >= i else 0.0):8.3f}" for i in range(actual_nk)) + "\n")
     if out_prefix:
         with open(os.path.join(target_dir, 'tdifrev.out'), 'w') as f_tr:
             for j in range(n):
-                f_tr.write(" ".join(f"{tvrdif[i][j]:8.3f}" for i in range(actual_nk)) + "\n")
+                f_tr.write(" ".join(f"{apply_corte(tvrdif[i][j] if j >= i else 0.0):8.3f}" for i in range(actual_nk)) + "\n")
 
     with open(get_path('tdifpseudo.out'), 'w') as f_tp:
         for j in range(n):
-            f_tp.write(" ".join(f"{tvpdif[i][j]:8.3f}" for i in range(actual_nk)) + "\n")
+            f_tp.write(" ".join(f"{apply_corte(tvpdif[i][j] if j >= i else 0.0):8.3f}" for i in range(actual_nk)) + "\n")
     if out_prefix:
         with open(os.path.join(target_dir, 'tdifpseudo.out'), 'w') as f_tp:
             for j in range(n):
-                f_tp.write(" ".join(f"{tvpdif[i][j]:8.3f}" for i in range(actual_nk)) + "\n")
+                f_tp.write(" ".join(f"{apply_corte(tvpdif[i][j] if j >= i else 0.0):8.3f}" for i in range(actual_nk)) + "\n")
 
     # modsound.txt para alimentação direta do skewt.m e skewt.py
     mod_lines = []

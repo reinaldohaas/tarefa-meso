@@ -19,21 +19,36 @@ import matplotlib.pyplot as plt
 from skewt import skewt
 from wyoming import run_wyoming
 
-def run_tcon(show=False):
+def run_tcon(sounding_file=None, show=False):
+    # Garante que a execução ocorra no diretório metpack/ para caminhos relativos
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    if base_dir and os.path.isdir(base_dir):
+        os.chdir(base_dir)
+
+    # Resolução de argumentos da linha de comando
+    if sounding_file is None and len(sys.argv) > 1:
+        arg = sys.argv[1].strip()
+        if arg in ('19951212', '19951223', '19951224'):
+            sounding_file = f"sounding_{arg}_12Z.txt"
+        elif os.path.exists(arg):
+            sounding_file = arg
+
+    snd = sounding_file if sounding_file else 'sounding.txt'
+
     # 1. Garante que as saídas do wyoming estão geradas e atualizadas
     if not (os.path.exists('p.out') and os.path.exists('porig.out') and os.path.exists('tdifrev.out')):
-        print("-> tcon: Arquivos de saída não encontrados. Executando wyoming.py...")
-        run_wyoming()
+        print(f"-> tcon: Arquivos de saída não encontrados. Executando wyoming.py [{snd}]...")
+        run_wyoming(snd)
 
     # 2. Leitura do cabeçalho (header.txt)
-    tit = "Radiossondagem"
+    tit = "SBPA - 24/12/1995 12Z"
     if os.path.exists('header.txt'):
         try:
             with open('header.txt', 'r', encoding='utf-8') as f:
                 parts = f.read().split()
                 if len(parts) >= 5:
                     st_id, hr, mo, dy, yr = parts[0], parts[1], parts[2], parts[3], parts[4]
-                    tit = f"Estação {st_id} - {int(hr):02d}Z {int(dy):02d}/{int(mo):02d}/{int(yr):04d}"
+                    tit = f"Estação {st_id} - {int(dy):02d}/{int(mo):02d}/{int(yr):04d} 12Z"
         except Exception:
             pass
 

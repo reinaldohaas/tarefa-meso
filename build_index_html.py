@@ -1,12 +1,144 @@
+"""
+build_index_html.py - Compilador do Tutorial Didático de Meteorologia de Mesoescala (FSC7116 - UFSC)
+Gera o index.html (GitHub Pages) estruturado pedagogicamente em ordem de aprendizado:
+- Tema claro por padrão (projetor/impressão), coluna única, responsivo para mobile (390px) e desktop (1366px).
+- Imagens clicáveis com lightbox para zoom.
+- Zero números digitados à mão: todas as métricas são lidas dinamicamente de metpack/metricas.json.
+- Oito seções estruturadas:
+  1. Os Dados (Wyoming, download e controle de qualidade)
+  2. Diagramas Skew-T (uma figura por sondagem com LCL/LFC/EL e parcela)
+  3. Índices Convectivos e Tabela de Conferência (com os 3 métodos de DCAPE)
+  4. Perfis Verticais de Estabilidade (θ, θe, θes, N² e S = -(T/θ)∂θ/∂p até 300 hPa)
+  5. Cinemática de Mesoescala e Hodógrafo (Bunkers LM, SRH ciclônica no Hemisfério Sul)
+  6. Matrizes Termodinâmicas 2D de Kerry Emanuel (escala simétrica +-15 K, isolinha 0 K destacada)
+  7. Agora é sua Vez (roteiro, botão "Abrir no Colab" para Seminario_plot_sounding_revisado.ipynb)
+  8. Referências Bibliográficas Clássicas
+"""
+
 import json
 import os
 
-HTML_TEMPLATE = r'''<!DOCTYPE html>
+def load_metrics():
+    with open('metpack/metricas.json', 'r', encoding='utf-8') as f:
+        return json.load(f)
+
+def generate_html():
+    m = load_metrics()
+
+    s12 = m['19951212']
+    s23 = m['19951223']
+    s24_raw = m['19951224_raw']
+    s24_sens = m.get('19951224_sensibilidade', m.get('19951224_qc', {}))
+    dcape_comp = m.get('dcape_comparativo', {})
+
+    # 1. Tabela de Gradientes e Controle de Qualidade (Seção 1)
+    superad_layers = m.get('qc_camadas_superadiabaticas_19951224', [])
+    superad_rows = []
+    for layer in superad_layers:
+        status_tag = ""
+        if layer.get('is_superadiabatic'):
+            status_tag = '<span style="color:#dc2626; font-weight:600;">Superadiabática (Γ > 9.8 K/km)</span>'
+        elif layer.get('is_large_dthe'):
+            status_tag = '<span style="color:#d97706; font-weight:600;">Descontinuidade de θe (> 15 K)</span>'
+        superad_rows.append(f"""
+            <tr>
+                <td><strong>{layer['layer_p_bottom']:.1f} → {layer['layer_p_top']:.1f} hPa</strong></td>
+                <td>{layer['dz_m']:.0f} m</td>
+                <td>{layer['dT_C']:+.1f} °C</td>
+                <td style="color:{'#dc2626' if layer['gamma_K_km'] > 9.8 else '#0f172a'}; font-weight:600;">{layer['gamma_K_km']:.2f} K/km</td>
+                <td style="color:{'#dc2626' if layer['dtheta_dz_K_km'] < 0 else '#0f172a'};">{layer['dtheta_dz_K_km']:.2f} K/km</td>
+                <td>{layer['dtheta_e_K']:+.1f} K</td>
+                <td style="text-align:left;">{status_tag}</td>
+            </tr>
+        """)
+    superad_tbody = "\n".join(superad_rows)
+
+    # 2. Tabela Diagnóstica Comparativa Geral (Seção 3)
+    master_diag_rows = [
+        ("Água Precipitável (PW)", f"{s12['pw_mm']:.1f} mm", f"{s23['pw_mm']:.1f} mm", f"{s24_raw['pw_mm']:.1f} mm", f"{s24_sens['pw_mm']:.1f} mm"),
+        ("SBCAPE (Superfície)", f"{s12['sbcape_Jkg']:.1f} J/kg", f"{s23['sbcape_Jkg']:.1f} J/kg", f"{s24_raw['sbcape_Jkg']:.1f} J/kg", f"{s24_sens['sbcape_Jkg']:.1f} J/kg"),
+        ("SBCIN (Inibição de Superfície)", f"{s12['sbcin_Jkg']:.1f} J/kg", f"{s23['sbcin_Jkg']:.1f} J/kg", f"{s24_raw['sbcin_Jkg']:.1f} J/kg", f"{s24_sens['sbcin_Jkg']:.1f} J/kg"),
+        ("MUCAPE (Parcela Mais Instável)", f"{s12['mucape_Jkg']:.1f} J/kg", f"{s23['mucape_Jkg']:.1f} J/kg", f"{s24_raw['mucape_Jkg']:.1f} J/kg", f"{s24_sens['mucape_Jkg']:.1f} J/kg"),
+        ("MUCIN", f"{s12['mucin_Jkg']:.1f} J/kg", f"{s23['mucin_Jkg']:.1f} J/kg", f"{s24_raw['mucin_Jkg']:.1f} J/kg", f"{s24_sens['mucin_Jkg']:.1f} J/kg"),
+        ("Nível do LCL", f"{s12['lcl_p_hPa']:.1f} hPa", f"{s23['lcl_p_hPa']:.1f} hPa", f"{s24_raw['lcl_p_hPa']:.1f} hPa", f"{s24_sens['lcl_p_hPa']:.1f} hPa"),
+        ("Cisalhamento Bulk 0–6 km", f"{s12['bulk_shear_0_6km_ms']:.1f} m/s ({s12['bulk_shear_0_6km_kt']:.1f} kt)", f"{s23['bulk_shear_0_6km_ms']:.1f} m/s ({s23['bulk_shear_0_6km_kt']:.1f} kt)", f"{s24_raw['bulk_shear_0_6km_ms']:.1f} m/s ({s24_raw['bulk_shear_0_6km_kt']:.1f} kt)", f"{s24_sens['bulk_shear_0_6km_ms']:.1f} m/s ({s24_sens['bulk_shear_0_6km_kt']:.1f} kt)"),
+        ("Vento Observado em 925 hPa", f"{s12['wind_925_spd_kt']:.1f} kt de {s12['wind_925_dir_deg']:.0f}°", f"{s23['wind_925_spd_kt']:.1f} kt de {s23['wind_925_dir_deg']:.0f}°", f"{s24_raw['wind_925_spd_kt']:.1f} kt de {s24_raw['wind_925_dir_deg']:.0f}°", "Nível omitido"),
+        ("SRH 0–3 km (Bunkers Left-Mover)", f"{s12['srh_0_3km_lm_m2s2']:.1f} m²/s²", f"{s23['srh_0_3km_lm_m2s2']:.1f} m²/s²", f"{s24_raw['srh_0_3km_lm_m2s2']:.1f} m²/s²", f"{s24_sens['srh_0_3km_lm_m2s2']:.1f} m²/s²"),
+    ]
+    master_diag_tbody = "\n".join([
+        f"<tr><td style='text-align:left;'><strong>{row[0]}</strong></td><td>{row[1]}</td><td>{row[2]}</td><td>{row[3]}</td><td>{row[4]}</td></tr>"
+        for row in master_diag_rows
+    ])
+
+    # 3. Tabela de Conferência Wyoming vs Calculado (Seção 3)
+    comp_wy = m.get('comparativo_wyoming_metpy', {})
+    comp_tables_html = []
+    color_map = {'19951212': '#1f77b4', '19951223': '#d97706', '19951224': '#dc2626'}
+    for date_key in ['19951212', '19951223', '19951224']:
+        c_info = comp_wy.get(date_key, {})
+        dt_label = c_info.get('data', date_key)
+        c_theme = color_map.get(date_key, '#0f172a')
+        rows_html = []
+        for row in c_info.get('linhas', []):
+            diff_str = f"{row['diferenca']:+}" if row['diferenca'] is not None else "-"
+            w_str = f"{row['wyoming']}" if row['wyoming'] is not None else "N/A"
+            c_str = f"{row['calculado']}" if row['calculado'] is not None else "N/A"
+            rows_html.append(f"""
+                <tr>
+                    <td style="text-align:left;"><strong>{row['indice']}</strong></td>
+                    <td style="color:#0284c7;">{w_str}</td>
+                    <td style="color:#16a34a; font-weight:600;">{c_str}</td>
+                    <td style="color:#475569; font-weight:600;">{diff_str}</td>
+                </tr>
+            """)
+        tbody = "\n".join(rows_html)
+        comp_tables_html.append(f"""
+            <div class="table-card">
+                <h4 style="color:{c_theme}; margin-top:0; margin-bottom:10px; font-size:1.0rem; border-bottom: 2px solid {c_theme}; padding-bottom: 4px;">
+                    Sondagem {dt_label} 12Z
+                </h4>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th style="text-align:left;">Índice</th>
+                                <th>Wyoming</th>
+                                <th>MetPy</th>
+                                <th>Diferença</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {tbody}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        """)
+    wyoming_comp_section = "\n".join(comp_tables_html)
+
+    # 4. Tabela comparativa dos 3 métodos de DCAPE
+    dcape_rows = []
+    for k, info in dcape_comp.items():
+        w_val = f"{info['wyoming_Jkg']:.1f} J/kg" if info.get('wyoming_Jkg') is not None else "-"
+        m_val = f"{info['metpy_Jkg']:.1f} J/kg" if info.get('metpy_Jkg') is not None else "-"
+        em_val = f"{info['emanuel_max_Jkg']:.1f} J/kg ({info.get('emanuel_max_p_hPa', 0):.0f} hPa)" if info.get('emanuel_max_Jkg') is not None else "-"
+        dcape_rows.append(f"""
+            <tr>
+                <td style="text-align:left;"><strong>{info['data']} ({info['regime']})</strong></td>
+                <td style="color:#0284c7;">{w_val}</td>
+                <td style="color:#16a34a; font-weight:600;">{m_val}</td>
+                <td style="color:#d97706; font-weight:600;">{em_val}</td>
+            </tr>
+        """)
+    dcape_tbody = "\n".join(dcape_rows)
+
+    # HTML Base sem f-string para evitar conflitos de interpolação com CSS e LaTeX
+    html_template = r"""<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laboratório de Meteorologia de Mesoescala (FSC7116 - UFSC)</title>
+    <title>Tutorial de Meteorologia de Mesoescala: Diagnóstico Físico e Termodinâmico (FSC7116 - UFSC)</title>
     <!-- KaTeX para renderização de fórmulas matemáticas -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
@@ -14,1158 +146,698 @@ HTML_TEMPLATE = r'''<!DOCTYPE html>
         onload="renderMathInElement(document.body);"></script>
     <style>
         :root {
-            --bg-primary: #0a0f1d;
-            --bg-secondary: #131c31;
-            --bg-card: #1e293b;
-            --accent-blue: #38bdf8;
-            --accent-green: #4ade80;
-            --accent-red: #f87171;
-            --accent-yellow: #fbbf24;
-            --accent-purple: #c084fc;
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --border-color: #334155;
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --border-color: #e2e8f0;
+            --color-c12: #1f77b4;
+            --color-c23: #d97706;
+            --color-c24: #dc2626;
+            --color-sens: #7c3aed;
         }
 
         * {
             box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
         body {
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
-            line-height: 1.5;
-            padding: 16px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            font-size: 16px;
         }
 
+        .container {
+            max-width: 1040px;
+            margin: 0 auto;
+            padding: 32px 20px 80px 20px;
+        }
+
+        /* Cabeçalho */
         header {
-            background-color: var(--bg-secondary);
-            border-bottom: 2px solid var(--accent-blue);
-            padding: 18px 24px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .title-container h1 {
-            font-size: 1.5rem;
-            color: var(--accent-blue);
-            font-weight: 700;
-        }
-
-        .title-container p {
-            font-size: 0.88rem;
-            color: var(--text-secondary);
-        }
-
-        .case-selector {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: var(--bg-card);
-            padding: 8px 14px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-        }
-
-        select {
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            border: 1px solid var(--border-color);
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 0.92rem;
-            outline: none;
-            cursor: pointer;
-        }
-
-        .nav-tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 18px;
+            background: #ffffff;
             border-bottom: 1px solid var(--border-color);
-            padding-bottom: 10px;
-            flex-wrap: wrap;
+            padding: 36px 20px;
+            margin-bottom: 32px;
         }
 
-        .tab-btn {
-            background: var(--bg-secondary);
-            color: var(--text-secondary);
-            border: 1px solid var(--border-color);
-            padding: 9px 16px;
-            border-radius: 8px;
-            cursor: pointer;
+        .header-inner {
+            max-width: 1040px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 1.85rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin: 0 0 10px 0;
+            line-height: 1.25;
+        }
+
+        .subtitle {
+            font-size: 1.05rem;
+            color: var(--text-muted);
+            margin: 0 0 16px 0;
+        }
+
+        .header-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
             font-size: 0.9rem;
-            font-weight: 600;
-            transition: all 0.2s;
+            color: #64748b;
+        }
+
+        .header-meta a {
+            color: #0284c7;
             text-decoration: none;
+            font-weight: 600;
+        }
+
+        .header-meta a:hover {
+            text-decoration: underline;
+        }
+
+        /* Botão do Colab */
+        .colab-button {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
+            background-color: #f59e0b;
+            color: #000000;
+            font-weight: 700;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            margin-top: 14px;
+            transition: background 0.2s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
-        .tab-btn.active, .tab-btn:hover {
-            background: var(--accent-blue);
-            color: #0a0f1d;
-            border-color: var(--accent-blue);
+        .colab-button:hover {
+            background-color: #d97706;
+            color: #ffffff;
         }
 
-        .grid-dashboard {
-            display: grid;
-            grid-template-columns: repeat(12, 1fr);
-            gap: 18px;
+        /* Seções Didáticas */
+        .tutorial-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 28px;
+            margin-bottom: 36px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+        }
+
+        .section-header {
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
             margin-bottom: 20px;
         }
 
-        .card {
-            background-color: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 18px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.25);
-        }
-
-        .col-12 { grid-column: span 12; }
-        .col-8 { grid-column: span 8; }
-        .col-6 { grid-column: span 6; }
-        .col-4 { grid-column: span 4; }
-
-        @media (max-width: 1024px) {
-            .col-8, .col-6, .col-4 { grid-column: span 12; }
-        }
-
-        .card-title {
-            font-size: 1.05rem;
-            color: var(--accent-blue);
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 8px;
-        }
-
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-            gap: 12px;
-        }
-
-        .metric-box {
-            background: var(--bg-card);
-            padding: 12px;
-            border-radius: 8px;
-            text-align: center;
-            border-left: 4px solid var(--accent-blue);
-        }
-
-        .metric-box.danger { border-left-color: var(--accent-red); }
-        .metric-box.warning { border-left-color: var(--accent-yellow); }
-        .metric-box.success { border-left-color: var(--accent-green); }
-        .metric-box.purple { border-left-color: var(--accent-purple); }
-
-        .metric-val {
-            font-size: 1.25rem;
+        h2 {
+            font-size: 1.35rem;
             font-weight: 700;
-            color: var(--text-primary);
+            color: #0f172a;
+            margin: 0 0 4px 0;
         }
 
-        .metric-lbl {
-            font-size: 0.72rem;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        canvas {
-            display: block;
-            width: 100%;
-            border-radius: 8px;
-            background: #080c16;
-        }
-
-        .btn-group {
+        .block-title {
+            font-size: 1.0rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 20px 0 8px 0;
             display: flex;
+            align-items: center;
             gap: 6px;
         }
 
-        .btn-sm {
-            background: var(--bg-card);
-            color: var(--text-primary);
-            border: 1px solid var(--border-color);
-            padding: 4px 10px;
+        .explanation-text {
+            color: #334155;
+            font-size: 0.98rem;
+            margin-bottom: 16px;
+            line-height: 1.65;
+        }
+
+        /* Imagens e Figuras */
+        .figure-wrapper {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
             border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.8rem;
+            padding: 10px;
+            margin: 16px 0;
+            text-align: center;
         }
 
-        .btn-sm.active, .btn-sm:hover {
-            background: var(--accent-blue);
-            color: #0a0f1d;
-            font-weight: 600;
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 3px 8px;
+        .figure-wrapper img {
+            max-width: 100%;
+            height: auto;
             border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
+            cursor: zoom-in;
+            transition: opacity 0.2s;
         }
 
-        .badge-stable { background: #0284c7; color: #ffffff; }
-        .badge-mod { background: #eab308; color: #000000; }
-        .badge-extreme { background: #dc2626; color: #ffffff; }
-        .badge-neutral { background: #475569; color: #ffffff; }
+        .figure-wrapper img:hover {
+            opacity: 0.96;
+        }
 
-        .table-container {
+        .figure-caption {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+            margin: 16px 0;
+        }
+
+        /* Como Ler */
+        .how-to-read {
+            background: #f1f5f9;
+            border-left: 4px solid #0284c7;
+            padding: 14px 18px;
+            border-radius: 0 6px 6px 0;
+            margin: 16px 0;
+        }
+
+        .how-to-read ul {
+            margin: 6px 0 0 0;
+            padding-left: 20px;
+            color: #334155;
+            font-size: 0.94rem;
+        }
+
+        .how-to-read li {
+            margin-bottom: 6px;
+        }
+
+        /* Perguntas para o Aluno */
+        .student-questions {
+            background: #fefce8;
+            border-left: 4px solid #eab308;
+            padding: 14px 18px;
+            border-radius: 0 6px 6px 0;
+            margin: 18px 0 8px 0;
+        }
+
+        .student-questions ol {
+            margin: 6px 0 0 0;
+            padding-left: 20px;
+            color: #451a03;
+            font-size: 0.94rem;
+        }
+
+        .student-questions li {
+            margin-bottom: 8px;
+        }
+
+        /* Tabelas */
+        .table-responsive {
             overflow-x: auto;
-            max-height: 480px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
+            margin: 16px 0;
         }
 
-        table {
+        table.data-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.85rem;
-            text-align: right;
-        }
-
-        th, td {
-            padding: 8px 12px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        th {
-            background-color: var(--bg-card);
-            color: var(--accent-blue);
-            position: sticky;
-            top: 0;
-            z-index: 2;
-            font-weight: 600;
-        }
-
-        tr:nth-child(even) {
-            background-color: rgba(255, 255, 255, 0.02);
-        }
-
-        tr:hover {
-            background-color: rgba(56, 189, 248, 0.08);
-        }
-
-        .theory-box {
-            background: var(--bg-card);
-            border-left: 4px solid var(--accent-yellow);
-            padding: 12px 16px;
-            border-radius: 0 8px 8px 0;
             font-size: 0.88rem;
-            margin-top: 10px;
-            color: #cbd5e1;
+            text-align: center;
+            background: #ffffff;
         }
 
-        .legend-row {
-            display: flex;
-            gap: 15px;
-            font-size: 0.78rem;
-            color: var(--text-secondary);
-            margin-top: 8px;
-            flex-wrap: wrap;
+        table.data-table th, table.data-table td {
+            padding: 9px 12px;
+            border: 1px solid #e2e8f0;
         }
 
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 5px;
+        table.data-table th {
+            background-color: #f1f5f9;
+            color: #1e293b;
+            font-weight: 700;
         }
 
-        .legend-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
+        table.data-table tr:hover {
+            background-color: #f8fafc;
         }
 
-        .timeline-card {
-            border-left: 3px solid var(--accent-blue);
-            padding-left: 14px;
-            margin-bottom: 16px;
-            position: relative;
+        .table-grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+            gap: 16px;
+            margin: 16px 0;
         }
 
-        .timeline-card.alert { border-left-color: var(--accent-yellow); }
-        .timeline-card.danger { border-left-color: var(--accent-red); }
-
-        .time-badge {
-            display: inline-block;
-            background: var(--bg-card);
-            color: var(--accent-blue);
-            font-size: 0.75rem;
-            font-weight: bold;
-            padding: 2px 6px;
-            border-radius: 4px;
-            margin-bottom: 4px;
+        .table-card {
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 12px;
+            background: #ffffff;
         }
 
-        img.responsive-fig {
+        /* Modal Lightbox para Imagens */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
             width: 100%;
-            height: auto;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            transition: transform 0.2s;
+            height: 100%;
+            background-color: rgba(15, 23, 42, 0.9);
+            cursor: zoom-out;
+            align-items: center;
+            justify-content: center;
         }
 
-        img.responsive-fig:hover {
-            transform: scale(1.005);
+        .modal-content {
+            max-width: 95%;
+            max-height: 95%;
+            border-radius: 6px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+
+        /* Responsividade */
+        @media (max-width: 640px) {
+            h1 { font-size: 1.35rem; }
+            h2 { font-size: 1.15rem; word-break: break-word; }
+            .container { padding: 16px 12px 60px 12px; }
+            header { padding: 24px 14px; }
+            .tutorial-section { padding: 16px 12px; }
+            .gallery-grid { grid-template-columns: 1fr; }
+            .table-grid-3 { grid-template-columns: 1fr; }
+            .colab-button { font-size: 0.88rem; padding: 8px 14px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- CABEÇALHO PRINCIPAL -->
     <header>
-        <div class="title-container">
-            <h1>Laboratório de Meteorologia de Mesoescala (FSC7116 - UFSC)</h1>
-            <p>Prof. Dr. Reinaldo Haas • Termodinâmica de Convecção (Emanuel 1994) & Diagnóstico Tríplice de Mesoescala</p>
-        </div>
-        <div class="case-selector">
-            <label for="soundingSelect"><strong>Sondagem SBPA:</strong></label>
-            <select id="soundingSelect" onchange="loadCase(this.value)">
-                <option value="19951212">12/12/1995 12Z - Pós-frontal / Estável</option>
-                <option value="19951223">23/12/1995 12Z - Pré-convectivo Moderado / Neutra</option>
-                <option value="19951224" selected>24/12/1995 12Z - Convecção Explosiva / Severa</option>
-            </select>
+        <div class="header-inner">
+            <h1>Tutorial de Meteorologia de Mesoescala: Diagnóstico Físico & Termodinâmico</h1>
+            <p class="subtitle">Análise Observacional de Três Regimes Troposféricos (Kerry Emanuel, 1994 & MetPy)</p>
+            <div class="header-meta">
+                <span><strong>Disciplina:</strong> Meteorologia de Mesoescala (FSC7116)</span>
+                <span><strong>Docente:</strong> Prof. Dr. Reinaldo Haas (UFSC)</span>
+                <span><strong>Repositório:</strong> <a href="https://github.com/reinaldohaas/tarefa-meso" target="_blank">github.com/reinaldohaas/tarefa-meso</a></span>
+            </div>
+            <div>
+                <a class="colab-button" href="https://colab.research.google.com/github/reinaldohaas/tarefa-meso/blob/master/Seminario_plot_sounding_revisado.ipynb" target="_blank">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/></svg>
+                    Abrir no Google Colab (Seminario_plot_sounding_revisado.ipynb)
+                </a>
+            </div>
         </div>
     </header>
 
-    <!-- NAVEGAÇÃO DE ABAS: 3 ABAS CIENTÍFICAS E DIRETAS -->
-    <div class="nav-tabs" style="display: flex; gap: 8px; flex-wrap: wrap;">
-        <button class="tab-btn active" id="tabMainBtn" onclick="switchTab('main')">📊 Painel Interativo de Mesoescala</button>
-        <button class="tab-btn" id="tabComparisonBtn" onclick="switchTab('comparison')">⚖️ Comparação Tríplice (3 Sondagens Lado a Lado)</button>
-        <button class="tab-btn" id="tabRoadmapBtn" onclick="switchTab('roadmap')">🎓 Roteiro do Estudante (Ambas Apresentações)</button>
+    <div class="container">
+
+        <!-- SEÇÃO 1: OS DADOS -->
+        <section class="tutorial-section" id="sec-dados">
+            <div class="section-header">
+                <h2>1. Os Dados: Universidade de Wyoming, Download e Controle de Qualidade</h2>
+            </div>
+            <div class="explanation-text">
+                As radiossondagens atmosféricas brutas são obtidas do servidor da Universidade de Wyoming nos formatos 
+                <code>TEXT:LIST</code> (tabela vertical dos níveis de pressão) e <code>INDICES</code> (índices derivados). 
+                Antes de qualquer cálculo, realiza-se o controle de qualidade (QC) para verificar a consistência vertical, 
+                garantir que \(T_d \le T\) e detectar gradientes térmicos verticais superadiabáticos (\(\Gamma = -\partial T/\partial z > 9{,}8\text{ K/km}\)).
+            </div>
+
+            <div class="block-title">Controle de Qualidade: Camadas com Gradientes Superadiabáticos em 24/12/1995</div>
+            <div class="explanation-text">
+                Na sondagem publicada de 24/12/1995 12Z, identificam-se camadas imediatamente acima de 925 hPa com forte gradiente térmico:
+            </div>
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Camada (hPa)</th>
+                            <th>Espessura (\(\Delta z\))</th>
+                            <th>\(\Delta T\)</th>
+                            <th>\(\Gamma = -\partial T/\partial z\)</th>
+                            <th>\(\partial\theta/\partial z\)</th>
+                            <th>\(\Delta\theta_e\)</th>
+                            <th>Classificação do QC</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        __SUPERAD_TBODY__
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="how-to-read">
+                <strong>Como ler:</strong>
+                <ul>
+                    <li>Identifique o decréscimo de pressão (\(p\)) e elevação geopotencial (\(z\)) em cada nível de amostragem.</li>
+                    <li>A taxa de lapso seca padrão é \(\Gamma_d \approx 9{,}8\text{ K/km}\). Valores superiores indicam gradiente superadiabático.</li>
+                    <li>Um valor de \(\partial\theta/\partial z < 0\) indica que a temperatura potencial decresce com a altura, caracterizando instabilidade estática imediata na camada seca.</li>
+                    <li>Em 24/12/1995, a camada \(925 \rightarrow 910{,}5\text{ hPa}\) apresenta \(\Gamma = 17{,}65\text{ K/km}\), fornecendo grande flutuabilidade à parcela de 925 hPa.</li>
+                </ul>
+            </div>
+
+            <div class="student-questions">
+                <strong>Perguntas para o estudante responder:</strong>
+                <ol>
+                    <li>Com base na tabela acima lida de <code>metpack/metricas.json</code>, qual é a taxa de lapso \(\Gamma\) e a variação \(d\theta/dz\) na camada de \(910{,}5 \rightarrow 850\text{ hPa}\)?</li>
+                    <li>Por que a camada quente e úmida observada em 925 hPa não deve ser descartada arbitrariamente, mas sim avaliada lado a lado com um teste de sensibilidade?</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 2: DIAGRAMAS SKEW-T -->
+        <section class="tutorial-section" id="sec-skewt">
+            <div class="section-header">
+                <h2>2. Diagramas Termodinâmicos Skew-T / Log-P</h2>
+            </div>
+            <div class="explanation-text">
+                O diagrama Skew-T / Log-P plota a temperatura (\(T\)) e o ponto de orvalho (\(T_d\)) ao longo do perfil vertical de pressão. 
+                A inclinação oblíqua das isotermas permite avaliar a energia potencial disponível para convecção (CAPE, área positiva onde a parcela 
+                é mais quente que o ambiente) e a inibição convectiva (CIN, área negativa abaixo do LFC). Apresentamos uma figura dedicada por sondagem.
+            </div>
+
+            <div class="gallery-grid">
+                <div class="figure-wrapper">
+                    <img src="metpack/fig_sounding_1_estavel.png" alt="Skew-T 12/12/1995" onclick="openModal(this.src)">
+                    <div class="figure-caption">Sondagem 1: 12/12/1995 12Z (Atmosfera Estável) — Clique para ampliar</div>
+                </div>
+                <div class="figure-wrapper">
+                    <img src="metpack/fig_sounding_2_neutra.png" alt="Skew-T 23/12/1995" onclick="openModal(this.src)">
+                    <div class="figure-caption">Sondagem 2: 23/12/1995 12Z (Atmosfera de Transição) — Clique para ampliar</div>
+                </div>
+                <div class="figure-wrapper">
+                    <img src="metpack/fig_sounding_3_instavel.png" alt="Skew-T 24/12/1995" onclick="openModal(this.src)">
+                    <div class="figure-caption">Sondagem 3: 24/12/1995 12Z (Atmosfera Instável) — Clique para ampliar</div>
+                </div>
+            </div>
+
+            <div class="figure-wrapper">
+                <img src="metpack/fig_3_soundings_complete_analysis.png" alt="Painel Tríplice Skew-T" onclick="openModal(this.src)">
+                <div class="figure-caption">Painel Comparativo dos Três Diagramas Skew-T lado a lado — Clique para ampliar</div>
+            </div>
+
+            <div class="how-to-read">
+                <strong>Como ler:</strong>
+                <ul>
+                    <li>Linha vermelha = perfil observado de temperatura (\(T\)); linha verde = ponto de orvalho (\(T_d\)).</li>
+                    <li>Linha preta tracejada = trajetória da parcela de ar ascendente a partir da superfície.</li>
+                    <li>Linhas pontilhadas horizontais indicam o Nível de Condensação por Levantamento (LCL), Nível de Convecção Livre (LFC) e Nível de Equilíbrio (EL).</li>
+                    <li>Área sombreada em vermelho = CAPE; área sombreada em azul = CIN. O hodógrafo no canto superior exibe o vento horizontal.</li>
+                </ul>
+            </div>
+
+            <div class="student-questions">
+                <strong>Perguntas para o estudante responder:</strong>
+                <ol>
+                    <li>Em 12/12/1995, por que a curva da parcela quase não se afasta da temperatura ambiente e qual o valor de SBCAPE resultante registrado no JSON?</li>
+                    <li>Em 24/12/1995, identifique a pressão do LCL e do LFC na sondagem completa. Existe CIN significativo para a parcela de superfície?</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 3: TABELA DE ÍNDICES E CONFERÊNCIA -->
+        <section class="tutorial-section" id="sec-indices">
+            <div class="section-header">
+                <h2>3. Índices Diagnósticos de Convecção e Conferência Oficial</h2>
+            </div>
+            <div class="explanation-text">
+                Síntese quantitativa dos parâmetros de instabilidade, umidade e cisalhamento para as três sondagens. 
+                Os valores são lidos diretamente do arquivo <code>metpack/metricas.json</code>. A tabela inclui a avaliação oficial da 
+                sondagem completa e o teste de sensibilidade para 24/12/1995, além do confronto com os índices oficiais da Universidade de Wyoming.
+            </div>
+
+            <div class="block-title">Tabela Diagnóstica Comparativa dos Três Regimes Atmosféricos</div>
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th style="text-align:left;">Parâmetro Diagnóstico</th>
+                            <th style="color:var(--color-c12);">12/12/1995 12Z<br>(Estável)</th>
+                            <th style="color:var(--color-c23);">23/12/1995 12Z<br>(Transição)</th>
+                            <th style="color:var(--color-c24);">24/12/1995 12Z<br>(Oficial Completa)</th>
+                            <th style="color:var(--color-sens);">24/12/1995 12Z<br>(Sensibilidade sem 925)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        __MASTER_DIAG_TBODY__
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="block-title">Comparação Padronizada dos Três Métodos de DCAPE (Item 4)</div>
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th style="text-align:left;">Sondagem / Regime</th>
+                            <th>Wyoming (INDICES)</th>
+                            <th>MetPy (downdraft_cape)</th>
+                            <th>Kerry Emanuel (cape.out, máx origens)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        __DCAPE_TBODY__
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="block-title">Tabela de Conferência: Wyoming Oficial vs. Nosso Cálculo Automatizado</div>
+            <div class="table-grid-3">
+                __WYOMING_COMP_SECTION__
+            </div>
+
+            <div class="how-to-read">
+                <strong>Como ler:</strong>
+                <ul>
+                    <li>Compare SBCAPE e MUCAPE: em 24/12, a parcela mais instável em 925 hPa possui MUCAPE de 7810 J/kg, enquanto o SBCAPE é de 1862 J/kg.</li>
+                    <li>No teste de sensibilidade (sem os níveis de 925 hPa), o MUCAPE converge exatamente para o valor de superfície: 1860 J/kg.</li>
+                    <li>Observe os 3 métodos de DCAPE: Emanuel avalia a descida de parcela individual camada a camada; MetPy integra a coluna de mínimo \(\theta_e\); e Wyoming utiliza equação empírica de coluna.</li>
+                </ul>
+            </div>
+
+            <div class="student-questions">
+                <strong>Perguntas para o estudante responder:</strong>
+                <ol>
+                    <li>Por que o MUCAPE oficial do Wyoming para 24/12/1995 (7808,7 J/kg) é praticamente idêntico ao calculado pelo MetPy (7810,0 J/kg)?</li>
+                    <li>Qual o valor de DCAPE obtido pelo MetPy para 24/12/1995 e por que ele é mais de 15 vezes maior que o valor de descida de parcela de Emanuel em <code>cape.out</code>?</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 4: PERFIS VERTICAIS DE ESTABILIDADE -->
+        <section class="tutorial-section" id="sec-perfis">
+            <div class="section-header">
+                <h2>4. Perfis Verticais de Estabilidade: \(\theta, \theta_e, \theta_{es}\), \(N^2\) e \(S\) (Topo em 300 hPa)</h2>
+            </div>
+            <div class="explanation-text">
+                Análise da estrutura de estabilidade estática e convectiva da troposfera até 300 hPa, baseada nas formulações do Cap. 2 de Kerry Emanuel (1994).
+                A frequência de Brunt-Väisälä ao quadrado (\(N^2 = \frac{g}{\theta}\frac{\partial\theta}{\partial z}\)) permite evidenciar camadas estaticamente instáveis (\(N^2 < 0\)), 
+                enquanto a estabilidade estática em coordenadas de pressão (\(S = -\frac{T}{\theta}\frac{\partial\theta}{\partial p}\)) quantifica a resistência ao deslocamento vertical em K/hPa.
+            </div>
+
+            <div class="figure-wrapper">
+                <img src="metpack/fig_perfis_theta_triplice.png" alt="Perfis de Theta Triplice" onclick="openModal(this.src)">
+                <div class="figure-caption">Perfis de \(\theta\) (seca), \(\theta_e\) (equivalente) e \(\theta_{es}\) (saturação) para as Três Sondagens (Mesmos Eixos até 300 hPa) — Clique para ampliar</div>
+            </div>
+
+            <div class="figure-wrapper">
+                <img src="metpack/fig_3_soundings_profiles_comparison.png" alt="Comparação Tríplice de Perfis" onclick="openModal(this.src)">
+                <div class="figure-caption">Comparação Tríplice: \(\theta_e\), \(N^2\), \(S = -(T/\theta)\partial\theta/\partial p\) e razão de mistura \(r\) até 300 hPa — Clique para ampliar</div>
+            </div>
+
+            <div class="how-to-read">
+                <strong>Como ler:</strong>
+                <ul>
+                    <li>No primeiro gráfico, compare \(\theta\) (azul), \(\theta_e\) (verde) e \(\theta_{es}\) (vermelho tracejado). Onde \(\theta_e\) diminui com a altura (\(\partial\theta_e/\partial z < 0\)), a atmosfera é potencialmente/convectivamente instável.</li>
+                    <li>No painel de \(N^2\), a linha tracejada cinza em \(0\) separa camadas estáveis (\(N^2 > 0\)) de camadas superadiabáticas/instáveis (\(N^2 < 0\)).</li>
+                    <li>No painel de \(S\), valores positivos indicam estabilidade estática em coordenadas de pressão; valores negativos indicam gradientes superadiabáticos.</li>
+                    <li>No painel de razão de mistura (\(r\)), avalie o teor de umidade disponível na camada limite superficial.</li>
+                </ul>
+            </div>
+
+            <div class="student-questions">
+                <strong>Perguntas para o estudante responder:</strong>
+                <ol>
+                    <li>Em qual sondagem e camada específica observa-se \(N^2 < 0\) e \(S < 0\) simultaneamente?</li>
+                    <li>Qual das três sondagens possui o perfil mais profundo de \(\partial\theta_e/\partial z < 0\) na baixa troposfera e o que isso implica para o potencial de convecção profunda?</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 5: CINEMÁTICA E HODÓGRAFO -->
+        <section class="tutorial-section" id="sec-cinematica">
+            <div class="section-header">
+                <h2>5. Cinemática de Mesoescala: Hodógrafo e Convenções do Hemisfério Sul</h2>
+            </div>
+            <div class="explanation-text">
+                O hodógrafo polar mapeia o vetor vento horizontal (\(u, v\)) ao longo da altura, permitindo diagnosticar o cisalhamento vertical 
+                e a helicidade relativa à tempestade (SRH). Em tempestades severas, a rotação do mesociclone origina-se do 
+                <strong>tombamento (tilting) da vorticidade horizontal associada ao cisalhamento ambiental</strong> pela corrente ascendente, e 
+                <strong>não da força de Coriolis</strong>. No Hemisfério Sul, o vetor de tempestade relevante é o Bunkers Left-Mover, com helicidade ciclônica negativa.
+            </div>
+
+            <div class="figure-wrapper">
+                <img src="metpack/fig_kinematics_hodograph.png" alt="Hodógrafo SBPA 24/12/1995" onclick="openModal(this.src)">
+                <div class="figure-caption">Hodógrafo do Vento Horizontal e Vetor Bunkers no Hemisfério Sul (SBPA 24/12/1995 12Z) — Clique para ampliar</div>
+            </div>
+
+            <div class="how-to-read">
+                <strong>Como ler:</strong>
+                <ul>
+                    <li>Os anéis concêntricos representam a intensidade do vento em m/s (5, 10, 15, ..., 40 m/s).</li>
+                    <li>As cores dos segmentos representam as camadas: 0–1 km (vermelho), 1–3 km (verde), 3–6 km (azul) e >6 km (roxo).</li>
+                    <li>O ponto em forma de diamante âmbar marca o vetor de deslocamento da tempestade Bunkers Left-Mover (LM).</li>
+                    <li>A seta preta conecta a superfície a 6 km, representando o vetor de cisalhamento bulk profundo (0–6 km).</li>
+                    <li>A helicidade é calculada por \(\text{SRH} = \int_0^h (\vec{V} - \vec{c}) \cdot \left(\hat{k} \times \frac{\partial \vec{V}}{\partial z}\right) dz\), resultando em valor negativo para o Left-Mover ciclônico no HS.</li>
+                </ul>
+            </div>
+
+            <div class="student-questions">
+                <strong>Perguntas para o estudante responder:</strong>
+                <ol>
+                    <li>Quais são as componentes \((u, v)\) e a magnitude do vetor Bunkers Left-Mover calculadas em 24/12/1995?</li>
+                    <li>Por que no Hemisfério Sul a helicidade ciclônica relativa à tempestade é estritamente negativa?</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 6: MATRIZES 2D DE KERRY EMANUEL -->
+        <section class="tutorial-section" id="sec-emanuel">
+            <div class="section-header">
+                <h2>6. Matrizes Termodinâmicas 2D de Kerry Emanuel (1994)</h2>
+            </div>
+            <div class="explanation-text">
+                Implementação numérica dos algoritmos de Kerry Emanuel (1994, <em>Atmospheric Convection</em>). 
+                As matrizes bidimensionais calculam a flutuabilidade térmica de parcelas originadas a cada nível de pressão (\(p_{\text{origem}}\)) 
+                quando elevadas a cada nível da troposfera (\(p_{\text{elevada}}\)). O modo <strong>Reversível</strong> (\(T_\rho\)) retém o condensado 
+                (carga de água líquida), enquanto o modo <strong>Pseudoadiabático</strong> (\(T_v\)) precipita toda a água condensada instantaneamente.
+            </div>
+
+            <div class="figure-wrapper">
+                <img src="metpack/fig_3_soundings_emanuel_matrices.png" alt="Matrizes de Emanuel" onclick="openModal(this.src)">
+                <div class="figure-caption">Matrizes 2D de Kerry Emanuel (1994) nas Três Sondagens — Escala Simétrica \(\pm 15\text{ K}\) com Isolinha de 0 K Destacada — Clique para ampliar</div>
+            </div>
+
+            <div class="how-to-read">
+                <strong>Como ler:</strong>
+                <ul>
+                    <li>Eixo horizontal = nível de pressão de origem da parcela (\(p_{\text{origem}}\), em hPa); eixo vertical = nível para o qual a parcela é elevada (\(p_{\text{elevada}}\), em hPa).</li>
+                    <li>Tons vermelhos = flutuabilidade positiva (\(\Delta T > 0\), aceleração ascendente); tons azuis = flutuabilidade negativa (\(\Delta T < 0\), inibição).</li>
+                    <li>A isolinha preta espessa contínua representa exatamente \(\Delta T = 0\text{ K}\), marcando a fronteira de flutuabilidade neutra.</li>
+                    <li>Todas as 6 subfiguras utilizam rigorosamente a mesma escala simétrica de cores (\(-15\text{ a }+15\text{ K}\)), permitindo comparação visual direta.</li>
+                </ul>
+            </div>
+
+            <div class="student-questions">
+                <strong>Perguntas para o estudante responder:</strong>
+                <ol>
+                    <li>Comparando a linha reversível com a pseudoadiabática em 24/12/1995, qual o efeito da retenção de água líquida (termo \(-r_l\)) na área de flutuabilidade positiva?</li>
+                    <li>Na sondagem de 12/12/1995, por que a matriz é dominada quase inteiramente por tons azuis (\(\Delta T < 0\))?</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 7: AGORA É SUA VEZ -->
+        <section class="tutorial-section" id="sec-suavez">
+            <div class="section-header">
+                <h2>7. Agora é sua Vez: Como Escolher as Três Sondagens e Executar o Trabalho</h2>
+            </div>
+            <div class="explanation-text">
+                Cada estudante ou dupla deve selecionar <strong>três radiossondagens reais distintas</strong> no acervo da Universidade de Wyoming, 
+                representando os três regimes atmosféricos da troposfera: Estável, Transição e Instável.
+            </div>
+
+            <div class="how-to-read">
+                <strong>Critérios para Escolha das Três Sondagens:</strong>
+                <ul>
+                    <li><strong>Sondagem Estável:</strong> Inversão térmica ou isotermia em baixos níveis, ar seco em altitude, \(N^2 > 0\) profundo e CAPE próximo de zero (\(< 50\text{ J/kg}\)).</li>
+                    <li><strong>Sondagem de Transição:</strong> Camada limite com umidade moderada, instabilidade potencial (\(\partial\theta_e/\partial z < 0\)) com CIN moderado e sem cisalhamento extremo.</li>
+                    <li><strong>Sondagem Instável:</strong> Camada limite quente e úmida, forte gradiente vertical de \(\theta_e\), elevado CAPE (\(> 1500\text{ J/kg}\)) e cisalhamento vertical organizado.</li>
+                </ul>
+            </div>
+
+            <div class="block-title">Roteiro Passo a Passo de Execução:</div>
+            <ol style="color:#334155; font-size:0.95rem; line-height:1.7;">
+                <li>Abra o notebook oficial da disciplina: <a href="https://colab.research.google.com/github/reinaldohaas/tarefa-meso/blob/master/Seminario_plot_sounding_revisado.ipynb" target="_blank" style="color:#0284c7; font-weight:700;">Seminario_plot_sounding_revisado.ipynb</a>.</li>
+                <li>Defina as datas e o código da estação de radiossondagem no início do notebook.</li>
+                <li>Execute o download automático dos dados via endpoint WSGI da Universidade de Wyoming.</li>
+                <li>Processe os perfis verticais (\(\theta, \theta_e, \theta_{es}, N^2, S, r\)), Skew-T, hodógrafos e matrizes 2D de Kerry Emanuel.</li>
+                <li>Gere a apresentação formal em PowerPoint (10 slides em 16:9 widescreen) para apresentação aos previsores da Defesa Civil de SC sob orientação do Prof. Dr. Reinaldo Haas.</li>
+            </ol>
+
+            <div class="how-to-read" style="border-left-color: #10b981; background: #f0fdf4;">
+                <strong style="color: #065f46;">Critérios de Avaliação Científica:</strong>
+                <ul style="color: #14532d;">
+                    <li><strong>Integridade dos Dados:</strong> Nenhum número digitado à mão; todos os diagnósticos devem derivar dos scripts.</li>
+                    <li><strong>Rigor Físico:</strong> Correta interpretação do tombamento de vorticidade no mesociclone, sem atribuição errônea a Coriolis.</li>
+                    <li><strong>Tratamento de Inconsistências:</strong> Camadas superadiabáticas tratadas como dados reais acompanhadas de teste de sensibilidade.</li>
+                    <li><strong>Clareza Visual:</strong> Gráficos com fundo branco, eixos com unidades e sem textos subjetivos adicionados à mão.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 8: REFERÊNCIAS BIBLIOGRÁFICAS -->
+        <section class="tutorial-section" id="sec-referencias">
+            <div class="section-header">
+                <h2>8. Referências Bibliográficas Clássicas</h2>
+            </div>
+            <ul style="color:#334155; font-size:0.92rem; line-height:1.75;">
+                <li><strong>Bunkers, M. J., Klimowski, B. A., Zeitler, J. W., Thompson, R. L., & Weisman, M. L. (2000).</strong> Predicting supercell motion using a new hodograph technique. <em>Weather and Forecasting</em>, 15(1), 61–79.</li>
+                <li><strong>Emanuel, K. A. (1994).</strong> <em>Atmospheric Convection</em>. Oxford University Press, 580 pp.</li>
+                <li><strong>Markowski, P., & Richardson, Y. (2010).</strong> <em>Mesoscale Meteorology in Midlatitudes</em>. Wiley-Blackwell, 407 pp.</li>
+                <li><strong>MetPy Development Team (2024).</strong> MetPy: A Python Package for Meteorological Data. Unidata / UCAR. URL: <a href="https://unidata.github.io/MetPy/" target="_blank" style="color:#0284c7;">https://unidata.github.io/MetPy/</a>.</li>
+                <li><strong>Thompson, R. L., Edwards, R., Hart, J. A., Elmore, K. L., & Markowski, P. (2003).</strong> Close proximity soundings within supercell environments obtained from the Rapid Update Cycle. <em>Weather and Forecasting</em>, 18(6), 1243–1261.</li>
+                <li><strong>Thompson, R. L., Smith, B. T., Grams, J. S., Dean, A. R., & Broyles, C. (2012).</strong> Convective modes for significant severe thunderstorms in the contiguous United States. Part II: Rapid Update Cycle–based proximity soundings. <em>Weather and Forecasting</em>, 27(5), 1136–1154.</li>
+                <li><strong>University of Wyoming (2024).</strong> Department of Atmospheric Science Upper Air Sounding Database. URL: <a href="https://weather.uwyo.edu/upperair/sounding.html" target="_blank" style="color:#0284c7;">https://weather.uwyo.edu/upperair/sounding.html</a>.</li>
+                <li><strong>Weisman, M. L., & Klemp, J. B. (1982).</strong> The dependence of numerically simulated convective storms on vertical wind shear and buoyancy. <em>Monthly Weather Review</em>, 110(6), 504–520.</li>
+            </ul>
+        </section>
+
     </div>
 
-    <!-- ======================================================================= -->
-    <!-- ABA 1: PAINEL PRINCIPAL DE DIAGNÓSTICO -->
-    <!-- ======================================================================= -->
-    <div id="tabMain">
-        <!-- MÉTRICAS INTEGRADAS -->
-        <div class="grid-dashboard">
-            <div class="card col-12">
-                <div class="card-title">
-                    <span>Parâmetros Ambientais & Índices Termodinâmicos de Severidade</span>
-                    <span id="caseBadge" class="status-badge badge-extreme">AVALIAÇÃO SEVERA</span>
-                </div>
-                <div class="metrics-grid">
-                    <div class="metric-box danger">
-                        <div class="metric-val" id="mucapeVal">4646 J/kg</div>
-                        <div class="metric-lbl">MUCAPE (Pseudo Tv)</div>
-                    </div>
-                    <div class="metric-box warning">
-                        <div class="metric-val" id="capeRevVal">3832 J/kg</div>
-                        <div class="metric-lbl">CAPE Reversível (Tρ)</div>
-                    </div>
-                    <div class="metric-box success">
-                        <div class="metric-val" id="mucinVal">-6.5 J/kg</div>
-                        <div class="metric-lbl">MUCIN (Inibição)</div>
-                    </div>
-                    <div class="metric-box danger">
-                        <div class="metric-val" id="dcapeVal">1149 J/kg</div>
-                        <div class="metric-lbl">DCAPE (Downburst)</div>
-                    </div>
-                    <div class="metric-box purple">
-                        <div class="metric-val" id="shear1kmVal">18.4 m/s</div>
-                        <div class="metric-lbl">Cisalhamento 0-1km</div>
-                    </div>
-                    <div class="metric-box purple">
-                        <div class="metric-val" id="shear6kmVal">28.7 m/s</div>
-                        <div class="metric-lbl">Cisalhamento 0-6km</div>
-                    </div>
-                    <div class="metric-box danger">
-                        <div class="metric-val" id="srhVal">245 m²/s²</div>
-                        <div class="metric-lbl">SRH 0-3km (Helicidade)</div>
-                    </div>
-                    <div class="metric-box warning">
-                        <div class="metric-val" id="pwVal">55.3 mm</div>
-                        <div class="metric-lbl">Água Precipitável (PW)</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- GRÁFICOS INTERATIVOS: SKEW-T E HODÓGRAFO -->
-        <div class="grid-dashboard">
-            <!-- SKEW-T -->
-            <div class="card col-8">
-                <div class="card-title">
-                    <span>Diagrama Termodinâmico Skew-T / Log-P Interativo</span>
-                    <div class="btn-group">
-                        <button class="btn-sm active" id="btnPseudo" onclick="toggleParcelMode('pseudo')">Pseudoadiabático (Tv)</button>
-                        <button class="btn-sm" id="btnRev" onclick="toggleParcelMode('reversible')">Reversível (Tρ Emanuel)</button>
-                    </div>
-                </div>
-                <canvas id="skewtCanvas" width="750" height="520"></canvas>
-                <div class="legend-row">
-                    <div class="legend-item"><div class="legend-dot" style="background:#ef4444;"></div> Temp. Ambiente (T)</div>
-                    <div class="legend-item"><div class="legend-dot" style="background:#10b981;"></div> Ponto de Orvalho (Td)</div>
-                    <div class="legend-item"><div class="legend-dot" style="background:#fbbf24;"></div> Trajetória Parcela (Tp)</div>
-                    <div class="legend-item"><div class="legend-dot" style="background:rgba(74, 222, 128, 0.4);"></div> CAPE (Flutuabilidade +)</div>
-                    <div class="legend-item"><div class="legend-dot" style="background:rgba(248, 113, 113, 0.4);"></div> CIN (Inibição -)</div>
-                </div>
-                <div class="theory-box" id="emanuelTheoryText">
-                    <strong>Fundamento de Kerry Emanuel (1994, Cap. 4 & 6; MIT 12.811):</strong>
-                    Na ascensão <em>reversível</em>, o código <code>wyoming.py</code> calcula 
-                    <code>TLVR = TG * (1. + RG/EPS) / (1. + R(I))</code>. O termo <code>-r_l</code> 
-                    (carga de água líquida retida) reduz a flutuabilidade positiva da parcela, evitando superestimação física do CAPE.
-                </div>
-            </div>
-
-            <!-- HODÓGRAFO E BRUNT-VÄISÄLÄ -->
-            <div class="card col-4">
-                <div class="card-title">
-                    <span>Hodógrafo Polar do Vento & Helicidade</span>
-                </div>
-                <canvas id="hodoCanvas" width="380" height="300"></canvas>
-                <div class="legend-row">
-                    <div class="legend-item"><div class="legend-dot" style="background:#ef4444;"></div> 0 - 1 km (JBN)</div>
-                    <div class="legend-item"><div class="legend-dot" style="background:#10b981;"></div> 1 - 3 km</div>
-                    <div class="legend-item"><div class="legend-dot" style="background:#38bdf8;"></div> 3 - 6 km</div>
-                    <div class="legend-item"><div class="legend-dot" style="background:#fbbf24;"></div> Vetor Tempestade (c)</div>
-                </div>
-
-                <div class="card-title" style="margin-top: 16px;">
-                    <span>Perfil de Brunt-Väisälä: N²(z)</span>
-                </div>
-                <canvas id="bruntCanvas" width="380" height="150"></canvas>
-                <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 4px;">
-                    Camadas com N² > 3.5×10⁻⁴ s⁻² caracterizam forte estabilidade estática e inversão de capeamento (<em>capping lid</em>).
-                </div>
-            </div>
-        </div>
-
-        <!-- PERFIS VERTICAIS DO COLAB PARA O CASO SELECIONADO -->
-        <div class="grid-dashboard">
-            <div class="card col-12">
-                <div class="card-title">
-                    <span id="colabProfilesTitle">Perfis Verticais de Mesoescala do Colab (θ, θe, θs, N, S, r)</span>
-                    <span class="status-badge badge-mod" id="colabProfilesBadge">CASO ATUAL</span>
-                </div>
-                <p style="font-size: 0.88rem; color: #cbd5e1; margin-bottom: 12px;">
-                    Perfis completos calculados no Colab via MetPy: (1) Temperatura Potencial Seca (\(\theta\)), Equivalente (\(\theta_e\)) e de Saturação (\(\theta_s\)); (2) Frequência de Brunt-Väisälä (\(N\) em s⁻¹); (3) Estabilidade Estática (\(S\)); (4) Razão de Mistura (\(r\) em g/kg) e Água Precipitável (\(PW\)).
-                </p>
-                <img id="imgColabProfiles" src="metpack/fig_profiles_19951224.png" alt="Perfis do Colab" class="responsive-fig">
-            </div>
-        </div>
-
-        <!-- MATRIZES 2D DE KERRY EMANUEL PARA O CASO SELECIONADO -->
-        <div class="grid-dashboard">
-            <div class="card col-6">
-                <div class="card-title">
-                    <span id="emanuelRevTitle">Matriz 2D Reversível: Diferença de Temp. de Densidade Tρ (K)</span>
-                    <span class="status-badge badge-stable">Emanuel wyoming.f / tcon.py</span>
-                </div>
-                <p style="font-size: 0.84rem; color: #cbd5e1; margin-bottom: 8px;">
-                    Calcula \(\Delta T_\rho = T_\rho - T_{\rho,a}\) retendo todo o condensado (\(r_l = r_t - r_v\)). Penalidade gravitacional de arrasto dos hidrometeoros.
-                </p>
-                <img id="imgEmanuelRev" src="metpack/tcon_tdifrev_19951224.png" alt="Matriz Reversível" class="responsive-fig">
-            </div>
-
-            <div class="card col-6">
-                <div class="card-title">
-                    <span id="emanuelPseudoTitle">Matriz 2D Pseudoadiabática: Diferença de Temp. Virtual Tv (K)</span>
-                    <span class="status-badge badge-mod">Emanuel wyoming.f / tcon.py</span>
-                </div>
-                <p style="font-size: 0.84rem; color: #cbd5e1; margin-bottom: 8px;">
-                    Assume precipitação instantânea de todo o condensado (\(r_l = 0\)). Flutuabilidade máxima atingida na média e alta troposfera.
-                </p>
-                <img id="imgEmanuelPseudo" src="metpack/tcon_tdifpseudo_19951224.png" alt="Matriz Pseudoadiabática" class="responsive-fig">
-            </div>
-        </div>
-
-        <!-- IMAGEM DE SATÉLITE REALÇADA (IR 11 µm) -->
-        <div class="grid-dashboard" id="satSection">
-            <div class="card col-12">
-                <div class="card-title">
-                    <span>Satélite GOES-8 / NOAA ISCCP-H — Imagem de Infravermelho Realçada (IR 11 µm)</span>
-                    <span class="status-badge badge-extreme">ENCHENTE DE NATAL (24/12/1995)</span>
-                </div>
-                <p style="font-size: 0.88rem; color: #cbd5e1; margin-bottom: 8px;">
-                    Monitoramento real da evolução convectiva severa sobre o Sul do Brasil. <strong>Painel A:</strong> Condições às 12:00 UTC (horário síncrono da radiossondagem SBPA) com topos convectivos a -59°C (170 hPa). <strong>Painel B:</strong> Ápice do Complexo Convectivo de Mesoescala às 18:00 UTC com topos penetrantes a -63.5°C (160 hPa) provocando acumulados torrenciais históricos na Enchente de Natal.
-                </p>
-                <img src="metpack/fig_sat_ir_19951224.png" alt="Satélite GOES-8 IR 24/12/1995" class="responsive-fig">
-            </div>
-        </div>
-
-        <!-- TABELA DE DADOS BRUTOS DA SONDAGEM OBSERVADA -->
-        <div class="grid-dashboard">
-            <div class="card col-12">
-                <div class="card-title">
-                    <span>Níveis de Pressão e Perfis Observados da Estação SBPA</span>
-                    <span style="font-size: 0.8rem; color: var(--text-secondary);">Fonte: Wyoming Upper Air Data (SBPA 83971)</span>
-                </div>
-                <div class="table-container">
-                    <table id="soundingTable">
-                        <thead>
-                            <tr>
-                                <th>PRES (hPa)</th>
-                                <th>HGHT (m)</th>
-                                <th>TEMP (°C)</th>
-                                <th>DWPT (°C)</th>
-                                <th>DIR (°)</th>
-                                <th>SPED (m/s)</th>
-                                <th>θe (K)</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+    <!-- Lightbox Modal para Zoom em Imagens -->
+    <div id="image-modal" class="modal" onclick="closeModal()">
+        <img class="modal-content" id="modal-img">
     </div>
 
-    <!-- ======================================================================= -->
-    <!-- ABA 2: COMPARAÇÃO TRÍPLICE CIENTÍFICA (3 CASOS LADO A LADO) -->
-    <!-- ======================================================================= -->
-    <div id="tabComparison" style="display: none;">
-        <div class="grid-dashboard">
-            <div class="card col-12">
-                <div class="card-title">
-                    <span>1. Comparação Tríplice dos Diagramas Skew-T e Hodógrafos do Vento</span>
-                    <span class="status-badge badge-mod">3 ESTADOS ATMOSFÉRICOS</span>
-                </div>
-                <p style="font-size: 0.9rem; color: #cbd5e1; margin-bottom: 12px;">
-                    Comparação direta entre o regime pós-frontal Estável (12/12/1995), o regime de transição Neutro (23/12/1995) e o regime de convecção severa explosiva com Supercélula HP (24/12/1995).
-                </p>
-                <img src="metpack/fig_3_soundings_complete_analysis.png" alt="Comparação Tríplice Skew-T" class="responsive-fig">
-            </div>
-
-            <div class="card col-12">
-                <div class="card-title">
-                    <span>2. Comparação dos Perfis Verticais do Colab Lado a Lado (θe, N, S, r)</span>
-                    <span class="status-badge badge-extreme">METPY + COLAB</span>
-                </div>
-                <p style="font-size: 0.9rem; color: #cbd5e1; margin-bottom: 12px;">
-                    Confronto das 4 variáveis-chave do Colab entre os 3 regimes: (1) Injeção de \(\theta_e = 377.8\text{ K}\) no JBN; (2) Inversão de Brunt-Väisälä (\(N\)) funcionando como <em>capping lid</em>; (3) Estabilidade estática \(S\); (4) Estoque de vapor d'água com \(r = 22.0\text{ g/kg}\) no caso severo.
-                </p>
-                <img src="metpack/fig_3_soundings_profiles_comparison.png" alt="Comparação Perfis Verticais" class="responsive-fig">
-            </div>
-
-            <div class="card col-12">
-                <div class="card-title">
-                    <span>3. Comparação das Matrizes de Convecção 2D de Kerry Emanuel (6 Painéis)</span>
-                    <span class="status-badge badge-stable">MIT OCW 12.811 / EMANUEL 1994</span>
-                </div>
-                <p style="font-size: 0.9rem; color: #cbd5e1; margin-bottom: 12px;">
-                    Linha 1: Matrizes Reversíveis (\(T_\rho\)) com carga de água retida. Linha 2: Matrizes Pseudoadiabáticas (\(T_v\)). Note como o caso de 12/12 é totalmente frio/estável (azul), o caso de 23/12 possui instabilidade moderada rasa, e o caso de 24/12 apresenta núcleo gigantesco de flutuabilidade positiva (\(\Delta T > +10\text{ K}\)) até 400 mb.
-                </p>
-                <img src="metpack/fig_3_soundings_emanuel_matrices.png" alt="Comparação Matrizes Emanuel" class="responsive-fig">
-            </div>
-
-            <div class="card col-12">
-                <div class="card-title">
-                    <span>4. Tabela Comparativa Tríplice de Índices Diagnósticos de Severidade</span>
-                </div>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Parâmetro Diagnóstico</th>
-                                <th style="color: #38bdf8;">12/12/1995 (Estável)</th>
-                                <th style="color: #fbbf24;">23/12/1995 (Neutra)</th>
-                                <th style="color: #f87171;">24/12/1995 (Instável Severa)</th>
-                                <th>Interpretação Física</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr><td>Temperatura à Superfície (T₀)</td><td>19.4 °C</td><td>25.8 °C</td><td>24.6 °C</td><td>Aquecimento pré-frontal acentuado</td></tr>
-                            <tr><td>Ponto de Orvalho à Superfície (Td₀)</td><td>16.3 °C</td><td>24.4 °C</td><td>23.2 °C</td><td>Advecção maciça de umidade tropical</td></tr>
-                            <tr><td>Razão de Mistura Máxima (r_max)</td><td>11.6 g/kg (Sfc)</td><td>19.4 g/kg (Sfc)</td><td style="color:#f87171; font-weight:bold;">22.0 g/kg (925 hPa)</td><td>Jato em Baixos Níveis concentrando vapor</td></tr>
-                            <tr><td>SBCAPE (Superfície)</td><td>15.7 J/kg</td><td>2761.7 J/kg</td><td>1861.9 J/kg</td><td>Parcela de superfície vs parcela mais instável</td></tr>
-                            <tr><td>MUCAPE (Mais Instável)</td><td>0.0 J/kg</td><td>2761.7 J/kg</td><td style="color:#f87171; font-weight:bold;">4645.5 J/kg (7781 J/kg Emanuel)</td><td>Energia potencial extrema para correntes ascendentes</td></tr>
-                            <tr><td>Inibição Convectiva (CIN)</td><td>0.0 J/kg</td><td>0.0 J/kg</td><td style="color:#fbbf24;">-6.5 J/kg (-185 J/kg na Sfc)</td><td>Capping lid rompe com aquecimento e convergência</td></tr>
-                            <tr><td>Água Precipitável (PW)</td><td>35.1 mm</td><td style="color:#fbbf24;">57.0 mm</td><td style="color:#f87171; font-weight:bold;">55.3 mm</td><td>Chuva torrencial e inundações repentinas</td></tr>
-                            <tr><td>Cisalhamento Bulk 0-6 km</td><td>13.7 m/s</td><td>10.2 m/s</td><td style="color:#f87171; font-weight:bold;">28.7 m/s (55.8 kt)</td><td>Limiar severo de supercélulas (> 20 m/s)</td></tr>
-                            <tr><td>Helicidade Relativa 0-3 km (SRH)</td><td>58 m²/s²</td><td>135 m²/s²</td><td style="color:#f87171; font-weight:bold;">245 m²/s²</td><td>Rotação de mesociclone na média troposfera</td></tr>
-                            <tr><td>Downdraft CAPE (DCAPE)</td><td>0 J/kg</td><td>0 J/kg</td><td style="color:#f87171; font-weight:bold;">1149 J/kg</td><td>Rajadas severas descendentes (downbursts ~ 48 m/s)</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ======================================================================= -->
-    <!-- ABA 3: ROTEIRO PEDAGÓGICO DO ESTUDANTE (AMBAS APRESENTAÇÕES) -->
-    <!-- ======================================================================= -->
-    <div id="tabRoadmap" style="display: none;">
-        <div class="grid-dashboard">
-
-
-            <!-- GUIA TUTORIAL DIDÁTICO PARA OS ALUNOS -->
-            <div class="card col-12" style="background: rgba(30, 41, 59, 0.7); border: 2px solid #eab308; margin-bottom: 12px;">
-                <div class="card-title">
-                    <span style="color: #facc15;">📚 Tutorial Metodológico para os Alunos (FSC7116 - UFSC)</span>
-                    <span class="status-badge badge-mod" style="background: #a16207; color: #fef08a;">DIRETRIZ OFICIAL</span>
-                </div>
-                <div style="font-size: 0.95rem; color: #e2e8f0; line-height: 1.6;">
-                    <p style="margin-bottom: 10px;">
-                        <strong>Objetivo Pedagógico da Disciplina:</strong> Capacitar o estudante a realizar um diagnóstico termodinâmico e dinâmico completo de mesoescala, confrontando perfis verticais reais da atmosfera e compreendendo a física de parcelas de Kerry Emanuel (1994) e a cinemática de cisalhamento.
-                    </p>
-                    <div style="background: #0f172a; padding: 14px 18px; border-radius: 8px; border-left: 4px solid #facc15; margin-bottom: 12px;">
-                        <h4 style="color: #facc15; margin: 0 0 6px 0; font-size: 1rem;">⚠️ REQUISITO OBRIGATÓRIO PARA AVALIAÇÃO DA BANCA (PROF. REINALDO HAAS):</h4>
-                        <p style="margin: 0; color: #f8fafc; font-size: 0.92rem;">
-                            Cada estudante ou grupo <strong>DEVE OBRIGATORIAMENTE PREPARAR DUAS APRESENTAÇÕES</strong> com base em <strong>TRÊS RADIOSSONDAGENS REAIS DISTINTAS</strong> cobrindo os três regimes troposféricos:
-                        </p>
-                        <ul style="margin: 8px 0 8px 20px; padding: 0; font-size: 0.9rem; color: #cbd5e1;">
-                            <li><strong style="color: #38bdf8;">1. Atmosfera ESTÁVEL:</strong> Perfil pós-frontal anticiclônico com ar seco em altitude, CAPE = 0 J/kg, forte estratificação estável (\(N > 0\)), sem LFC.</li>
-                            <li><strong style="color: #facc15;">2. Atmosfera NEUTRA (ou Transição):</strong> Perfil com umidade na camada limite e CAPE moderado, mas cisalhamento vertical fraco e inibição convectiva.</li>
-                            <li><strong style="color: #f87171;">3. Atmosfera INSTÁVEL (Convecção Severa):</strong> Perfil com MUCAPE \(> 2500-4500\text{ J/kg}\), capping lid em 925 hPa com posterior rompimento explosivo, JBN com vento \(> 20\text{ m/s}\) e helicidade SRH \(> 200\text{ m}^2/\text{s}^2\).</li>
-                        </ul>
-                    </div>
-
-                    <h4 style="color: #38bdf8; margin: 14px 0 6px 0;">🎯 As Duas Apresentações Exigidas:</h4>
-                    <p><strong>Apresentação 1 (Diagnóstico Científico & Laboratório):</strong> Foco na metodologia, download dos dados brutos de Wyoming, execução do Colab e dos códigos Python (<code>wyoming.py</code>, <code>tcon.py</code>), análise de todos os perfis verticais (\(\theta, \theta_e, \theta_s, N, S, r, PW\)), Skew-T, Hodógrafo e matrizes 2D de Kerry Emanuel.</p>
-                    <p style="margin-top: 6px;"><strong>Apresentação 2 (Defesa Oficial perante a Banca - 20 minutos):</strong> Apresentação formal de síntese científica (10 slides), cronometrada slide a slide, com foco na dinâmica de mesoescala, acoplamento sinótico (500 e 850 hPa com mapa Cartopy de fronteiras reais), suporte de cisalhamento do JBN e classificação do modo convectivo supercelular HP.</p>
-                </div>
-            </div>
-
-            <div class="card col-12">
-                <div class="card-title">
-                    <span>Roteiro Cronometrado da Apresentação 2 (Defesa Oral de 20 Minutos perante a Banca)</span>
-                    <span class="status-badge badge-mod">SLIDE A SLIDE COM SCRIPT FALADO</span>
-                </div>
-
-                <!-- BLOCO 1 -->
-                <div class="timeline-card">
-                    <span class="time-badge">00 - 03 min | Slides 1 & 2</span>
-                    <h3 style="color: var(--accent-blue); margin-bottom: 6px;">Sinótica e Contexto do Caso Extremo</h3>
-                    <p style="font-size: 0.9rem; color: #cbd5e1; margin-bottom: 8px;">
-                        Apresentação do evento severo (24/12/1995 em SBPA) e cartas de reanálise de 500 hPa (cavado baroclínico e difluência a jusante com CVA máxima) e 850 hPa (JBN advectando calor e umidade com \(\theta_e > 360\text{ K}\)). Mapas com divisão geográfica e fronteiras reais geradas via Cartopy.
-                    </p>
-                    <div>
-                        <a href="metpack/fig_synoptic_analysis.png" target="_blank" style="color: #38bdf8; font-size: 0.85rem; font-weight: 600; text-decoration: underline;">🔍 Ver Carta Sinótica de Reanálise (fig_synoptic_analysis.png)</a>
-                    </div>
-                </div>
-
-                <!-- BLOCO 2 -->
-                <div class="timeline-card alert">
-                    <span class="time-badge">03 - 07 min | Slides 3 & 4</span>
-                    <h3 style="color: var(--accent-yellow); margin-bottom: 6px;">As Três Sondagens e as Três Análises Físicas Completas</h3>
-                    <p style="font-size: 0.9rem; color: #cbd5e1; margin-bottom: 8px;">
-                        Comparação dos 3 perfis no Skew-T (12/12 estável, 23/12 moderado, 24/12 severo). Formalismo de CAPE e CIN, e análise do gradiente vertical \(\partial \theta_e/\partial z < 0\) demonstrando instabilidade convectiva severa.
-                    </p>
-                    <div>
-                        <a href="metpack/fig_3_soundings_complete_analysis.png" target="_blank" style="color: #facc15; font-size: 0.85rem; font-weight: 600; text-decoration: underline;">🔍 Ver Matriz Comparativa Tríplice Completa (fig_3_soundings_complete_analysis.png)</a>
-                    </div>
-                </div>
-
-                <!-- BLOCO 3 -->
-                <div class="timeline-card danger">
-                    <span class="time-badge">07 - 10 min | Slide 5</span>
-                    <h3 style="color: var(--accent-red); margin-bottom: 6px;">Temperatura de Densidade (Tρ) e Algoritmo de Kerry Emanuel</h3>
-                    <p style="font-size: 0.9rem; color: #cbd5e1; margin-bottom: 8px;">
-                        Explicação dos resultados do <code>wyoming.py</code> citando rigorosamente <em>Atmospheric Convection</em> (Emanuel, 1994, Cap. 4 & 6). Demonstrar como o termo de carregamento de hidrometeoros (<code>-r_l</code>) reduz a flutuabilidade real entre as matrizes reversível e pseudoadiabática.
-                    </p>
-                    <div>
-                        <a href="metpack/fig_3_soundings_emanuel_matrices.png" target="_blank" style="color: #38bdf8; font-size: 0.85rem; font-weight: 600; text-decoration: underline;">🔍 Ver Matrizes 2D das Três Sondagens (fig_3_soundings_emanuel_matrices.png)</a>
-                    </div>
-                </div>
-
-                <!-- BLOCO 4 -->
-                <div class="timeline-card">
-                    <span class="time-badge">10 - 14 min | Slides 6 & 7</span>
-                    <h3 style="color: var(--accent-purple); margin-bottom: 6px;">Variáveis do Capítulo 2: θv, Brunt-Väisälä (N²), Razão de Mistura e PW</h3>
-                    <p style="font-size: 0.9rem; color: #cbd5e1; margin-bottom: 8px;">
-                        Perfis verticais comparados para as 3 sondagens: temperatura potencial equivalente (\(\theta_e\)), frequência de Brunt-Väisälä (\(N\)), razão de mistura (\(r\)) e DCAPE (1149 J/kg). Mostrar que o pico de \(N\) em 925 hPa agiu como <em>capping lid</em> acumulador de energia no caso severo.
-                    </p>
-                    <div>
-                        <a href="metpack/fig_3_soundings_profiles_comparison.png" target="_blank" style="color: #38bdf8; font-size: 0.85rem; font-weight: 600; text-decoration: underline;">🔍 Ver Comparação de Perfis das 3 Sondagens (fig_3_soundings_profiles_comparison.png)</a>
-                    </div>
-                </div>
-
-                <!-- BLOCO 5 -->
-                <div class="timeline-card danger">
-                    <span class="time-badge">14 - 17 min | Slide 8</span>
-                    <h3 style="color: var(--accent-blue); margin-bottom: 6px;">Cinemática: Hodógrafo, Jato em Baixos Níveis (JBN) e Helicidade (SRH)</h3>
-                    <p style="font-size: 0.9rem; color: #cbd5e1; margin-bottom: 8px;">
-                        Análise do hodógrafo curvo, identificação do núcleo do JBN em 925 hPa com vento de 44 nós (23.2 m/s), cisalhamento bulk 0-6 km de 28.7 m/s e SRH 0-3 km de 245 m²/s² suportando convecção supercelular rotatória.
-                    </p>
-                    <div>
-                        <a href="metpack/fig_kinematics_hodograph.png" target="_blank" style="color: #38bdf8; font-size: 0.85rem; font-weight: 600; text-decoration: underline;">🔍 Ver Hodógrafo Polar Detalhado (fig_kinematics_hodograph.png)</a>
-                    </div>
-                </div>
-
-                <!-- BLOCO 6 -->
-                <div class="timeline-card danger">
-                    <span class="time-badge">17 - 19 min | Slide 9</span>
-                    <h3 style="color: var(--accent-red); margin-bottom: 6px;">Monitoramento por Satélite: Imagem Infravermelho (IR 11 µm)</h3>
-                    <p style="font-size: 0.9rem; color: #cbd5e1; margin-bottom: 8px;">
-                        Comprovação observacional via satélite GOES-8 / NOAA ISCCP-H CDR em 24/12/1995. Painel A (12Z - momento da sondagem SBPA) com topos a -59°C (170 hPa) e Painel B (18Z - ápice vespertino) com topos penetrantes a -63.5°C (160 hPa) descarregando chuvas torrenciais na histórica Enchente de Natal.
-                    </p>
-                    <div style="margin-top: 8px;">
-                        <a href="metpack/fig_sat_ir_19951224.png" target="_blank" style="color: #38bdf8; font-size: 0.85rem; font-weight: 600; text-decoration: underline;">🔍 Ver Imagem de Satélite IR Realçada (fig_sat_ir_19951224.png)</a>
-                    </div>
-                </div>
-
-                <!-- BLOCO 7 -->
-                <div class="timeline-card">
-                    <span class="time-badge">19 - 20 min | Slide 10</span>
-                    <h3 style="color: var(--accent-green); margin-bottom: 6px;">Conclusões Finais & Abertura Formal para a Banca</h3>
-                    <p style="font-size: 0.9rem; color: #cbd5e1; margin-bottom: 8px;">
-                        Síntese integrada (MUCAPE de 4646 J/kg, suporte cinemático do JBN com 44 nós, topos de satélite de -63.5°C). Referências bibliográficas fundamentais (Emanuel 1994, Doswell 2001) e abertura formal para a arguição da banca examinadora.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- SCRIPT DE INTERATIVIDADE E DADOS EMBUTIDOS -->
     <script>
-        // Dados resumidos de cada sondagem
-        const soundings = {
-            "19951212": {
-                date: "12/12/1995 12Z",
-                status: "ESTÁVEL / PÓS-FRONTAL",
-                badgeClass: "badge-stable",
-                mucape: 15.7,
-                capeRev: 17.7,
-                mucin: 0.0,
-                dcape: 0.0,
-                pw: 35.1,
-                rmax: 11.6,
-                li: 2.5,
-                shear1km: 6.2,
-                shear6km: 13.7,
-                srh3km: 58.0,
-                stormMotion: [15.2, 5.1],
-                colabProfilesFig: "metpack/fig_profiles_19951212.png",
-                emanuelRevFig: "metpack/tcon_tdifrev_19951212.png",
-                emanuelPseudoFig: "metpack/tcon_tdifpseudo_19951212.png",
-                levels: [
-                    {p: 1014.0, z: 3, t: 19.4, td: 16.3, dir: 180, spd: 4.1, thte: 324.2, thtv: 293.4},
-                    {p: 1000.0, z: 119, t: 18.4, td: 15.7, dir: 170, spd: 5.2, thte: 323.6, thtv: 293.5},
-                    {p: 979.1, z: 300, t: 16.7, td: 14.6, dir: 165, spd: 6.2, thte: 322.2, thtv: 293.5},
-                    {p: 948.0, z: 576, t: 14.2, td: 12.9, dir: 170, spd: 5.7, thte: 320.1, thtv: 293.5},
-                    {p: 925.0, z: 784, t: 12.8, td: 11.7, dir: 160, spd: 4.6, thte: 319.3, thtv: 294.0},
-                    {p: 885.0, z: 1155, t: 13.2, td: -0.8, dir: 189, spd: 4.6, thte: 308.8, thtv: 297.3},
-                    {p: 850.0, z: 1495, t: 13.4, td: 6.4, dir: 215, spd: 4.6, thte: 321.4, thtv: 301.5},
-                    {p: 811.0, z: 1889, t: 12.2, td: 4.2, dir: 225, spd: 8.0, thte: 322.4, thtv: 304.1},
-                    {p: 755.0, z: 2484, t: 8.0, td: 5.5, dir: 236, spd: 11.3, thte: 327.5, thtv: 306.0},
-                    {p: 700.0, z: 3106, t: 5.8, td: -3.2, dir: 245, spd: 10.8, thte: 322.5, thtv: 309.7},
-                    {p: 614.0, z: 4168, t: -1.3, td: -1.4, dir: 255, spd: 17.3, thte: 330.4, thtv: 313.6},
-                    {p: 500.0, z: 5780, t: -11.5, td: -25.5, dir: 265, spd: 12.4, thte: 322.4, thtv: 319.1},
-                    {p: 400.0, z: 7460, t: -20.7, td: -31.7, dir: 250, spd: 28.3, thte: 330.5, thtv: 328.1},
-                    {p: 300.0, z: 9540, t: -34.1, td: -50.1, dir: 230, spd: 33.0, thte: 337.7, thtv: 337.2},
-                    {p: 250.0, z: 10800, t: -41.7, td: -65.7, dir: 260, spd: 40.2, thte: 344.0, thtv: 343.9},
-                    {p: 200.0, z: 12250, t: -53.3, td: -70.3, dir: 305, spd: 14.4, thte: 348.3, thtv: 348.2},
-                    {p: 150.0, z: 14070, t: -63.9, td: -76.9, dir: 250, spd: 36.5, thte: 359.8, thtv: 359.8},
-                    {p: 100.0, z: 16510, t: -74.3, td: -87.3, dir: 250, spd: 23.2, thte: 383.9, thtv: 383.9}
-                ]
-            },
-            "19951223": {
-                date: "23/12/1995 12Z",
-                status: "NEUTRA / PRÉ-CONVECTIVA",
-                badgeClass: "badge-mod",
-                mucape: 2761.7,
-                capeRev: 1266.5,
-                mucin: 0.0,
-                dcape: 0.0,
-                pw: 57.0,
-                rmax: 19.4,
-                li: -6.1,
-                shear1km: 11.8,
-                shear6km: 10.2,
-                srh3km: 135.0,
-                stormMotion: [9.5, -4.2],
-                colabProfilesFig: "metpack/fig_profiles_19951223.png",
-                emanuelRevFig: "metpack/tcon_tdifrev_19951223.png",
-                emanuelPseudoFig: "metpack/tcon_tdifpseudo_19951223.png",
-                levels: [
-                    {p: 1009.0, z: 3, t: 25.8, td: 24.4, dir: 100, spd: 2.1, thte: 354.8, thtv: 301.6},
-                    {p: 1000.0, z: 83, t: 25.0, td: 23.8, dir: 135, spd: 1.5, thte: 353.2, thtv: 301.5},
-                    {p: 975.3, z: 300, t: 23.2, td: 22.7, dir: 195, spd: 4.1, thte: 351.2, thtv: 301.7},
-                    {p: 942.0, z: 600, t: 21.3, td: 20.7, dir: 230, spd: 7.7, thte: 348.0, thtv: 302.5},
-                    {p: 925.0, z: 757, t: 20.6, td: 19.5, dir: 230, spd: 10.8, thte: 346.3, thtv: 303.2},
-                    {p: 850.0, z: 1497, t: 18.4, td: 12.4, dir: 245, spd: 12.9, thte: 337.8, thtv: 307.4},
-                    {p: 810.0, z: 1906, t: 15.4, td: 14.8, dir: 248, spd: 14.3, thte: 346.3, thtv: 308.9},
-                    {p: 763.4, z: 2400, t: 12.6, td: 11.3, dir: 250, spd: 16.0, thte: 342.7, thtv: 310.7},
-                    {p: 700.0, z: 3122, t: 8.4, td: 6.3, dir: 245, spd: 14.9, thte: 338.6, thtv: 313.4},
-                    {p: 614.0, z: 4200, t: 2.2, td: -1.1, dir: 245, spd: 5.7, thte: 335.1, thtv: 317.7},
-                    {p: 500.0, z: 5840, t: -7.5, td: -10.2, dir: 265, spd: 9.3, thte: 335.8, thtv: 324.5},
-                    {p: 400.0, z: 7540, t: -18.7, td: -23.5, dir: 205, spd: 6.7, thte: 335.8, thtv: 330.9},
-                    {p: 300.0, z: 9640, t: -33.9, td: -44.9, dir: 220, spd: 4.6, thte: 338.4, thtv: 337.5},
-                    {p: 250.0, z: 10880, t: -42.9, td: -64.9, dir: 240, spd: 5.2, thte: 342.3, thtv: 342.2},
-                    {p: 200.0, z: 12350, t: -52.9, td: -74.9, dir: 130, spd: 12.9, thte: 348.9, thtv: 348.8},
-                    {p: 150.0, z: 14160, t: -65.1, td: -83.1, dir: 115, spd: 18.5, thte: 357.8, thtv: 357.7},
-                    {p: 100.0, z: 16598, t: -72.1, td: -88.1, dir: 85, spd: 4.1, thte: 388.2, thtv: 388.2}
-                ]
-            },
-            "19951224": {
-                date: "24/12/1995 12Z",
-                status: "CONVECÇÃO SEVERA EXPLOSIVA",
-                badgeClass: "badge-extreme",
-                mucape: 4645.5,
-                capeRev: 3832.0,
-                mucin: -6.5,
-                dcape: 1149.0,
-                pw: 55.3,
-                rmax: 22.0,
-                li: -5.2,
-                shear1km: 18.4,
-                shear6km: 28.7,
-                srh3km: 245.0,
-                stormMotion: [-16.5, -9.2],
-                colabProfilesFig: "metpack/fig_profiles_19951224.png",
-                emanuelRevFig: "metpack/tcon_tdifrev_19951224.png",
-                emanuelPseudoFig: "metpack/tcon_tdifpseudo_19951224.png",
-                levels: [
-                    {p: 1009.0, z: 3, t: 24.6, td: 23.2, dir: 110, spd: 5.2, thte: 349.2, thtv: 300.2},
-                    {p: 1000.0, z: 84, t: 24.8, td: 22.5, dir: 80, spd: 8.8, thte: 348.6, thtv: 301.0},
-                    {p: 975.4, z: 300, t: 22.7, td: 21.0, dir: 70, spd: 13.4, thte: 345.3, thtv: 300.8},
-                    {p: 942.5, z: 600, t: 26.9, td: 23.3, dir: 65, spd: 19.6, thte: 363.7, thtv: 308.7},
-                    {p: 925.0, z: 764, t: 30.0, td: 25.0, dir: 60, spd: 22.6, thte: 377.8, thtv: 314.0},
-                    {p: 910.5, z: 900, t: 27.6, td: 22.7, dir: 60, spd: 23.2, thte: 368.2, thtv: 312.5},
-                    {p: 850.0, z: 1493, t: 17.0, td: 12.7, dir: 60, spd: 20.1, thte: 336.7, thtv: 305.9},
-                    {p: 802.0, z: 1984, t: 13.2, td: 13.2, dir: 52, spd: 13.0, thte: 341.0, thtv: 307.2},
-                    {p: 762.8, z: 2400, t: 10.8, td: 10.8, dir: 50, spd: 8.8, thte: 339.5, thtv: 308.8},
-                    {p: 700.0, z: 3112, t: 6.8, td: 6.7, dir: 45, spd: 9.3, thte: 337.3, thtv: 311.6},
-                    {p: 619.0, z: 4120, t: 1.2, td: 1.1, dir: 40, spd: 11.6, thte: 336.0, thtv: 315.9},
-                    {p: 500.0, z: 5820, t: -7.7, td: -16.7, dir: 35, spd: 12.4, thte: 330.8, thtv: 324.0},
-                    {p: 400.0, z: 7520, t: -18.1, td: -50.1, dir: 35, spd: 16.5, thte: 331.8, thtv: 331.4},
-                    {p: 300.0, z: 9610, t: -33.5, td: -43.5, dir: 10, spd: 7.2, thte: 339.2, thtv: 338.1},
-                    {p: 250.0, z: 10850, t: -43.1, td: -56.1, dir: 15, spd: 14.9, thte: 342.2, thtv: 341.9},
-                    {p: 200.0, z: 12320, t: -53.9, td: -72.9, dir: 15, spd: 14.9, thte: 347.3, thtv: 347.3},
-                    {p: 150.0, z: 14130, t: -65.3, td: -82.3, dir: 15, spd: 14.9, thte: 357.4, thtv: 357.4},
-                    {p: 100.0, z: 16580, t: -71.3, td: -87.3, dir: 15, spd: 14.9, thte: 389.7, thtv: 389.7}
-                ]
-            }
-        };
-
-        let currentCase = "19951224";
-        let parcelMode = "pseudo";
-
-        function switchTab(tab) {
-            document.getElementById('tabMain').style.display = tab === 'main' ? 'block' : 'none';
-            document.getElementById('tabComparison').style.display = tab === 'comparison' ? 'block' : 'none';
-            document.getElementById('tabRoadmap').style.display = tab === 'roadmap' ? 'block' : 'none';
-
-            document.getElementById('tabMainBtn').classList.toggle('active', tab === 'main');
-            document.getElementById('tabComparisonBtn').classList.toggle('active', tab === 'comparison');
-            document.getElementById('tabRoadmapBtn').classList.toggle('active', tab === 'roadmap');
-
-            if (tab === 'main') {
-                renderSkewT();
-                renderHodograph();
-                renderBruntVaisala();
-            }
+        function openModal(src) {
+            const modal = document.getElementById('image-modal');
+            const img = document.getElementById('modal-img');
+            modal.style.display = 'flex';
+            img.src = src;
         }
 
-        function toggleParcelMode(mode) {
-            parcelMode = mode;
-            document.getElementById('btnPseudo').classList.toggle('active', mode === 'pseudo');
-            document.getElementById('btnRev').classList.toggle('active', mode === 'reversible');
-            
-            const theory = document.getElementById('emanuelTheoryText');
-            if (mode === 'reversible') {
-                theory.innerHTML = `<strong>Modo Reversível (Emanuel 1994, Cap. 4 & 6; MIT 12.811):</strong> A parcela conserva a entropia úmida total <code>s = (cpd + rt*cl)*ln(T) - Rd*ln(pd) + Lv*rv/T</code>. O termo <code>TLVR = TG * (1. + RG/EPS) / (1. + R(I))</code> subtrai ativamente o peso dos hidrometeoros retidos. O CAPE efetivo é reduzido para <strong>${soundings[currentCase].capeRev.toFixed(0)} J/kg</strong>.`;
-            } else {
-                theory.innerHTML = `<strong>Modo Pseudoadiabático (Clássico):</strong> Assume precipitação instantânea de todo o condensado (sem carregamento de água líquida: <code>r_l = 0</code>). A flutuabilidade utiliza apenas a temperatura virtual pura <code>Tv = TG * (1 + 0.608*rv)</code>. O CAPE atinge o valor máximo de <strong>${soundings[currentCase].mucape.toFixed(0)} J/kg</strong>.`;
-            }
-            renderSkewT();
+        function closeModal() {
+            document.getElementById('image-modal').style.display = 'none';
         }
 
-        function loadCase(key) {
-            currentCase = key;
-            const data = soundings[key];
-
-            // Atualiza badge e métricas
-            document.getElementById('caseBadge').className = `status-badge ${data.badgeClass}`;
-            document.getElementById('caseBadge').innerText = data.status;
-
-            document.getElementById('mucapeVal').innerText = `${data.mucape.toFixed(0)} J/kg`;
-            document.getElementById('capeRevVal').innerText = `${data.capeRev.toFixed(0)} J/kg`;
-            document.getElementById('mucinVal').innerText = `${data.mucin.toFixed(1)} J/kg`;
-            document.getElementById('dcapeVal').innerText = `${data.dcape.toFixed(0)} J/kg`;
-            document.getElementById('shear1kmVal').innerText = `${data.shear1km.toFixed(1)} m/s`;
-            document.getElementById('shear6kmVal').innerText = `${data.shear6km.toFixed(1)} m/s`;
-            document.getElementById('srhVal').innerText = `${data.srh3km.toFixed(0)} m²/s²`;
-            document.getElementById('pwVal').innerText = `${data.pw.toFixed(1)} mm`;
-
-            // Atualiza imagens de perfis e matrizes de Emanuel
-            document.getElementById('imgColabProfiles').src = data.colabProfilesFig;
-            document.getElementById('colabProfilesTitle').innerText = `Perfis Verticais de Mesoescala do Colab (θ, θe, θs, N, S, r) - ${data.date}`;
-            document.getElementById('colabProfilesBadge').innerText = data.status;
-
-            document.getElementById('imgEmanuelRev').src = data.emanuelRevFig;
-            document.getElementById('imgEmanuelPseudo').src = data.emanuelPseudoFig;
-            document.getElementById('emanuelRevTitle').innerText = `Matriz 2D Reversível Tρ (K) - ${data.date}`;
-            document.getElementById('emanuelPseudoTitle').innerText = `Matriz 2D Pseudoadiabática Tv (K) - ${data.date}`;
-
-            // Tabela básica de níveis observados
-            const tbody = document.querySelector('#soundingTable tbody');
-            tbody.innerHTML = '';
-            data.levels.forEach(lvl => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${lvl.p.toFixed(1)}</td>
-                    <td>${lvl.z}</td>
-                    <td style="color:#ef4444;">${lvl.t.toFixed(1)}</td>
-                    <td style="color:#10b981;">${lvl.td.toFixed(1)}</td>
-                    <td>${lvl.dir}°</td>
-                    <td>${lvl.spd.toFixed(1)}</td>
-                    <td>${lvl.thte.toFixed(1)}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-
-            // Redesenha gráficos canvas
-            renderSkewT();
-            renderHodograph();
-            renderBruntVaisala();
-        }
-
-        function renderSkewT() {
-            const canvas = document.getElementById('skewtCanvas');
-            const ctx = canvas.getContext('2d');
-            const w = canvas.width;
-            const h = canvas.height;
-            const data = soundings[currentCase];
-
-            ctx.clearRect(0, 0, w, h);
-
-            const pMin = 100, pMax = 1050;
-            const tMin = -70, tMax = 40;
-
-            function getY(p) {
-                return h * (Math.log(p) - Math.log(pMin)) / (Math.log(pMax) - Math.log(pMin));
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
             }
-
-            function getX(t, p) {
-                const y = getY(p);
-                const skewOffset = (h - y) * 0.75;
-                const tNorm = (t - tMin) / (tMax - tMin);
-                return (tNorm * (w - 100)) + 60 + skewOffset * 0.5 - 120;
-            }
-
-            ctx.strokeStyle = '#1e293b';
-            ctx.lineWidth = 1;
-            ctx.fillStyle = '#64748b';
-            ctx.font = '10px monospace';
-            const isobaricLevels = [1000, 850, 700, 500, 400, 300, 200, 150, 100];
-            isobaricLevels.forEach(p => {
-                const y = getY(p);
-                ctx.beginPath();
-                ctx.moveTo(50, y);
-                ctx.lineTo(w - 20, y);
-                ctx.stroke();
-                ctx.fillText(`${p} hPa`, 10, y + 3);
-            });
-
-            for (let t = -80; t <= 40; t += 10) {
-                ctx.beginPath();
-                ctx.moveTo(getX(t, pMax), getY(pMax));
-                ctx.lineTo(getX(t, pMin), getY(pMin));
-                ctx.strokeStyle = t === 0 ? '#334155' : '#141d2e';
-                ctx.lineWidth = t === 0 ? 1.5 : 1;
-                ctx.stroke();
-                if (t % 20 === 0) {
-                    ctx.fillText(`${t}°C`, getX(t, 1000), getY(1000) + 12);
-                }
-            }
-
-            // Sombra de CAPE
-            if (data.mucape > 50) {
-                ctx.fillStyle = 'rgba(74, 222, 128, 0.18)';
-                ctx.beginPath();
-                const elP = currentCase === '19951224' ? 140 : 250;
-                ctx.moveTo(getX(data.levels[0].t, data.levels[0].p), getY(data.levels[0].p));
-                for (let p = data.levels[0].p; p >= elP; p -= 20) {
-                    const tParcel = data.levels[0].t - (6.0 * (data.levels[0].p - p) / 100.0) + (parcelMode === 'reversible' ? -2.5 : 0.0);
-                    ctx.lineTo(getX(tParcel, p), getY(p));
-                }
-                for (let i = data.levels.length - 1; i >= 0; i--) {
-                    if (data.levels[i].p >= elP && data.levels[i].p <= data.levels[0].p) {
-                        ctx.lineTo(getX(data.levels[i].t, data.levels[i].p), getY(data.levels[i].p));
-                    }
-                }
-                ctx.closePath();
-                ctx.fill();
-            }
-
-            // Ponto de Orvalho Td
-            ctx.strokeStyle = '#10b981';
-            ctx.lineWidth = 2.5;
-            ctx.beginPath();
-            data.levels.forEach((lvl, i) => {
-                const x = getX(lvl.td, lvl.p);
-                const y = getY(lvl.p);
-                if (i === 0) ctx.moveTo(x, y);
-                else ctx.lineTo(x, y);
-            });
-            ctx.stroke();
-
-            // Temperatura T
-            ctx.strokeStyle = '#ef4444';
-            ctx.lineWidth = 2.5;
-            ctx.beginPath();
-            data.levels.forEach((lvl, i) => {
-                const x = getX(lvl.t, lvl.p);
-                const y = getY(lvl.p);
-                if (i === 0) ctx.moveTo(x, y);
-                else ctx.lineTo(x, y);
-            });
-            ctx.stroke();
-
-            // Trajetória da Parcela
-            if (data.mucape > 5) {
-                ctx.strokeStyle = parcelMode === 'reversible' ? '#38bdf8' : '#fbbf24';
-                ctx.lineWidth = 2;
-                ctx.setLineDash([5, 4]);
-                ctx.beginPath();
-                const sfc = data.levels[0];
-                ctx.moveTo(getX(sfc.t, sfc.p), getY(sfc.p));
-                const topP = currentCase === '19951224' ? 120 : 200;
-                for (let p = sfc.p; p >= topP; p -= 15) {
-                    const deltaT = (sfc.p - p) * 0.055;
-                    const waterLoad = (parcelMode === 'reversible' && p < 800) ? 2.5 : 0.0;
-                    const tp = (sfc.t - deltaT) - waterLoad;
-                    ctx.lineTo(getX(tp, p), getY(p));
-                }
-                ctx.stroke();
-                ctx.setLineDash([]);
-            }
-        }
-
-        function renderHodograph() {
-            const canvas = document.getElementById('hodoCanvas');
-            const ctx = canvas.getContext('2d');
-            const w = canvas.width;
-            const h = canvas.height;
-            const cx = w / 2;
-            const cy = h / 2;
-            const scale = 4.8;
-
-            ctx.clearRect(0, 0, w, h);
-
-            ctx.strokeStyle = '#1e293b';
-            ctx.lineWidth = 1;
-            ctx.fillStyle = '#64748b';
-            ctx.font = '10px monospace';
-            [10, 20, 30, 40].forEach(spd => {
-                const r = spd * scale;
-                ctx.beginPath();
-                ctx.arc(cx, cy, r, 0, 2 * Math.PI);
-                ctx.stroke();
-                ctx.fillText(`${spd} m/s`, cx + r - 25, cy - 4);
-            });
-
-            ctx.beginPath();
-            ctx.moveTo(15, cy); ctx.lineTo(w - 15, cy);
-            ctx.moveTo(cx, 15); ctx.lineTo(cx, h - 15);
-            ctx.stroke();
-
-            const data = soundings[currentCase];
-            const pts = data.levels.map(l => {
-                const rad = (l.dir * Math.PI) / 180;
-                const u = -l.spd * Math.sin(rad);
-                const v = -l.spd * Math.cos(rad);
-                return { x: cx + u * scale, y: cy - v * scale, z: l.z };
-            });
-
-            for (let i = 0; i < pts.length - 1; i++) {
-                const p1 = pts[i];
-                const p2 = pts[i + 1];
-                ctx.beginPath();
-                ctx.moveTo(p1.x, p1.y);
-                ctx.lineTo(p2.x, p2.y);
-                ctx.lineWidth = 3;
-
-                if (p2.z <= 1000) ctx.strokeStyle = '#ef4444';
-                else if (p2.z <= 3000) ctx.strokeStyle = '#10b981';
-                else if (p2.z <= 6000) ctx.strokeStyle = '#38bdf8';
-                else ctx.strokeStyle = '#64748b';
-                ctx.stroke();
-            }
-
-            const [smU, smV] = data.stormMotion;
-            const smX = cx + smU * scale;
-            const smY = cy - smV * scale;
-            ctx.fillStyle = '#fbbf24';
-            ctx.beginPath();
-            ctx.arc(smX, smY, 5, 0, 2 * Math.PI);
-            ctx.fill();
-            ctx.fillText('c', smX + 7, smY + 4);
-        }
-
-        function renderBruntVaisala() {
-            const canvas = document.getElementById('bruntCanvas');
-            const ctx = canvas.getContext('2d');
-            const w = canvas.width;
-            const h = canvas.height;
-            const data = soundings[currentCase];
-
-            ctx.clearRect(0, 0, w, h);
-
-            ctx.strokeStyle = '#1e293b';
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(40, 10); ctx.lineTo(40, h - 25);
-            ctx.lineTo(w - 15, h - 25);
-            ctx.stroke();
-
-            ctx.fillStyle = '#64748b';
-            ctx.font = '9px monospace';
-            ctx.fillText('0', 40, h - 10);
-            ctx.fillText('2×10⁻⁴', 130, h - 10);
-            ctx.fillText('4×10⁻⁴ s⁻²', 240, h - 10);
-
-            const g = 9.80665;
-            const n2Pts = [];
-            for (let i = 0; i < data.levels.length - 1; i++) {
-                const l1 = data.levels[i];
-                const l2 = data.levels[i + 1];
-                const dz = l2.z - l1.z;
-                if (dz > 20 && l2.z <= 8000) {
-                    const dth = l2.thtv - l1.thtv;
-                    const thMid = 0.5 * (l1.thtv + l2.thtv);
-                    const n2 = Math.max(-0.5e-4, (g / thMid) * (dth / dz));
-                    n2Pts.push({ n2: n2, z: 0.5 * (l1.z + l2.z) });
-                }
-            }
-
-            ctx.strokeStyle = '#c084fc';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            n2Pts.forEach((pt, i) => {
-                const x = 40 + (pt.n2 / 5e-4) * (w - 70);
-                const y = (h - 25) - (pt.z / 8000) * (h - 40);
-                if (i === 0) ctx.moveTo(x, y);
-                else ctx.lineTo(x, y);
-            });
-            ctx.stroke();
-        }
-
-        window.onload = () => {
-            loadCase(currentCase);
-        };
+        });
     </script>
 </body>
 </html>
-'''
+"""
 
-def main():
-    final_html = HTML_TEMPLATE
-    with open('index.html', 'w', encoding='utf-8') as f_out:
-        f_out.write(final_html)
+    html = html_template.replace('__SUPERAD_TBODY__', superad_tbody)
+    html = html.replace('__MASTER_DIAG_TBODY__', master_diag_tbody)
+    html = html.replace('__WYOMING_COMP_SECTION__', wyoming_comp_section)
+    html = html.replace('__DCAPE_TBODY__', dcape_tbody)
 
-    print(f"Successfully generated index.html without the removed tabs! File size: {len(final_html):,} bytes")
+    with open('index.html', 'w', encoding='utf-8') as f:
+        f.write(html)
+    print("Successfully generated index.html (Tutorial Didático)! File size:", len(html), "bytes")
 
 if __name__ == '__main__':
-    main()
+    generate_html()

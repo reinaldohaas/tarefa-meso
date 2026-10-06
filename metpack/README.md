@@ -7,14 +7,14 @@
 
 ## 0. Diretriz Didática para os Alunos (FSC7116 - UFSC)
 
-### ⚠️ Requisito Obrigatório para a Banca Examinadora (Prof. Reinaldo Haas):
+### ⚠️ Requisito Obrigatório para Apresentação aos Previsores da Defesa Civil de SC (Orientação: Prof. Dr. Reinaldo Haas):
 Cada aluno ou grupo de trabalho **DEVE ESCOLHER OBRIGATORIAMENTE TRÊS RADIOSSONDAGENS ATMOSFÉRICAS REAIS DISTINTAS**, contemplando os três estados fundamentais da troposfera:
 
-1. **Atmosfera ESTÁVEL:** Perfil dominado por subsidência anticiclônica ou regime pós-frontal, ar seco em médios níveis ($T - T_d > 15^\circ\text{C}$), CAPE nulo ($\text{CAPE} = 0\text{ J/kg}$), estabilidade estática profunda ($N^2 > 0$ em toda a coluna), sem LFC ou EL.
-2. **Atmosfera NEUTRA (ou Transição):** Perfil com umidade na camada limite e CAPE moderado, porém associado a inibição convectiva (CIN) e/ou ausência de suporte dinâmico em 500 hPa e cisalhamento vertical fraco ($0\text{--}6\text{ km} \approx 10\text{ m/s}$), resultando em convecção rasa ou desorganizada.
-3. **Atmosfera INSTÁVEL (Convecção Severa):** Perfil com acúmulo extremo de energia ($\text{MUCAPE} > 2.000\text{--}4.600\text{ J/kg}$), presença de Capping Lid (tampa de inversão em 925 hPa) com posterior rompimento, forte gradiente $\partial \theta_e/\partial z < 0$, convergência no JBN ($> 20\text{ m/s}$) e cisalhamento profundo ($0\text{--}6\text{ km} > 20\text{ m/s}$) propício a Supercélulas de Alta Precipitação (HP) e downbursts.
+1. **Atmosfera ESTÁVEL:** Perfil dominado por estratificação térmica estável, ar seco em altitude, CAPE baixo/nulo, estabilidade estática profunda ($N^2 > 0$) e ausência de convecção profunda. *(Exemplo: 12/12/1995)*.
+2. **Atmosfera de TRANSIÇÃO:** Perfil com umidade e equilíbrio convectivo, exibindo flutuabilidade moderada. *(Exemplo: 23/12/1995)*.
+3. **Atmosfera INSTÁVEL:** Perfil com acúmulo de energia convectiva, vento intenso em baixos níveis, cisalhamento vertical profundo e helicidade relativa à tempestade ciclônica (SRH negativa no Hemisfério Sul com o vetor Bunkers Left-Mover). *(Exemplo: 24/12/1995)*.
 
-> **Flexibilidade de Escolha:** As 3 sondagens podem ser da **mesma estação em datas diferentes** (como no nosso caso modelo de Porto Alegre - SBPA em dez/1995: 12/12 estável, 23/12 neutro e 24/12 severo) **OU de estações e regiões geográficas diferentes** na América do Sul (ex: comparar simultaneamente SBPA sob tempo severo com SBFL ou SBCT em regime neutro/estável via Universidade de Wyoming).
+> **Flexibilidade de Escolha:** As 3 sondagens podem ser da **mesma estação em datas diferentes** (como no nosso caso modelo de Porto Alegre - SBPA em dez/1995) **OU de estações e regiões geográficas diferentes** na América do Sul via Universidade de Wyoming.
 
 ---
 
@@ -30,7 +30,6 @@ Todas as rotinas clássicas foram rigorosamente transpostas para **Python 3** mo
 | **`wyoming.f`** | **`wyoming.py`** | Executa a ascensão de parcelas de Kerry Emanuel a cada 5 hPa, calculando CAPE Reversível ($T_\rho$), CAPE Pseudoadiabático ($T_v$), CIN e DCAPE. Gera `cape.out`, `tdifrev.out`, `tdifpseudo.out`, `p.out` e `porig.out`. |
 | **`skewt.m`** | **`skewt.py`** | Gera o diagrama termodinâmico Skew-T / Log-P com adiabáticas secas ($\theta$), saturadas ($\theta_e$), isohígras ($q_s$) e perfil observado oblíquo. |
 | **`tcon.m`** | **`tcon.py`** | Orquestra a execução de `wyoming.py`, plota o Skew-T e gera os mapas de contorno 2D `pcolor`/`contour` de anomalia de temperatura de densidade ($p_{\text{orig}} \times p_{\text{elevada}}$). |
-| — | **`plot_meso.py`** | Painel integrado de 4 quadrantes para apresentação: Skew-T, Hodógrafo do vento com SRH, Espectro de CAPE e Brunt-Väisälä ($N^2$). |
 
 ---
 
@@ -49,7 +48,7 @@ $$B = g \left( \frac{T_{\rho, p} - T_{\rho, e}}{T_{\rho, e}} \right)$$
 
 $$\text{CAPE} = \int_{p_{\text{EL}}}^{p_{\text{LFC}}} R_d (T_{\rho, p} - T_{\rho, e})\, d\ln p$$
 
-Em ambientes tropicais ou subtropicais quentes e úmidos (como Porto Alegre em 24/12/1995, com $r_v \approx 22\text{ g/kg}$), o termo $-r_l$ reduz o CAPE efetivo em **15% a 25%** (uma redução de mais de $1500\text{ J/kg}$).
+Em ambientes tropicais ou subtropicais quentes e úmidos, o termo $-r_l$ (retenção de água líquida) reduz expressivamente a flutuabilidade e o CAPE efetivo em relação ao cálculo pseudoadiabático convencional. Todos os valores comparativos para as 3 sondagens são calculados dinamicamente e consolidados em `metricas.json`.
 
 ---
 
@@ -80,28 +79,20 @@ Start-Process tcon_3_tdifpseudo.png
 Start-Process tcon_comparacao_emanuel.png
 ```
 
-### Passo 3.4: Gerar o Diagnóstico Integrado de Mesoescala (`plot_meso.py`)
-```powershell
-& "$HOME\.local\bin\uv.exe" run --with matplotlib plot_meso.py
-Start-Process diagnostico_mesoescala.png
-```
-
-### Passo 3.5: Gerar as Figuras Científicas do Seminário (`generate_figures.py`)
+### Passo 3.4: Gerar as Figuras Científicas do Seminário (`generate_figures.py`)
 Gera os gráficos de alta resolução baseados nas rotinas do Google Colab do Prof. Reinaldo Haas:
 ```powershell
 cd C:\Users\haas\github\tarefa-meso
 & "$HOME\.local\bin\uv.exe" run --with metpy --with pandas --with matplotlib generate_figures.py
 ```
 Figuras geradas em `metpack/`:
-- `fig_colab_severe_skewt.png`: Skew-T + Hodógrafo + Tabela com 21 índices convectivos do MetPy.
+- `fig_colab_severe_skewt.png`: Skew-T + Hodógrafo + Tabela de índices convectivos do MetPy.
 - `fig_3_soundings_skewt.png`: Comparação das 3 sondagens (12/12 estável, 23/12 moderado, 24/12 severo).
-- `fig_synoptic_analysis.png`: Cartas sinóticas conceituais de 500 hPa (difluência/cavado) e 850 hPa (JBN/umidade).
-- `fig_cap2_profiles.png`: Perfis verticais do Cap. 2 de Emanuel ($\theta/\theta_e/\theta_s$, Brunt-Väisälä $N^2$ com capping lid, razão de mistura $r$ e DCAPE).
-- `fig_kinematics_hodograph.png`: Hodógrafo polar detalhado com camadas cinemáticas, vetor JBN, vetor de tempestade e cisalhamento 0-6 km.
-- `fig_esquema_supercelula_hp.png`: Modelo conceitual de Supercélula de Alta Precipitação (HP) e transição para Linha de Instabilidade.
+- `fig_cap2_profiles.png`: Perfis verticais do Cap. 2 de Emanuel ($\theta/\theta_e/\theta_s$, Brunt-Väisälä $N$, estabilidade $S$, razão de mistura $r$) com topo em 300 hPa.
+- `fig_kinematics_hodograph.png`: Hodógrafo polar com Bunkers Left-Mover no Hemisfério Sul, cisalhamento 0–6 km e SRH 0–3 km.
 
-### Passo 3.6: Gerar a Apresentação em PowerPoint (`generate_pptx.py`)
-Gera o arquivo `apresentacao_meso.pptx` estritamente sincronizado com o roteiro de 20 minutos (10 slides) para a banca examinadora:
+### Passo 3.5: Gerar a Apresentação em PowerPoint (`generate_pptx.py`)
+Gera o arquivo `apresentacao_meso.pptx` estritamente sincronizado com o roteiro de 20 minutos (10 slides) para apresentação aos previsores da Defesa Civil de SC:
 ```powershell
 cd C:\Users\haas\github\tarefa-meso
 & "$HOME\.local\bin\uv.exe" run --with python-pptx generate_pptx.py
