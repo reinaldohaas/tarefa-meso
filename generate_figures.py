@@ -352,7 +352,6 @@ def generate_tripartite_skewt_panel(metrics):
 
     plt.tight_layout()
     plt.savefig('metpack/fig_3_soundings_complete_analysis.png', dpi=160, bbox_inches='tight')
-    plt.savefig('metpack/fig_3_soundings_skewt.png', dpi=160, bbox_inches='tight')
     plt.close()
     print("Saved tripartite Skew-T comparison: metpack/fig_3_soundings_complete_analysis.png")
 
