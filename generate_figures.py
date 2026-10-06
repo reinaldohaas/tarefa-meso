@@ -206,17 +206,20 @@ def generate_individual_skewt(metrics):
         h.plot(u[mask_wind], v[mask_wind], color='#0f172a', linewidth=1.6)
         ax_hodo.set_title('Hodógrafo (kt)', fontsize=8, fontweight='bold', color='#475569')
 
-        # Caixa de índices diagnósticos lidos do JSON
+        # Caixa de índices diagnósticos lidos do JSON (Siphon / MetPy & Emanuel)
         dc_em = m.get('emanuel', {}).get('max_dcape_emanuel_Jkg', 0.0) if isinstance(m.get('emanuel'), dict) else 0.0
+        k_val = f"{m.get('k_index_C', 0):.1f}" if m.get('k_index_C') is not None else "N/A"
+        tt_val = f"{m.get('total_totals_C', 0):.1f}" if m.get('total_totals_C') is not None else "N/A"
+        sh_val = f"{m.get('showalter_K', 0):.1f}" if m.get('showalter_K') is not None else "N/A"
+        sw_val = f"{m.get('sweat_index', 0):.1f}" if m.get('sweat_index') is not None else "N/A"
+        
         text_indices = (
-            f"PW: {m.get('pw_mm', 0):.1f} mm\n"
-            f"SBCAPE: {m.get('sbcape_Jkg', 0):.0f} J/kg | SBCIN: {m.get('sbcin_Jkg', 0):.0f} J/kg\n"
-            f"MUCAPE: {m.get('mucape_Jkg', 0):.0f} J/kg | MUCIN: {m.get('mucin_Jkg', 0):.0f} J/kg\n"
-            f"Bulk Shear 0-6km: {m.get('bulk_shear_0_6km_ms', 0):.1f} m/s ({m.get('bulk_shear_0_6km_kt', 0):.1f} kt)\n"
-            f"SRH 0-3km (LM): {m.get('srh_0_3km_lm_m2s2', 0):.1f} m²/s²\n"
-            f"DCAPE (MetPy): {m.get('dcape_metpy_Jkg', 0):.0f} J/kg | Emanuel (máx): {dc_em:.1f} J/kg"
+            f"PW: {m.get('pw_mm', 0):.1f} mm | K-Index: {k_val}°C | TT: {tt_val} K | Showalter: {sh_val} K | SWEAT: {sw_val}\n"
+            f"SBCAPE: {m.get('sbcape_Jkg', 0):.0f} J/kg (SBCIN: {m.get('sbcin_Jkg', 0):.0f}) | MUCAPE: {m.get('mucape_Jkg', 0):.0f} J/kg (MUCIN: {m.get('mucin_Jkg', 0):.0f})\n"
+            f"Bulk Shear 0-6km: {m.get('bulk_shear_0_6km_ms', 0):.1f} m/s ({m.get('bulk_shear_0_6km_kt', 0):.1f} kt) | SRH 0-3km (LM): {m.get('srh_0_3km_lm_m2s2', 0):.1f} m²/s²\n"
+            f"DCAPE (MetPy): {m.get('dcape_metpy_Jkg', 0):.0f} J/kg | DCAPE Emanuel (máx): {dc_em:.1f} J/kg"
         )
-        fig.text(0.18, 0.03, text_indices, fontsize=8.5, family='monospace',
+        fig.text(0.18, 0.02, text_indices, fontsize=8.2, family='monospace',
                  bbox=dict(boxstyle='round,pad=0.5', facecolor='#f8fafc', edgecolor='#cbd5e1'))
 
         plt.savefig(c['out_fig'], dpi=160, bbox_inches='tight')

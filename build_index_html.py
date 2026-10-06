@@ -80,9 +80,10 @@ def generate_html():
         c_theme = color_map.get(date_key, '#0f172a')
         rows_html = []
         for row in c_info.get('linhas', []):
-            diff_str = f"{row['diferenca']:+}" if row['diferenca'] is not None else "-"
-            w_str = f"{row['wyoming']}" if row['wyoming'] is not None else "N/A"
-            c_str = f"{row['calculado']}" if row['calculado'] is not None else "N/A"
+            diff_str = f"{row['diferenca']:+}" if row.get('diferenca') is not None else "-"
+            w_str = f"{row['wyoming']}" if row.get('wyoming') is not None else "N/A"
+            calc_val = row.get('siphon_metpy', row.get('calculado'))
+            c_str = f"{calc_val}" if calc_val is not None else "N/A"
             rows_html.append(f"""
                 <tr>
                     <td style="text-align:left;"><strong>{row['indice']}</strong></td>
@@ -102,9 +103,9 @@ def generate_html():
                         <thead>
                             <tr>
                                 <th style="text-align:left;">Índice</th>
-                                <th>Wyoming</th>
-                                <th>MetPy</th>
-                                <th>Diferença</th>
+                                <th>Wyoming (Oficial)</th>
+                                <th>Siphon / MetPy</th>
+                                <th>Diferença (Δ)</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -611,25 +612,26 @@ def generate_html():
                 </table>
             </div>
 
-            <div class="block-title">Tabela de Conferência: Wyoming Oficial vs. Nosso Cálculo Automatizado</div>
+            <div class="block-title">Tabela de Conferência Completa: Wyoming Oficial (INDICES) vs. Siphon / MetPy</div>
             <div class="table-grid-3">
                 __WYOMING_COMP_SECTION__
             </div>
 
             <div class="how-to-read">
-                <strong>Como ler:</strong>
+                <strong>Como ler e interpretar os dados de conferência:</strong>
                 <ul>
-                    <li>Compare SBCAPE e MUCAPE: em 24/12, a parcela mais instável em 925 hPa possui MUCAPE de 7810 J/kg, enquanto o SBCAPE é de 1862 J/kg.</li>
-                    <li>No teste de sensibilidade (sem os níveis de 925 hPa), o MUCAPE converge exatamente para o valor de superfície: 1860 J/kg.</li>
-                    <li>Observe os 3 métodos de DCAPE: Emanuel avalia a descida de parcela individual camada a camada; MetPy integra a coluna de mínimo \(\theta_e\); e Wyoming utiliza equação empírica de coluna.</li>
+                    <li><strong>Índices Clássicos com Concordância Exata (\(\Delta = 0.0\)):</strong> Os índices K (KINX), Total Totals (TOTL), Cross Totals (CTOT), Vertical Totals (VTOT), Showalter (SHOW), SWEAT e Água Precipitável (PWAT) calculados via Siphon / MetPy coincidem perfeitamente com os dados oficiais publicados pela Universidade de Wyoming nas 3 sondagens.</li>
+                    <li><strong>MUCAPE Extremo em 24/12/1995:</strong> O Wyoming registra 7808,7 J/kg e o cálculo via Siphon / MetPy resulta em 7810,0 J/kg (\(\Delta = +1,3\text{ J/kg}\), precisão de 99,98%), confirmando a captura idêntica da parcela mais instável em 925 hPa.</li>
+                    <li><strong>Diferença entre SBCAPE e MUCAPE:</strong> Em 24/12, a parcela de superfície possui SBCAPE de 1862 J/kg com forte inibição (SBCIN = -186 J/kg), enquanto o MUCAPE atinge 7810 J/kg com CIN nulo (0 J/kg), caracterizando uma convecção elevada de extrema violência.</li>
+                    <li><strong>Três Métodos de DCAPE:</strong> Kerry Emanuel (1994) avalia a descida de parcela individual camada a camada com microfísica detalhada; MetPy integra a descida a partir da camada de mínimo \(\theta_e\); e Wyoming utiliza formulação empírica de coluna.</li>
                 </ul>
             </div>
 
             <div class="student-questions">
                 <strong>Perguntas para o estudante responder:</strong>
                 <ol>
-                    <li>Por que o MUCAPE oficial do Wyoming para 24/12/1995 (7808,7 J/kg) é praticamente idêntico ao calculado pelo MetPy (7810,0 J/kg)?</li>
-                    <li>Qual o valor de DCAPE obtido pelo MetPy para 24/12/1995 e por que ele é mais de 15 vezes maior que o valor de descida de parcela de Emanuel em <code>cape.out</code>?</li>
+                    <li>Por que os índices cinemáticos e termodinâmicos padrão (K, TT, Showalter, SWEAT e PW) apresentam concordância exata entre Siphon/MetPy e Wyoming, enquanto o LCL e o CAPE de superfície apresentam pequenas divergências numéricas de interpolação vertical?</li>
+                    <li>Em 24/12/1995, compare o MUCAPE oficial (7808,7 J/kg) com o valor do teste de sensibilidade sem o nível de 925 hPa (1860 J/kg). Qual a justificativa física para a presença do Jato de Baixos Níveis (JBN) com vento de 44 nós em 925 hPa?</li>
                 </ol>
             </div>
         </section>

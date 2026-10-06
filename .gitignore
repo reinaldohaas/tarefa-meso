@@ -4,3 +4,7 @@ saida/
 *.exe
 metpack/testes/
 screenshot_*.png
+emanuel_*/
+/*.png
+/wyoming_*.txt
+/wyoming*.f
