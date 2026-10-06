@@ -781,6 +781,7 @@ def generate_html():
                 Os casos de Porto Alegre (SBPA 83971) em 12/12, 22/12 e 24/12/1995 mostrados acima são apenas o <strong>exemplo resolvido</strong>.
                 <strong>Cada estudante ou dupla deve trocar as três sondagens</strong>, escolhendo datas e/ou estações próprias no acervo da
                 Universidade de Wyoming (diferentes das do exemplo e das dos colegas), uma para cada regime: Estável, Neutra e Instável.
+                Presumivelmente, a sondagem instável é a mais próxima (no tempo e no espaço) do evento severo escolhido para o trabalho de fim de curso.
             </div>
 
             <div class="how-to-read">

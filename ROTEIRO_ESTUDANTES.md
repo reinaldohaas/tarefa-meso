@@ -22,6 +22,7 @@ Os casos de Porto Alegre (SBPA 83971) em 12/12, 22/12 e 24/12/1995 são apenas o
 **Cada aluno ou dupla deve trocar as três sondagens**, escolhendo:
 - **datas e/ou estações próprias**, diferentes das do exemplo e das dos colegas (combine a escolha com o professor);
 - **uma sondagem para cada regime** (estável, neutro e instável), justificando a classificação com os índices calculados;
+- presumivelmente, a sondagem **instável** é a mais próxima (no tempo e no espaço) do evento severo escolhido para o trabalho de fim de curso; as sondagens estável e neutra servem de contraste;
 - estações disponíveis no arquivo da Universidade de Wyoming (código WMO de 5 dígitos, por exemplo 83971 Porto Alegre, 83899 Florianópolis, 83840 Curitiba), nos horários 00Z ou 12Z, conferindo antes no site que a sondagem existe.
 
 | Regime Atmosférico | Assinatura Termodinâmica Típica | Comportamento Físico Esperado | Exemplo do tutorial (SBPA 83971), não reutilizar |
