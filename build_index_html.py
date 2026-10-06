@@ -778,8 +778,9 @@ def generate_html():
                 <h2>7. Agora é sua Vez: Como Escolher as Três Sondagens e Executar o Trabalho</h2>
             </div>
             <div class="explanation-text">
-                Cada estudante ou dupla deve selecionar <strong>três radiossondagens reais distintas</strong> no acervo da Universidade de Wyoming, 
-                representando os três regimes atmosféricos da troposfera: Estável, Neutra e Instável.
+                Os casos de Porto Alegre (SBPA 83971) em 12/12, 22/12 e 24/12/1995 mostrados acima são apenas o <strong>exemplo resolvido</strong>.
+                <strong>Cada estudante ou dupla deve trocar as três sondagens</strong>, escolhendo datas e/ou estações próprias no acervo da
+                Universidade de Wyoming (diferentes das do exemplo e das dos colegas), uma para cada regime: Estável, Neutra e Instável.
             </div>
 
             <div class="how-to-read">
@@ -794,9 +795,10 @@ def generate_html():
             <div class="block-title">Roteiro Passo a Passo de Execução:</div>
             <ol style="color:#334155; font-size:0.95rem; line-height:1.7;">
                 <li>Abra o notebook oficial da disciplina: <a href="https://colab.research.google.com/github/reinaldohaas/tarefa-meso/blob/master/Seminario_plot_sounding_revisado.ipynb" target="_blank" style="color:#0284c7; font-weight:700;">Seminario_plot_sounding_revisado.ipynb</a>.</li>
-                <li>Defina as datas e o código da estação de radiossondagem no início do notebook.</li>
+                <li>Na célula <code>CASOS</code> do notebook, troque o código da estação e a data das três sondagens do exemplo pelas suas.</li>
                 <li>Execute o download automático dos dados via endpoint WSGI da Universidade de Wyoming.</li>
                 <li>Processe os perfis verticais (\(\theta, \theta_e, \theta_{es}, N^2, S, r\)), Skew-T, hodógrafos e matrizes 2D de Kerry Emanuel.</li>
+                <li>Alternativa em MATLAB Online: rode <code>metpack/tarefa_sondagens.m</code> (programas de Kerry Emanuel adaptados; ver ROTEIRO_ESTUDANTES.md, item 3.3).</li>
                 <li>Gere a apresentação formal em PowerPoint (10 slides em 16:9 widescreen) para apresentação aos previsores da Defesa Civil de SC sob orientação do Prof. Dr. Reinaldo Haas.</li>
             </ol>
 

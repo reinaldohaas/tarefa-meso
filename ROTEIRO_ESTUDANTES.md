@@ -8,19 +8,23 @@
 ---
 
 ## 📋 Sumário Executivo
-Este documento orienta os estudantes no cumprimento integral da tarefa de meteorologia de mesoescala. O trabalho consiste em diagnosticar **três regimes atmosféricos distintos** (Estável, Neutro/Transição e Instável) a partir de dados reais de radiossondagem, processar as variáveis termodinâmicas e cinemáticas clássicas e avançadas (algoritmo de Kerry Emanuel, 1994), e produzir **duas apresentações complementares**:
+Este documento orienta os estudantes no cumprimento integral da tarefa de meteorologia de mesoescala. O trabalho consiste em diagnosticar **três regimes atmosféricos distintos** (Estável, Neutro e Instável) a partir de **três radiossondagens reais escolhidas pelo próprio aluno ou dupla**, processar as variáveis termodinâmicas e cinemáticas clássicas e avançadas (algoritmo de Kerry Emanuel, 1994), e produzir **duas apresentações complementares**:
 
 1. **Apresentação 1 (Laboratório e Diagnóstico Físico):** Foco em metodologia de extração e controle de qualidade dos dados, reprodução do código no Google Colab / Python local, geração e interpretação detalhada de todos os perfis verticais ($\theta, \theta_e, \theta_s, N, S, r, PW$), diagramas Skew-T, hodógrafos e matrizes 2D de Emanuel.
 2. **Apresentação 2 (Defesa Oral de 20 Minutos perante os Previsores da Defesa Civil de SC):** Apresentação formal de síntese diagnóstica e operacional (10 slides em formato 16:9 widescreen sob orientação do Prof. Dr. Reinaldo Haas), rigorosamente cronometrada, com acoplamento dinâmico, suporte de cisalhamento em baixos níveis e balanço termodinâmico.
 
-> **Importante (Integridade dos Dados):** Todos os valores numéricos de diagnóstico citados devem provir estritamente do arquivo mestre `metpack/metricas.json`, gerado a partir das sondagens de Wyoming e dos relatórios de Kerry Emanuel (1994). É estritamente proibido inventar valores ou utilizar aproximações analíticas sintéticas.
+> **Importante (Integridade dos Dados):** Todos os valores citados devem sair da execução do notebook (ou do MATLAB) com as SUAS três sondagens: saídas das células e o arquivo `metpack/metricas_notebook.json` gerado na sua execução. O `metpack/metricas.json` do repositório contém apenas os valores do exemplo do tutorial. É proibido inventar valores ou copiar os do exemplo.
 
 ---
 
 ## 1. 🎯 Requisito Fundamental: As Três Radiossondagens
-Cada aluno ou dupla deve selecionar e analisar **três radiossondagens obrigatoriamente distintas** (em datas e/ou localidades diferentes):
+Os casos de Porto Alegre (SBPA 83971) em 12/12, 22/12 e 24/12/1995 são apenas o **exemplo resolvido** do tutorial.
+**Cada aluno ou dupla deve trocar as três sondagens**, escolhendo:
+- **datas e/ou estações próprias**, diferentes das do exemplo e das dos colegas (combine a escolha com o professor);
+- **uma sondagem para cada regime** (estável, neutro e instável), justificando a classificação com os índices calculados;
+- estações disponíveis no arquivo da Universidade de Wyoming (código WMO de 5 dígitos, por exemplo 83971 Porto Alegre, 83899 Florianópolis, 83840 Curitiba), nos horários 00Z ou 12Z, conferindo antes no site que a sondagem existe.
 
-| Regime Atmosférico | Assinatura Termodinâmica Típica | Comportamento Físico Esperado | Caso de Referência (SBPA 83971) |
+| Regime Atmosférico | Assinatura Termodinâmica Típica | Comportamento Físico Esperado | Exemplo do tutorial (SBPA 83971), não reutilizar |
 | :--- | :--- | :--- | :--- |
 | **1. Atmosfera ESTÁVEL** | Inversão térmica ou isotermia em baixos níveis; ar seco na média troposfera; estratificação estável com $N > 0$; $\text{SBCAPE} < 50\text{ J/kg}$. | Estratificação térmica e hidrostática estável; ausência de convecção profunda. | `12/12/1995 12Z`<br>($\text{SBCAPE} = 15.7\text{ J/kg}$, $\text{MUCAPE} = 0.9\text{ J/kg}$, $\text{PW} = 35.1\text{ mm}$) |
 | **2. Atmosfera NEUTRA** | Camada limite com umidade moderada; fraca flutuabilidade; cisalhamento e convergência fracos. | Transição convectiva; umedecimento progressivo da troposfera. | `22/12/1995 12Z`<br>($\text{SBCAPE} = 836.0\text{ J/kg}$, $\text{MUCAPE} = 836.0\text{ J/kg}$, $\text{SBCIN} = -221.8\text{ J/kg}$, $\text{PW} = 43.9\text{ mm}$, Shear 0–6 km = $2.8\text{ m/s}$) |
@@ -75,27 +79,60 @@ python metpack/wyoming.py
 ### 3.1. Opção A: Execução no Google Colab
 1. Abra o notebook oficial da disciplina: [Seminario_plot_sounding_revisado.ipynb](https://colab.research.google.com/github/reinaldohaas/tarefa-meso/blob/master/Seminario_plot_sounding_revisado.ipynb).
 2. Execute as células sequencialmente para instalar o `metpy` e `siphon` e compilar o modelo de Kerry Emanuel (`wyoming.f`).
-3. Defina os parâmetros das suas 3 sondagens na lista `CASOS` (`station`, `date`, `regime`).
+3. Na célula `CASOS`, troque estação e data pelas suas três sondagens:
+   ```python
+   CASOS = [
+       dict(regime='ESTÁVEL',  station='XXXXX', date=datetime(AAAA, MM, DD, HH), src='FM35'),
+       dict(regime='NEUTRA',   station='XXXXX', date=datetime(AAAA, MM, DD, HH), src='FM35'),
+       dict(regime='INSTÁVEL', station='XXXXX', date=datetime(AAAA, MM, DD, HH), src='FM35'),
+   ]
+   ```
+   As cópias de reserva em `metpack/` existem só para o exemplo; para as suas datas o notebook precisa de internet (Siphon/Wyoming). Confira no site do Wyoming o valor de `src` disponível para a sua data.
 4. Execute as rotinas de cálculo para gerar as tabelas comparativas (MetPy vs. Wyoming), diagramas Skew-T, perfis até 200 hPa e matrizes de flutuabilidade de Emanuel.
 
 ### 3.2. Opção B: Execução Local com `uv` (Recomendada)
 O gerenciador de ambientes [uv](https://github.com/astral-sh/uv) permite rodar os scripts sem conflitos de dependências:
 ```powershell
-# 1. Recalcular métricas oficiais (gera metpack/metricas.json)
+# 0. Executar o notebook com as suas sondagens (grava figuras e metpack/metricas_notebook.json; precisa do gfortran)
+uv run --with metpy --with siphon --with requests --with matplotlib --with nbconvert --with ipykernel jupyter nbconvert --to notebook --execute --inplace Seminario_plot_sounding_revisado.ipynb
+
+# 1. Montar metpack/metricas.json com os valores do notebook
 uv run --with metpy --with pandas --with numpy python metpack/calc_metricas.py
 
-# 2. Gerar as matrizes 2D de Emanuel (tcon.py)
-uv run --with matplotlib --with numpy python metpack/tcon.py
-
-# 3. Gerar todas as figuras científicas (perfis até 200 hPa, Skew-T, hodógrafo)
+# 2. Figuras complementares (painel triplo, Cap. 2, hodógrafo com Bunkers LM/RM)
 uv run --with metpy --with cartopy --with matplotlib --with numpy python generate_figures.py
 
-# 4. Gerar a apresentação em PowerPoint (10 slides)
+# 3. Gerar a apresentação em PowerPoint (10 slides)
 uv run --with python-pptx python generate_pptx.py
 
-# 5. Compilar o dashboard web (index.html)
+# 4. Compilar o tutorial web (index.html)
 uv run python build_index_html.py
 ```
+
+### 3.3. Opção C: MATLAB Online (programas originais de Kerry Emanuel)
+Os programas em MATLAB de Kerry Emanuel ([texmex.mit.edu/pub/emanuel/soundings](https://texmex.mit.edu/pub/emanuel/soundings/): `getsounding.m`, `skewt.m`, `tcon.m`, `wyoming.f` e `instructions.pdf`) foram adaptados em `metpack/` para a interface atual do Wyoming:
+
+| Original (Emanuel) | Adaptado em `metpack/` | O que muda |
+| :--- | :--- | :--- |
+| `getsounding.m` | `getsounding_wyoming.m` | Usa o endereço atual (`wsgi`), lê as colunas pela posição do cabeçalho, converte o vento SPED (m/s) para nós e grava o `sounding.txt` no formato lido pelo `wyoming.f`. Sem internet, usa a cópia local `sounding_AAAAMMDD_HHZ.txt`. |
+| `tcon.m` | `tcon_emanuel.m` | Compila o `wyoming.f` (gfortran), roda e desenha as matrizes reversível e pseudoadiabática lado a lado, na mesma escala, sem o piso artificial de −4 K. |
+| `skewt.m` | `skewt.m` (sem mudança) | `skewt(p, T, UR/100)`. |
+| — | `tarefa_sondagens.m` | Script principal: roda as três sondagens de `CASOS`. |
+
+Passos no [MATLAB Online](https://matlab.mathworks.com) (é preciso uma conta MathWorks):
+1. Envie a pasta `metpack/` do repositório para o MATLAB Drive (Upload) e abra `metpack/tarefa_sondagens.m`.
+2. Em `CASOS`, troque estação e data pelas suas três sondagens (o exemplo é Porto Alegre, dezembro de 1995):
+   ```matlab
+   CASOS = {
+       'ESTÁVEL',    XXXXX,    [AAAA MM DD HH];
+       'NEUTRA',     XXXXX,    [AAAA MM DD HH];
+       'INSTÁVEL',   XXXXX,    [AAAA MM DD HH];
+   };
+   ```
+3. Clique em **Run**. Para cada caso saem o Skew-T de Emanuel e as matrizes de flutuabilidade; no Command Window aparecem a fonte dos dados e as CAPE reversível e pseudoadiabática (superfície e máxima).
+4. Se o MATLAB Online não tiver compilador Fortran (`gfortran`), o `tcon_emanuel.m` avisa. Nesse caso, rode o notebook (Opção A) com as mesmas sondagens e copie para a pasta `emanuel_AAAAMMDD_HH` de cada caso os arquivos `p.out`, `porig.out`, `tdifrev.out`, `tdifpseudo.out` e `cape.out`; ao rodar de novo, o MATLAB usa esses arquivos.
+
+Os valores de CAPE de Emanuel obtidos pelo MATLAB devem ser iguais aos do notebook para as mesmas sondagens (é o mesmo `wyoming.f` com a mesma entrada); confira e comente qualquer diferença.
 
 ---
 
@@ -126,6 +163,9 @@ uv run python build_index_html.py
 ---
 
 ## 5. ⏱️ Estrutura da Apresentação 2: Defesa Oral de 20 Minutos perante os Previsores da Defesa Civil de SC
+
+> As datas e os valores citados nesta seção são do exemplo do tutorial (SBPA, dezembro de 1995). Na sua apresentação, use as suas três sondagens e os valores da sua execução.
+
 *Objetivo:* Defesa formal de 20 minutos (10 slides em proporção 16:9), focada na síntese física, forçamento de mesoescala e conclusões diagnósticas sob orientação acadêmica do Prof. Dr. Reinaldo Haas.
 
 ### Tabela de Cronometragem Slide a Slide:
@@ -145,6 +185,8 @@ uv run python build_index_html.py
 ---
 
 ## 6. 🧠 Perguntas Típicas dos Previsores da Defesa Civil de SC e Como Responder
+
+> As datas e os valores citados nesta seção são do exemplo do tutorial (SBPA, dezembro de 1995). Na sua apresentação, use as suas três sondagens e os valores da sua execução.
 
 ### Pergunta 1: *"Por que o CAPE no modo reversível de Kerry Emanuel é significativamente menor que no modo pseudoadiabático tradicional?"*
 > **Resposta do Aluno:**  
@@ -169,7 +211,7 @@ uv run python build_index_html.py
 ---
 
 ## 7. 📦 Recursos Prontos Disponíveis no Repositório
-- **Arquivo Mestre de Métricas:** `metpack/metricas.json` (fonte única de todos os índices diagnósticos verificados e da tabela de conferência oficial com Wyoming).
+- **Métricas do exemplo do tutorial:** `metpack/metricas.json` e `metpack/metricas_notebook.json` (valores das sondagens de Porto Alegre, dezembro de 1995; os seus valores saem da sua execução).
 - **Notebook Oficial da Disciplina:** [Seminario_plot_sounding_revisado.ipynb](https://colab.research.google.com/github/reinaldohaas/tarefa-meso/blob/master/Seminario_plot_sounding_revisado.ipynb) (processamento via Siphon/MetPy, conferência com Wyoming e modelagem de parcelas de Emanuel).
 - **Apresentação PPTX Formatada:** `apresentacao_meso.pptx` (10 slides 16:9 widescreen gerados por script, com notas de orador completas para os previsores da Defesa Civil de SC).
 - **Dashboard Web:** `index.html` (aba de comparação tríplice com tabelas e perfis até 200 hPa, e aba de roteiro pedagógico).
@@ -177,8 +219,8 @@ uv run python build_index_html.py
   - `metpack/calc_metricas.py`: Consolidação de métricas diagnósticas, índices de Wyoming e teste de sensibilidade.
   - `metpack/wyoming.py`: Algoritmo de Emanuel em Python puro (suporta `corte=None|-4.0`).
   - `metpack/wyoming.f`: Código clássico de Kerry Emanuel em Fortran.
-  - `metpack/compare_wyoming.py`: Script de validação Fortran vs Python.
   - `metpack/tcon.py`: Geração das matrizes 2D de diferença térmica de Emanuel.
+  - `metpack/tarefa_sondagens.m`, `metpack/getsounding_wyoming.m`, `metpack/tcon_emanuel.m`, `metpack/skewt.m`: versão MATLAB (MATLAB Online) dos programas de Kerry Emanuel.
   - `generate_figures.py`: Geração dos perfis até 200 hPa, Skew-T e hodógrafos.
   - `generate_pptx.py`: Geração da apresentação em PowerPoint.
   - `build_index_html.py`: Compilador do `index.html`.
