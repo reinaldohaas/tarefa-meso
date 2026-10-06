@@ -67,26 +67,9 @@ tarefa-meso/
 
 ---
 
-## 🛠️ Para manter o site e os slides (professor)
+## 🛠️ Como rodar
 
-Não é necessário para os alunos. O notebook `Seminario_plot_sounding_revisado.ipynb` é a fonte dos dados, dos valores e das figuras principais do exemplo: ele grava em `metpack/` as figuras e o `metricas_notebook.json`. Depois dele, os scripts abaixo atualizam o `metricas.json`, as figuras complementares, o `index.html` e o `apresentacao_meso.pptx` (precisa do `gfortran`):
-
-```powershell
-# 0. Executar o notebook (grava figuras e metpack/metricas_notebook.json)
-uv run --with metpy --with siphon --with requests --with matplotlib --with nbconvert --with ipykernel jupyter nbconvert --to notebook --execute --inplace Seminario_plot_sounding_revisado.ipynb
-
-# 1. Montar metpack/metricas.json (usa os valores do notebook)
-uv run --with metpy --with pandas --with numpy python metpack/calc_metricas.py
-
-# 2. Gerar as figuras complementares (painel triplo, Cap. 2, hodógrafo com Bunkers LM/RM)
-uv run --with metpy --with cartopy --with matplotlib --with numpy python generate_figures.py
-
-# 3. Gerar o tutorial web para GitHub Pages
-uv run python build_index_html.py
-
-# 4. Gerar a apresentação em PowerPoint (10 slides / 20 min)
-uv run --with python-pptx python generate_pptx.py
-```
+Veja o **[ROTEIRO_ESTUDANTES.md](https://github.com/reinaldohaas/tarefa-meso/blob/master/ROTEIRO_ESTUDANTES.md)**, item 3: as três formas de rodar (notebook no Colab ou em IDE com Jupyter, linha de comando com o `uv` e MATLAB Online), com o que instalar e os comandos.
 
 ---
 

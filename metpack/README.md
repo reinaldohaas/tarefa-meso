@@ -63,7 +63,13 @@ Para cada caso de `CASOS`, a pasta `emanuel_AAAAMMDD_HH` recebe `skewt.png`, `ma
 
 **MATLAB Online**: envie a pasta `metpack/` para o MATLAB Drive, abra `tarefa_sondagens.m`, troque `CASOS` e clique em Run.
 
-**Notebook** (índices do MetPy, perfis, hodógrafo e figuras do site): `Seminario_plot_sounding_revisado.ipynb`. Depois dele, `calc_metricas.py`, `generate_figures.py`, `build_index_html.py` e `generate_pptx.py` atualizam o site e os slides (ver `README.md` na raiz).
+**Notebook** (índices do MetPy, perfis, hodógrafo e figuras do site): `Seminario_plot_sounding_revisado.ipynb`. Depois dele, para atualizar o site e os slides do exemplo (só para quem mantém o repositório), na pasta do repositório:
+```powershell
+uv run --with metpy --with pandas --with numpy python metpack/calc_metricas.py
+uv run --with metpy --with cartopy --with matplotlib --with numpy python generate_figures.py
+uv run python build_index_html.py
+uv run --with python-pptx python generate_pptx.py
+```
 
 ---
 
