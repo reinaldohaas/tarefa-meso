@@ -7,9 +7,9 @@ Regras de Integridade Científica e Tutoriais:
 2. Nenhuma interpretação fixada em gráfico: sem caixas/setas/faixas de "tampa", "capping lid", "inversão", "pico".
 3. Fundo branco, paleta consistente e acessível a daltônicos para as 3 sondagens:
    - 12/12/1995 (Estável): Azul (#1f77b4)
-   - 23/12/1995 (Transição): Âmbar (#d97706)
+   - 22/12/1995 (Transição): Âmbar (#d97706)
    - 24/12/1995 (Instável): Vermelho (#dc2626)
-4. Perfis verticais até 300 hPa:
+4. Perfis verticais até 200 hPa:
    - Painéis θ, θe, θes com mesmos eixos.
    - N² (frequência de Brunt-Väisälä ao quadrado, mostrando N² < 0) com linha N² = 0.
    - S = -(T/θ)∂θ/∂p em K/hPa com linha S = 0.
@@ -35,7 +35,7 @@ plt.rcParams['axes.linewidth'] = 1.0
 
 # Cores padronizadas para as três sondagens
 COLOR_12 = '#1f77b4'  # Azul - 12/12 Estável
-COLOR_23 = '#d97706'  # Âmbar - 23/12 Transição
+COLOR_22 = '#d97706'  # Âmbar - 22/12 Transição
 COLOR_24 = '#dc2626'  # Vermelho - 24/12 Instável
 COLOR_SENS = '#7c3aed' # Roxo - 24/12 Sensibilidade
 
@@ -125,10 +125,10 @@ def generate_individual_skewt(metrics):
             'out_fig': 'metpack/fig_sounding_1_estavel.png'
         },
         {
-            'date': '19951223',
-            'm_key': '19951223',
-            'title': 'Radiossondagem SBPA — 23/12/1995 12Z (Atmosfera de Transição)',
-            'color': COLOR_23,
+            'date': '19951222',
+            'm_key': '19951222',
+            'title': 'Radiossondagem SBPA — 22/12/1995 12Z (Atmosfera de Transição)',
+            'color': COLOR_22,
             'out_fig': 'metpack/fig_sounding_2_neutra.png'
         },
         {
@@ -252,7 +252,7 @@ def generate_individual_skewt(metrics):
         ax_params.add_patch(box)
 
         # Cabeçalho do Painel
-        ax_params.text(0.05, 0.93, "PARÂMETROS DIAGNÓSTICOS (Siphon / MetPy)",
+        ax_params.text(0.05, 0.93, "PARÂMETROS DIAGNÓSTICOS (MetPy)",
                        fontsize=12, fontweight='bold', color='#0f172a', transform=ax_params.transAxes)
         ax_params.plot([0.05, 0.95], [0.89, 0.89], color='#cbd5e1', linewidth=1.3, transform=ax_params.transAxes)
 
@@ -302,13 +302,13 @@ def generate_individual_skewt(metrics):
 def generate_tripartite_skewt_panel(metrics):
     """Gera o painel 3-em-1 comparando os Skew-T lado a lado."""
     fig = plt.figure(figsize=(18, 7.5), dpi=150)
-    dates = ['19951212', '19951223', '19951224']
+    dates = ['19951212', '19951222', '19951224']
     titles = [
         '12/12/1995 12Z (Estável)',
-        '23/12/1995 12Z (Transição)',
+        '22/12/1995 12Z (Transição)',
         '24/12/1995 12Z (Instável)'
     ]
-    m_keys = ['19951212', '19951223', '19951224_raw']
+    m_keys = ['19951212', '19951222', '19951224_raw']
 
     for i, date in enumerate(dates):
         df = parse_sounding_file(f"metpack/sounding_{date}_12Z.txt")
@@ -357,24 +357,24 @@ def generate_tripartite_skewt_panel(metrics):
     print("Saved tripartite Skew-T comparison: metpack/fig_3_soundings_complete_analysis.png")
 
 # ==============================================================================
-# 3. PERFIS DE THETA, THETA-E, THETA-ES (3 PAINÉIS, MESMOS EIXOS, TOPO EM 300 hPa)
+# 3. PERFIS DE THETA, THETA-E, THETA-ES (3 PAINÉIS, MESMOS EIXOS, TOPO EM 200 hPa)
 # ==============================================================================
 def generate_perfis_theta_triplice(metrics):
     """
     Gera a figura com 3 painéis de θ, θe e θes (um por sondagem)
-    com estritamente os mesmos eixos e topo em 300 hPa.
+    com estritamente os mesmos eixos e topo em 200 hPa.
     """
     cases = [
         ('19951212', '12/12/1995 12Z (Estável)', COLOR_12),
-        ('19951223', '23/12/1995 12Z (Transição)', COLOR_23),
+        ('19951222', '22/12/1995 12Z (Transição)', COLOR_22),
         ('19951224', '24/12/1995 12Z (Instável)', COLOR_24)
     ]
 
     fig, axes = plt.subplots(1, 3, figsize=(16, 7), dpi=150)
-    fig.suptitle("Perfis de Temperatura Potencial: θ (Seca), θe (Equivalente) e θes (Saturação)\nComparação dos Três Regimes Troposféricos (Superfície até 300 hPa)",
+    fig.suptitle("Perfis de Temperatura Potencial: θ (Seca), θe (Equivalente) e θes (Saturação)\nComparação dos Três Regimes Troposféricos (Superfície até 200 hPa)",
                  fontsize=13, fontweight='bold', color='#0f172a', y=0.98)
 
-    yticks = [1000, 925, 850, 700, 600, 500, 400, 300]
+    yticks = [1000, 925, 850, 700, 600, 500, 400, 300, 200]
 
     for i, (date, label, c_border) in enumerate(cases):
         ax = axes[i]
@@ -390,8 +390,8 @@ def generate_perfis_theta_triplice(metrics):
         theta_e = mpcalc.equivalent_potential_temperature(p, T, Td).to('kelvin')
         theta_es = mpcalc.saturation_equivalent_potential_temperature(p, T).to('kelvin')
 
-        # Filtro até 300 hPa
-        mask = p >= 290 * units.hPa
+        # Filtro até 200 hPa
+        mask = p >= 195 * units.hPa
         p_m = p[mask].magnitude
         th_m = theta[mask].magnitude
         the_m = theta_e[mask].magnitude
@@ -401,7 +401,7 @@ def generate_perfis_theta_triplice(metrics):
         ax.plot(the_m, p_m, color='#16a34a', linewidth=2.2, label='θe (Equivalente)')
         ax.plot(thes_m, p_m, color='#dc2626', linestyle='--', linewidth=2.0, label='θes (Saturação)')
 
-        ax.set_ylim(1050, 300)
+        ax.set_ylim(1050, 200)
         ax.set_yscale('log')
         ax.set_yticks(yticks)
         ax.set_yticklabels([str(y) for y in yticks])
@@ -423,7 +423,7 @@ def generate_perfis_theta_triplice(metrics):
     print(f"Saved: {out_fig}")
 
 # ==============================================================================
-# 4. COMPARAÇÃO TRÍPLICE DE ESTABILIDADE: θe, N², S = -(T/θ)∂θ/∂p E r (TOPO 300 hPa)
+# 4. COMPARAÇÃO TRÍPLICE DE ESTABILIDADE: θe, N², S = -(T/θ)∂θ/∂p E r (TOPO 200 hPa)
 # ==============================================================================
 def generate_3_soundings_profiles_comparison(metrics):
     """
@@ -432,19 +432,19 @@ def generate_3_soundings_profiles_comparison(metrics):
     - Painel 2: N² (frequência de Brunt-Väisälä ao quadrado, ×10⁻⁴ s⁻²)
     - Painel 3: Estabilidade Estática S = -(T/θ)∂θ/∂p em K/hPa
     - Painel 4: Razão de mistura r (g/kg)
-    Topo padronizado em 300 hPa, fundo branco e mesma paleta de cores.
+    Topo padronizado em 200 hPa, fundo branco e mesma paleta de cores.
     """
     cases = [
         ('19951212', '12/12/1995 (Estável)', COLOR_12, '-'),
-        ('19951223', '23/12/1995 (Transição)', COLOR_23, '--'),
+        ('19951222', '22/12/1995 (Transição)', COLOR_22, '--'),
         ('19951224', '24/12/1995 (Instável)', COLOR_24, '-')
     ]
 
     fig, axes = plt.subplots(1, 4, figsize=(18, 7.5), dpi=150)
-    fig.suptitle("Diagnóstico Comparativo Vertical de Estabilidade Troposférica (Superfície até 300 hPa)\nSBPA Porto Alegre: Estável (12/12/1995), Transição (23/12/1995) e Instável (24/12/1995)",
+    fig.suptitle("Diagnóstico Comparativo Vertical de Estabilidade Troposférica (Superfície até 200 hPa)\nSBPA Porto Alegre: Estável (12/12/1995), Transição (22/12/1995) e Instável (24/12/1995)",
                  fontsize=13, fontweight='bold', color='#0f172a', y=0.98)
 
-    yticks = [1000, 925, 850, 700, 600, 500, 400, 300]
+    yticks = [1000, 925, 850, 700, 600, 500, 400, 300, 200]
 
     for date, label, color, ls in cases:
         df = parse_sounding_file(f"metpack/sounding_{date}_12Z.txt")
@@ -472,8 +472,8 @@ def generate_3_soundings_profiles_comparison(metrics):
         dtheta_dp = np.gradient(theta_K, p_hpa)
         S_K_per_hPa = - (T_K / theta_K) * dtheta_dp
 
-        # Filtro até 300 hPa
-        mask = p >= 295 * units.hPa
+        # Filtro até 200 hPa
+        mask = p >= 195 * units.hPa
         p_m = p_hpa[mask]
         the_m = theta_e[mask].magnitude
         n2_m = n2_vals[mask]
@@ -513,7 +513,7 @@ def generate_3_soundings_profiles_comparison(metrics):
     ]
 
     for i, ax in enumerate(axes):
-        ax.set_ylim(1050, 300)
+        ax.set_ylim(1050, 200)
         ax.set_yscale('log')
         ax.set_yticks(yticks)
         ax.set_yticklabels([str(y) for y in yticks])
@@ -542,7 +542,7 @@ def generate_3_soundings_profiles_comparison(metrics):
 # 5. PERFIS DO CAPÍTULO 2 DE EMANUEL (SBPA 24/12/1995 12Z)
 # ==============================================================================
 def generate_cap2_thermo_profiles(metrics):
-    """Gera perfis termodinâmicos do Cap. 2 de Emanuel com topo em 300 hPa e fundo branco."""
+    """Gera perfis termodinâmicos do Cap. 2 de Emanuel com topo em 200 hPa e fundo branco."""
     df = parse_sounding_file('metpack/sounding_19951224_12Z.txt')
     if df is None:
         return
@@ -567,15 +567,15 @@ def generate_cap2_thermo_profiles(metrics):
     dtheta_dp = np.gradient(theta_K, p_hpa)
     S_K_per_hPa = - (T_K / theta_K) * dtheta_dp
 
-    # Filtro até 300 hPa
-    mask = p >= 295 * units.hPa
+    # Filtro até 200 hPa
+    mask = p >= 195 * units.hPa
     p_m = p_hpa[mask]
 
     fig, axes = plt.subplots(1, 4, figsize=(18, 7.5), dpi=150)
-    fig.suptitle("Perfis Verticais de Estabilidade Termodinâmica (Emanuel 1994, Cap. 2)\nSBPA Porto Alegre — 24/12/1995 12Z (Superfície até 300 hPa)", 
+    fig.suptitle("Perfis Verticais de Estabilidade Termodinâmica (Emanuel 1994, Cap. 2)\nSBPA Porto Alegre — 24/12/1995 12Z (Superfície até 200 hPa)", 
                  fontsize=13, fontweight='bold', color='#0f172a', y=0.98)
 
-    yticks = [1000, 925, 850, 700, 600, 500, 400, 300]
+    yticks = [1000, 925, 850, 700, 600, 500, 400, 300, 200]
 
     # Painel 1: θ, θe, θes
     axes[0].plot(theta[mask].magnitude, p_m, color='#1e3a8a', linewidth=2.0, label='θ (Potencial)')
@@ -614,7 +614,7 @@ def generate_cap2_thermo_profiles(metrics):
     axes[3].legend(loc='upper right', fontsize=8.5)
 
     for ax in axes:
-        ax.set_ylim(1050, 300)
+        ax.set_ylim(1050, 200)
         ax.set_yscale('log')
         ax.set_yticks(yticks)
         ax.set_yticklabels([str(y) for y in yticks])
@@ -633,11 +633,11 @@ def generate_all_soundings_colab_profiles(metrics):
     """Gera o quarteto de perfis individuais para cada uma das 3 sondagens."""
     cases = [
         ('19951212', '12/12/1995 12Z (Estável)', 'metpack/fig_profiles_19951212.png', '19951212'),
-        ('19951223', '23/12/1995 12Z (Transição)', 'metpack/fig_profiles_19951223.png', '19951223'),
+        ('19951222', '22/12/1995 12Z (Transição)', 'metpack/fig_profiles_19951222.png', '19951222'),
         ('19951224', '24/12/1995 12Z (Instável)', 'metpack/fig_profiles_19951224.png', '19951224_raw')
     ]
 
-    yticks = [1000, 925, 850, 700, 600, 500, 400, 300]
+    yticks = [1000, 925, 850, 700, 600, 500, 400, 300, 200]
 
     for date, label, out_fig, m_key in cases:
         df = parse_sounding_file(f"metpack/sounding_{date}_12Z.txt")
@@ -664,11 +664,11 @@ def generate_all_soundings_colab_profiles(metrics):
         dtheta_dp = np.gradient(theta_K, p_hpa)
         S_K_per_hPa = - (T_K / theta_K) * dtheta_dp
 
-        mask = p >= 295 * units.hPa
+        mask = p >= 195 * units.hPa
         p_m = p_hpa[mask]
 
         fig, axes = plt.subplots(1, 4, figsize=(18, 7.5), dpi=150)
-        fig.suptitle(f"Perfis Verticais de Estabilidade — SBPA {label} (Superfície até 300 hPa)",
+        fig.suptitle(f"Perfis Verticais de Estabilidade — SBPA {label} (Superfície até 200 hPa)",
                      fontsize=13, fontweight='bold', color='#0f172a', y=0.98)
 
         # 1. θ, θe, θes
@@ -708,7 +708,7 @@ def generate_all_soundings_colab_profiles(metrics):
         axes[3].legend(loc='upper right', fontsize=8.5)
 
         for ax in axes:
-            ax.set_ylim(1050, 300)
+            ax.set_ylim(1050, 200)
             ax.set_yscale('log')
             ax.set_yticks(yticks)
             ax.set_yticklabels([str(y) for y in yticks])
@@ -821,7 +821,7 @@ def generate_emanuel_matrices(metrics):
     """
     cases = [
         ('19951212', '12/12/1995 (Estável)'),
-        ('19951223', '23/12/1995 (Transição)'),
+        ('19951222', '22/12/1995 (Transição)'),
         ('19951224', '24/12/1995 (Instável)')
     ]
 

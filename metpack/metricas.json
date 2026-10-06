@@ -167,7 +167,7 @@
     "cross_totals_C": 17.9,
     "vertical_totals_C": 24.9,
     "showalter_K": 4.2,
-    "sweat_index": 98.4,
+    "sweat_index": 118.8,
     "dcape_metpy_Jkg": 642.9,
     "bulk_shear_0_1km_ms": 0.53,
     "bulk_shear_0_1km_kt": 1.0,
@@ -310,63 +310,63 @@
       }
     }
   },
-  "19951223": {
-    "pw_mm": 56.98,
-    "lcl_p_hPa": 988.5,
-    "lcl_t_C": 24.1,
-    "sbcape_Jkg": 2761.7,
-    "sbcin_Jkg": 0.0,
-    "mucape_Jkg": 2761.7,
-    "mucin_Jkg": 0.0,
-    "mlcape_Jkg": 1624.1,
-    "mlcin_Jkg": -55.0,
-    "lfc_p_hPa": 876.3,
-    "el_p_hPa": 156.3,
-    "lifted_index_K": -6.51,
-    "k_index_C": 36.2,
-    "total_totals_C": 45.8,
-    "cross_totals_C": 19.9,
-    "vertical_totals_C": 25.9,
-    "showalter_K": 0.2,
-    "sweat_index": 251.7,
-    "dcape_metpy_Jkg": 524.7,
-    "bulk_shear_0_1km_ms": 13.17,
-    "bulk_shear_0_1km_kt": 25.6,
-    "bulk_shear_0_3km_ms": 16.86,
-    "bulk_shear_0_3km_kt": 32.8,
-    "bulk_shear_0_6km_ms": 10.19,
-    "bulk_shear_0_6km_kt": 19.8,
-    "bunkers_lm_u_ms": 10.95,
-    "bunkers_lm_v_ms": 11.52,
-    "bunkers_rm_u_ms": 7.34,
-    "bunkers_rm_v_ms": -3.04,
-    "mean_wind_u_ms": 9.14,
-    "mean_wind_v_ms": 4.24,
-    "bunkers_lm_spd_kt": 30.9,
-    "bunkers_lm_spd_ms": 15.89,
-    "bunkers_lm_dir_deg": 223.5,
-    "srh_0_1km_lm_m2s2": -26.9,
-    "srh_0_3km_lm_m2s2": -54.9,
-    "srh_0_3km_rm_m2s2": 154.6,
+  "19951222": {
+    "pw_mm": 43.89,
+    "lcl_p_hPa": 882.1,
+    "lcl_t_C": 18.3,
+    "sbcape_Jkg": 836.0,
+    "sbcin_Jkg": -221.8,
+    "mucape_Jkg": 836.0,
+    "mucin_Jkg": -221.8,
+    "mlcape_Jkg": 363.0,
+    "mlcin_Jkg": -286.0,
+    "lfc_p_hPa": 710.2,
+    "el_p_hPa": 238.6,
+    "lifted_index_K": -3.53,
+    "k_index_C": 34.9,
+    "total_totals_C": 48.4,
+    "cross_totals_C": 18.7,
+    "vertical_totals_C": 29.7,
+    "showalter_K": -0.6,
+    "sweat_index": 161.6,
+    "dcape_metpy_Jkg": 1338.5,
+    "bulk_shear_0_1km_ms": 6.42,
+    "bulk_shear_0_1km_kt": 12.5,
+    "bulk_shear_0_3km_ms": 3.96,
+    "bulk_shear_0_3km_kt": 7.7,
+    "bulk_shear_0_6km_ms": 2.83,
+    "bulk_shear_0_6km_kt": 5.5,
+    "bunkers_lm_u_ms": -6.27,
+    "bunkers_lm_v_ms": 1.26,
+    "bunkers_rm_u_ms": 8.57,
+    "bunkers_rm_v_ms": -0.95,
+    "mean_wind_u_ms": 1.15,
+    "mean_wind_v_ms": 0.15,
+    "bunkers_lm_spd_kt": 12.4,
+    "bunkers_lm_spd_ms": 6.39,
+    "bunkers_lm_dir_deg": 101.4,
+    "srh_0_1km_lm_m2s2": 55.5,
+    "srh_0_3km_lm_m2s2": -5.2,
+    "srh_0_3km_rm_m2s2": 54.1,
     "p_level_near_925": 925.0,
-    "wind_925_spd_kt": 21.0,
-    "wind_925_spd_ms": 10.8,
-    "wind_925_dir_deg": 230.0,
-    "t_925_C": 20.6,
-    "td_925_C": 19.5,
-    "theta_e_925_K": 346.2860855372837,
+    "wind_925_spd_kt": 8.9,
+    "wind_925_spd_ms": 4.6,
+    "wind_925_dir_deg": 10.0,
+    "t_925_C": 25.4,
+    "td_925_C": 16.4,
+    "theta_e_925_K": 343.79191677486045,
     "emanuel": {
-      "surface_p_hPa": 1009.0,
-      "surface_cape_rev_Jkg": 1263.0,
-      "surface_cape_pseudo_Jkg": 2536.6,
-      "surface_cin_rev_Jkg": 3.5,
-      "surface_cin_pseudo_Jkg": 0.0,
+      "surface_p_hPa": 1006.0,
+      "surface_cape_rev_Jkg": -107.9,
+      "surface_cape_pseudo_Jkg": 503.2,
+      "surface_cin_rev_Jkg": 273.9,
+      "surface_cin_pseudo_Jkg": 233.8,
       "surface_dcape_emanuel_Jkg": 0.0,
-      "max_cape_rev_Jkg": 1263.0,
-      "max_cape_pseudo_Jkg": 2536.6,
-      "max_cape_p_hPa": 1009.0,
-      "max_dcape_emanuel_Jkg": 44.8,
-      "max_dcape_p_hPa": 910.0
+      "max_cape_rev_Jkg": -107.9,
+      "max_cape_pseudo_Jkg": 503.2,
+      "max_cape_p_hPa": 1006.0,
+      "max_dcape_emanuel_Jkg": 195.5,
+      "max_dcape_p_hPa": 905.0
     },
     "indices_wyoming": {
       "SLAT": {
@@ -386,87 +386,87 @@
       },
       "SHOW": {
         "description": "Showalter Index",
-        "value": 0.3,
+        "value": -0.5,
         "unit": "delta_degree_Celsius"
       },
       "LFVT": {
         "description": "Virtual Lifted Index",
-        "value": -6.1,
+        "value": -3.1,
         "unit": "delta_degree_Celsius"
       },
       "SWET": {
         "description": "SWEAT Index",
-        "value": 251.6,
+        "value": 148.3,
         "unit": "dimensionless"
       },
       "KINX": {
         "description": "K Index",
-        "value": 36.2,
+        "value": 34.9,
         "unit": "degree_Celsius"
       },
       "CTOT": {
         "description": "Cross Totals",
-        "value": 19.9,
+        "value": 18.7,
         "unit": "delta_degree_Celsius"
       },
       "VTOT": {
         "description": "Vertical Totals",
-        "value": 25.9,
+        "value": 29.7,
         "unit": "delta_degree_Celsius"
       },
       "TOTL": {
         "description": "Total Totals",
-        "value": 45.8,
+        "value": 48.4,
         "unit": "delta_degree_Celsius"
       },
       "DCAPE": {
         "description": "Downward CAPE",
-        "value": 530.6,
+        "value": 1352.5,
         "unit": "joule / kilogram"
       },
       "MUCAPE": {
         "description": "Most Unstable CAPE",
-        "value": 2031.9,
+        "value": 415.2,
         "unit": "joule / kilogram"
       },
       "MUCIN": {
         "description": "Most Unstable CIN",
-        "value": 0.0,
+        "value": -294.5,
         "unit": "joule / kilogram"
       },
       "LCLP": {
         "description": "Lifted Condensation Level",
-        "value": 970.0,
+        "value": 865.0,
         "unit": "hectopascal"
       },
       "LCLT": {
         "description": "Temperature of the Lifted Condensation Level",
-        "value": 22.7,
+        "value": 16.8,
         "unit": "degree_Celsius"
       },
       "LCLZ": {
         "description": "Height of the Lifted Condensation Level",
-        "value": 345.0,
+        "value": 1330.0,
         "unit": "meter"
       },
       "CCLP": {
         "description": "Convective Condensation Level",
-        "value": 958.6,
+        "value": 759.8,
         "unit": "hectopascal"
       },
       "CCLT": {
         "description": "Temperature of the Convective Condensation Level",
-        "value": 22.5,
+        "value": 14.8,
         "unit": "degree_Celsius"
       },
       "CCLC": {
         "description": "Convective Temperature",
-        "value": 26.9,
+        "value": 38.8,
         "unit": "degree_Celsius"
       },
       "PWAT": {
         "description": "Precipitable Water",
-        "value": 57.0,
+        "value": 43.9,
         "unit": "millimeter"
       }
     }
@@ -489,7 +489,7 @@
     "cross_totals_C": 20.4,
     "vertical_totals_C": 24.7,
     "showalter_K": 0.5,
-    "sweat_index": 205.0,
+    "sweat_index": 254.6,
     "dcape_metpy_Jkg": 1096.8,
     "bulk_shear_0_1km_ms": 19.74,
     "bulk_shear_0_1km_kt": 38.4,
@@ -650,7 +650,7 @@
     "cross_totals_C": 20.4,
     "vertical_totals_C": 24.7,
     "showalter_K": 0.5,
-    "sweat_index": 205.0,
+    "sweat_index": 254.6,
     "dcape_metpy_Jkg": 887.6,
     "bulk_shear_0_1km_ms": 14.46,
     "bulk_shear_0_1km_kt": 28.1,
@@ -698,7 +698,7 @@
     "cross_totals_C": 20.4,
     "vertical_totals_C": 24.7,
     "showalter_K": 0.5,
-    "sweat_index": 205.0,
+    "sweat_index": 254.6,
     "dcape_metpy_Jkg": 887.6,
     "bulk_shear_0_1km_ms": 14.46,
     "bulk_shear_0_1km_kt": 28.1,
@@ -737,13 +737,13 @@
       "emanuel_max_Jkg": 60.0,
       "emanuel_max_p_hPa": 905.0
     },
-    "19951223": {
-      "data": "23/12/1995",
+    "19951222": {
+      "data": "22/12/1995",
       "regime": "Transição",
-      "wyoming_Jkg": 530.6,
-      "metpy_Jkg": 524.7,
-      "emanuel_max_Jkg": 44.8,
-      "emanuel_max_p_hPa": 910.0
+      "wyoming_Jkg": 1352.5,
+      "metpy_Jkg": 1338.5,
+      "emanuel_max_Jkg": 195.5,
+      "emanuel_max_p_hPa": 905.0
     },
     "19951224_raw": {
       "data": "24/12/1995",
@@ -770,6 +770,7 @@
           "indice": "PW (Água Precipitável)",
           "unidade": "mm",
           "wyoming": 35.1,
+          "metpy": 35.12,
           "siphon_metpy": 35.12,
           "diferenca": 0.02
         },
@@ -777,6 +778,7 @@
           "indice": "MUCAPE (Most Unstable CAPE)",
           "unidade": "J/kg",
           "wyoming": 0.9,
+          "metpy": 0.9,
           "siphon_metpy": 0.9,
           "diferenca": 0.0
         },
@@ -784,6 +786,7 @@
           "indice": "MUCIN (Most Unstable CIN)",
           "unidade": "J/kg",
           "wyoming": -159.4,
+          "metpy": -159.0,
           "siphon_metpy": -159.0,
           "diferenca": 0.4
         },
@@ -791,6 +794,7 @@
           "indice": "SBCAPE (Surface-Based CAPE)",
           "unidade": "J/kg",
           "wyoming": null,
+          "metpy": 15.7,
           "siphon_metpy": 15.7,
           "diferenca": null
         },
@@ -798,6 +802,7 @@
           "indice": "SBCIN (Surface-Based CIN)",
           "unidade": "J/kg",
           "wyoming": null,
+          "metpy": 0.0,
           "siphon_metpy": 0.0,
           "diferenca": null
         },
@@ -805,6 +810,7 @@
           "indice": "LCL Pressão (LCLP)",
           "unidade": "hPa",
           "wyoming": 952.0,
+          "metpy": 968.3,
           "siphon_metpy": 968.3,
           "diferenca": 16.3
         },
@@ -812,6 +818,7 @@
           "indice": "LFC Pressão (LFCP)",
           "unidade": "hPa",
           "wyoming": null,
+          "metpy": 961.8,
           "siphon_metpy": 961.8,
           "diferenca": null
         },
@@ -819,6 +826,7 @@
           "indice": "EL Pressão (EQLV)",
           "unidade": "hPa",
           "wyoming": null,
+          "metpy": 892.2,
           "siphon_metpy": 892.2,
           "diferenca": null
         },
@@ -826,6 +834,7 @@
           "indice": "K-Index (KINX)",
           "unidade": "°C",
           "wyoming": 22.3,
+          "metpy": 22.3,
           "siphon_metpy": 22.3,
           "diferenca": 0.0
         },
@@ -833,6 +842,7 @@
           "indice": "Total Totals (TOTL)",
           "unidade": "K",
           "wyoming": 42.8,
+          "metpy": 42.8,
           "siphon_metpy": 42.8,
           "diferenca": 0.0
         },
@@ -840,6 +850,7 @@
           "indice": "Cross Totals (CTOT)",
           "unidade": "K",
           "wyoming": 17.9,
+          "metpy": 17.9,
           "siphon_metpy": 17.9,
           "diferenca": 0.0
         },
@@ -847,6 +858,7 @@
           "indice": "Vertical Totals (VTOT)",
           "unidade": "K",
           "wyoming": 24.9,
+          "metpy": 24.9,
           "siphon_metpy": 24.9,
           "diferenca": 0.0
         },
@@ -854,6 +866,7 @@
           "indice": "Showalter Index (SHOW)",
           "unidade": "K",
           "wyoming": 4.2,
+          "metpy": 4.2,
           "siphon_metpy": 4.2,
           "diferenca": 0.0
         },
@@ -861,13 +874,15 @@
           "indice": "SWEAT Index (SWET)",
           "unidade": "adimensional",
           "wyoming": 98.4,
-          "siphon_metpy": 98.4,
-          "diferenca": 0.0
+          "metpy": 118.8,
+          "siphon_metpy": 118.8,
+          "diferenca": 20.4
         },
         {
           "indice": "Lifted Index (LFVT/LIFT)",
           "unidade": "K",
           "wyoming": 2.5,
+          "metpy": 2.58,
           "siphon_metpy": 2.58,
           "diferenca": 0.08
         },
@@ -875,125 +890,142 @@
           "indice": "DCAPE (Downdraft CAPE)",
           "unidade": "J/kg",
           "wyoming": 644.0,
+          "metpy": 642.9,
           "siphon_metpy": 642.9,
           "diferenca": -1.1
         }
       ]
     },
-    "19951223": {
-      "data": "23/12/1995",
+    "19951222": {
+      "data": "22/12/1995",
       "linhas": [
         {
           "indice": "PW (Água Precipitável)",
           "unidade": "mm",
-          "wyoming": 57.0,
-          "siphon_metpy": 56.98,
-          "diferenca": -0.02
+          "wyoming": 43.9,
+          "metpy": 43.89,
+          "siphon_metpy": 43.89,
+          "diferenca": -0.01
         },
         {
           "indice": "MUCAPE (Most Unstable CAPE)",
           "unidade": "J/kg",
-          "wyoming": 2031.9,
-          "siphon_metpy": 2761.7,
-          "diferenca": 729.8
+          "wyoming": 415.2,
+          "metpy": 836.0,
+          "siphon_metpy": 836.0,
+          "diferenca": 420.8
         },
         {
           "indice": "MUCIN (Most Unstable CIN)",
           "unidade": "J/kg",
-          "wyoming": 0.0,
-          "siphon_metpy": 0.0,
-          "diferenca": 0.0
+          "wyoming": -294.5,
+          "metpy": -221.8,
+          "siphon_metpy": -221.8,
+          "diferenca": 72.7
         },
         {
           "indice": "SBCAPE (Surface-Based CAPE)",
           "unidade": "J/kg",
           "wyoming": null,
-          "siphon_metpy": 2761.7,
+          "metpy": 836.0,
+          "siphon_metpy": 836.0,
           "diferenca": null
         },
         {
           "indice": "SBCIN (Surface-Based CIN)",
           "unidade": "J/kg",
           "wyoming": null,
-          "siphon_metpy": 0.0,
+          "metpy": -221.8,
+          "siphon_metpy": -221.8,
           "diferenca": null
         },
         {
           "indice": "LCL Pressão (LCLP)",
           "unidade": "hPa",
-          "wyoming": 970.0,
-          "siphon_metpy": 988.5,
-          "diferenca": 18.5
+          "wyoming": 865.0,
+          "metpy": 882.1,
+          "siphon_metpy": 882.1,
+          "diferenca": 17.1
         },
         {
           "indice": "LFC Pressão (LFCP)",
           "unidade": "hPa",
           "wyoming": null,
-          "siphon_metpy": 876.3,
+          "metpy": 710.2,
+          "siphon_metpy": 710.2,
           "diferenca": null
         },
         {
           "indice": "EL Pressão (EQLV)",
           "unidade": "hPa",
           "wyoming": null,
-          "siphon_metpy": 156.3,
+          "metpy": 238.6,
+          "siphon_metpy": 238.6,
           "diferenca": null
         },
         {
           "indice": "K-Index (KINX)",
           "unidade": "°C",
-          "wyoming": 36.2,
-          "siphon_metpy": 36.2,
+          "wyoming": 34.9,
+          "metpy": 34.9,
+          "siphon_metpy": 34.9,
           "diferenca": 0.0
         },
         {
           "indice": "Total Totals (TOTL)",
           "unidade": "K",
-          "wyoming": 45.8,
-          "siphon_metpy": 45.8,
+          "wyoming": 48.4,
+          "metpy": 48.4,
+          "siphon_metpy": 48.4,
           "diferenca": 0.0
         },
         {
           "indice": "Cross Totals (CTOT)",
           "unidade": "K",
-          "wyoming": 19.9,
-          "siphon_metpy": 19.9,
+          "wyoming": 18.7,
+          "metpy": 18.7,
+          "siphon_metpy": 18.7,
           "diferenca": 0.0
         },
         {
           "indice": "Vertical Totals (VTOT)",
           "unidade": "K",
-          "wyoming": 25.9,
-          "siphon_metpy": 25.9,
+          "wyoming": 29.7,
+          "metpy": 29.7,
+          "siphon_metpy": 29.7,
           "diferenca": 0.0
         },
         {
           "indice": "Showalter Index (SHOW)",
           "unidade": "K",
-          "wyoming": 0.3,
-          "siphon_metpy": 0.2,
+          "wyoming": -0.5,
+          "metpy": -0.6,
+          "siphon_metpy": -0.6,
           "diferenca": -0.1
         },
         {
           "indice": "SWEAT Index (SWET)",
           "unidade": "adimensional",
-          "wyoming": 251.6,
-          "siphon_metpy": 251.7,
-          "diferenca": 0.1
+          "wyoming": 148.3,
+          "metpy": 161.6,
+          "siphon_metpy": 161.6,
+          "diferenca": 13.3
         },
         {
           "indice": "Lifted Index (LFVT/LIFT)",
           "unidade": "K",
-          "wyoming": -6.1,
-          "siphon_metpy": -6.51,
-          "diferenca": -0.41
+          "wyoming": -3.1,
+          "metpy": -3.53,
+          "siphon_metpy": -3.53,
+          "diferenca": -0.43
         },
         {
           "indice": "DCAPE (Downdraft CAPE)",
           "unidade": "J/kg",
-          "wyoming": 530.6,
-          "siphon_metpy": 524.7,
-          "diferenca": -5.9
+          "wyoming": 1352.5,
+          "metpy": 1338.5,
+          "siphon_metpy": 1338.5,
+          "diferenca": -14.0
         }
       ]
     },
@@ -1004,6 +1036,7 @@
           "indice": "PW (Água Precipitável)",
           "unidade": "mm",
           "wyoming": 55.4,
+          "metpy": 55.35,
           "siphon_metpy": 55.35,
           "diferenca": -0.05
         },
@@ -1011,6 +1044,7 @@
           "indice": "MUCAPE (Most Unstable CAPE)",
           "unidade": "J/kg",
           "wyoming": 7808.7,
+          "metpy": 7810.0,
           "siphon_metpy": 7810.0,
           "diferenca": 1.3
         },
@@ -1018,6 +1052,7 @@
           "indice": "MUCIN (Most Unstable CIN)",
           "unidade": "J/kg",
           "wyoming": 0.0,
+          "metpy": 0.0,
           "siphon_metpy": 0.0,
           "diferenca": 0.0
         },
@@ -1025,6 +1060,7 @@
           "indice": "SBCAPE (Surface-Based CAPE)",
           "unidade": "J/kg",
           "wyoming": null,
+          "metpy": 1861.9,
           "siphon_metpy": 1861.9,
           "diferenca": null
         },
@@ -1032,6 +1068,7 @@
           "indice": "SBCIN (Surface-Based CIN)",
           "unidade": "J/kg",
           "wyoming": null,
+          "metpy": -186.3,
           "siphon_metpy": -186.3,
           "diferenca": null
         },
@@ -1039,6 +1076,7 @@
           "indice": "LCL Pressão (LCLP)",
           "unidade": "hPa",
           "wyoming": 953.0,
+          "metpy": 988.4,
           "siphon_metpy": 988.4,
           "diferenca": 35.4
         },
@@ -1046,6 +1084,7 @@
           "indice": "LFC Pressão (LFCP)",
           "unidade": "hPa",
           "wyoming": null,
+          "metpy": 854.3,
           "siphon_metpy": 854.3,
           "diferenca": null
         },
@@ -1053,6 +1092,7 @@
           "indice": "EL Pressão (EQLV)",
           "unidade": "hPa",
           "wyoming": null,
+          "metpy": 189.9,
           "siphon_metpy": 189.9,
           "diferenca": null
         },
@@ -1060,6 +1100,7 @@
           "indice": "K-Index (KINX)",
           "unidade": "°C",
           "wyoming": 37.3,
+          "metpy": 37.3,
           "siphon_metpy": 37.3,
           "diferenca": 0.0
         },
@@ -1067,6 +1108,7 @@
           "indice": "Total Totals (TOTL)",
           "unidade": "K",
           "wyoming": 45.1,
+          "metpy": 45.1,
           "siphon_metpy": 45.1,
           "diferenca": 0.0
         },
@@ -1074,6 +1116,7 @@
           "indice": "Cross Totals (CTOT)",
           "unidade": "K",
           "wyoming": 20.4,
+          "metpy": 20.4,
           "siphon_metpy": 20.4,
           "diferenca": 0.0
         },
@@ -1081,6 +1124,7 @@
           "indice": "Vertical Totals (VTOT)",
           "unidade": "K",
           "wyoming": 24.7,
+          "metpy": 24.7,
           "siphon_metpy": 24.7,
           "diferenca": 0.0
         },
@@ -1088,6 +1132,7 @@
           "indice": "Showalter Index (SHOW)",
           "unidade": "K",
           "wyoming": 0.5,
+          "metpy": 0.5,
           "siphon_metpy": 0.5,
           "diferenca": 0.0
         },
@@ -1095,13 +1140,15 @@
           "indice": "SWEAT Index (SWET)",
           "unidade": "adimensional",
           "wyoming": 204.9,
-          "siphon_metpy": 205.0,
-          "diferenca": 0.1
+          "metpy": 254.6,
+          "siphon_metpy": 254.6,
+          "diferenca": 49.7
         },
         {
           "indice": "Lifted Index (LFVT/LIFT)",
           "unidade": "K",
           "wyoming": -5.2,
+          "metpy": -4.75,
           "siphon_metpy": -4.75,
           "diferenca": 0.45
         },
@@ -1109,6 +1156,7 @@
           "indice": "DCAPE (Downdraft CAPE)",
           "unidade": "J/kg",
           "wyoming": 1149.0,
+          "metpy": 1096.8,
           "siphon_metpy": 1096.8,
           "diferenca": -52.2
         }

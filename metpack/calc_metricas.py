@@ -321,9 +321,9 @@ def calc_diagnostics(df, label=""):
     except Exception as e:
         res['showalter_K'] = None
 
-    # 10. SWEAT Index
+    # 10. SWEAT Index (Severe Weather Threat Index - Miller 1972 requer vento em nós)
     try:
-        sw = mpcalc.sweat_index(p, T, Td, df['SPED'].values * units('m/s'), df['DRCT'].values * units.deg)
+        sw = mpcalc.sweat_index(p, T, Td, df['SKNT'].values * units.knot, df['DRCT'].values * units.deg)
         res['sweat_index'] = round(float(sw.magnitude[0]), 1)
     except Exception as e:
         res['sweat_index'] = None
@@ -400,12 +400,12 @@ def calc_diagnostics(df, label=""):
     return res
 
 def main():
-    print("=== INICIANDO AUDITORIA CIENTÍFICA: SIPHON / METPY vs WYOMING ===")
+    print("=== INICIANDO AUDITORIA CIENTÍFICA: METPY vs WYOMING ===")
     
-    dates = ['19951212', '19951223', '19951224']
+    dates = ['19951212', '19951222', '19951224']
     indices_files = {
         '19951212': 'metpack/indices_19951212_12Z.txt',
-        '19951223': 'metpack/indices_19951223_12Z.txt',
+        '19951222': 'metpack/indices_19951222_12Z.txt',
         '19951224': 'metpack/indices_19951224_12Z.txt'
     }
 
@@ -413,7 +413,7 @@ def main():
 
     # 1. Carregamento das três sondagens via Siphon
     df_12 = fetch_sounding_siphon('19951212')
-    df_23 = fetch_sounding_siphon('19951223')
+    df_22 = fetch_sounding_siphon('19951222')
     df_24 = fetch_sounding_siphon('19951224')
 
     # Análise de taxas de lapso e QC em 24/12
@@ -464,13 +464,13 @@ def main():
     diag_12['indices_wyoming'] = ind_12
     out_json['19951212'] = diag_12
 
-    # 3. Diagnóstico de 23/12/1995 (Oficial)
-    diag_23 = calc_diagnostics(df_23, "19951223")
-    emanuel_23 = parse_emanuel_cape_out('metpack/19951223_cape.out')
-    diag_23['emanuel'] = emanuel_23
-    ind_23 = parse_wyoming_indices_html(indices_files['19951223'])
-    diag_23['indices_wyoming'] = ind_23
-    out_json['19951223'] = diag_23
+    # 3. Diagnóstico de 22/12/1995 (Oficial)
+    diag_22 = calc_diagnostics(df_22, "19951222")
+    emanuel_22 = parse_emanuel_cape_out('metpack/19951222_cape.out')
+    diag_22['emanuel'] = emanuel_22
+    ind_22 = parse_wyoming_indices_html(indices_files['19951222'])
+    diag_22['indices_wyoming'] = ind_22
+    out_json['19951222'] = diag_22
 
     # 4. Diagnóstico de 24/12/1995 (Oficial - Sondagem Completa como publicada)
     diag_24_raw = calc_diagnostics(df_24, "19951224_raw")
@@ -497,13 +497,13 @@ def main():
             'emanuel_max_Jkg': (emanuel_12.get('max_dcape_emanuel_Jkg') if emanuel_12 else None),
             'emanuel_max_p_hPa': (emanuel_12.get('max_dcape_p_hPa') if emanuel_12 else None)
         },
-        '19951223': {
-            'data': '23/12/1995',
+        '19951222': {
+            'data': '22/12/1995',
             'regime': 'Transição',
-            'wyoming_Jkg': (ind_23.get('DCAPE', {}).get('value') if ind_23 else None),
-            'metpy_Jkg': diag_23.get('dcape_metpy_Jkg'),
-            'emanuel_max_Jkg': (emanuel_23.get('max_dcape_emanuel_Jkg') if emanuel_23 else None),
-            'emanuel_max_p_hPa': (emanuel_23.get('max_dcape_p_hPa') if emanuel_23 else None)
+            'wyoming_Jkg': (ind_22.get('DCAPE', {}).get('value') if ind_22 else None),
+            'metpy_Jkg': diag_22.get('dcape_metpy_Jkg'),
+            'emanuel_max_Jkg': (emanuel_22.get('max_dcape_emanuel_Jkg') if emanuel_22 else None),
+            'emanuel_max_p_hPa': (emanuel_22.get('max_dcape_p_hPa') if emanuel_22 else None)
         },
         '19951224_raw': {
             'data': '24/12/1995',
@@ -525,7 +525,7 @@ def main():
 
     # Tabela comparativa estruturada e exaustiva: Siphon/MetPy vs Wyoming
     comp_dict = {}
-    for dt_key, dt_label, diag in [('19951212', '12/12/1995', diag_12), ('19951223', '23/12/1995', diag_23), ('19951224', '24/12/1995', diag_24_raw)]:
+    for dt_key, dt_label, diag in [('19951212', '12/12/1995', diag_12), ('19951222', '22/12/1995', diag_22), ('19951224', '24/12/1995', diag_24_raw)]:
         w = diag.get('indices_wyoming', {}) or {}
         items = [
             ('PW (Água Precipitável)', 'mm', w.get('PWAT', {}).get('value'), diag.get('pw_mm')),
@@ -552,6 +552,7 @@ def main():
                 'indice': name,
                 'unidade': unit,
                 'wyoming': val_w,
+                'metpy': val_calc,
                 'siphon_metpy': val_calc,
                 'diferenca': diff
             })
@@ -568,12 +569,12 @@ def main():
 
     # Exibição da Tabela de Conferência Oficial com Wyoming
     print("\n" + "="*95)
-    print("TABELA DE CONFERÊNCIA EXAUSTIVA: WYOMING OFICIAL vs SIPHON / METPY")
+    print("TABELA DE CONFERÊNCIA EXAUSTIVA: WYOMING OFICIAL vs METPY")
     print("="*95)
-    for dt, diag in [('12/12/1995 (Estável)', diag_12), ('23/12/1995 (Transição)', diag_23), ('24/12/1995 (Instável)', diag_24_raw)]:
+    for dt, diag in [('12/12/1995 (Estável)', diag_12), ('22/12/1995 (Transição)', diag_22), ('24/12/1995 (Instável)', diag_24_raw)]:
         w = diag.get('indices_wyoming', {})
         print(f"\n--- DATA: {dt} ---")
-        print(f"{'Índice':<28} | {'Unidade':<12} | {'Wyoming':<12} | {'Siphon / MetPy':<15} | {'Diferença':<12}")
+        print(f"{'Índice':<28} | {'Unidade':<12} | {'Wyoming':<12} | {'MetPy':<15} | {'Diferença':<12}")
         print("-" * 92)
         
         items = [

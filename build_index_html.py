@@ -8,7 +8,7 @@ Gera o index.html (GitHub Pages) estruturado pedagogicamente em ordem de aprendi
   1. Os Dados (Wyoming, download e controle de qualidade)
   2. Diagramas Skew-T (uma figura por sondagem com LCL/LFC/EL e parcela)
   3. Índices Convectivos e Tabela de Conferência (com os 3 métodos de DCAPE)
-  4. Perfis Verticais de Estabilidade (θ, θe, θes, N² e S = -(T/θ)∂θ/∂p até 300 hPa)
+  4. Perfis Verticais de Estabilidade (θ, θe, θes, N² e S = -(T/θ)∂θ/∂p até 200 hPa)
   5. Cinemática de Mesoescala e Hodógrafo (Bunkers LM, SRH ciclônica no Hemisfério Sul)
   6. Matrizes Termodinâmicas 2D de Kerry Emanuel (escala simétrica +-15 K, isolinha 0 K destacada)
   7. Agora é sua Vez (roteiro, botão "Abrir no Colab" para Seminario_plot_sounding_revisado.ipynb)
@@ -26,7 +26,7 @@ def generate_html():
     m = load_metrics()
 
     s12 = m['19951212']
-    s23 = m['19951223']
+    s22 = m['19951222']
     s24_raw = m['19951224_raw']
     s24_sens = m.get('19951224_sensibilidade', m.get('19951224_qc', {}))
     dcape_comp = m.get('dcape_comparativo', {})
@@ -55,15 +55,15 @@ def generate_html():
 
     # 2. Tabela Diagnóstica Comparativa Geral (Seção 3)
     master_diag_rows = [
-        ("Água Precipitável (PW)", f"{s12['pw_mm']:.1f} mm", f"{s23['pw_mm']:.1f} mm", f"{s24_raw['pw_mm']:.1f} mm", f"{s24_sens['pw_mm']:.1f} mm"),
-        ("SBCAPE (Superfície)", f"{s12['sbcape_Jkg']:.1f} J/kg", f"{s23['sbcape_Jkg']:.1f} J/kg", f"{s24_raw['sbcape_Jkg']:.1f} J/kg", f"{s24_sens['sbcape_Jkg']:.1f} J/kg"),
-        ("SBCIN (Inibição de Superfície)", f"{s12['sbcin_Jkg']:.1f} J/kg", f"{s23['sbcin_Jkg']:.1f} J/kg", f"{s24_raw['sbcin_Jkg']:.1f} J/kg", f"{s24_sens['sbcin_Jkg']:.1f} J/kg"),
-        ("MUCAPE (Parcela Mais Instável)", f"{s12['mucape_Jkg']:.1f} J/kg", f"{s23['mucape_Jkg']:.1f} J/kg", f"{s24_raw['mucape_Jkg']:.1f} J/kg", f"{s24_sens['mucape_Jkg']:.1f} J/kg"),
-        ("MUCIN", f"{s12['mucin_Jkg']:.1f} J/kg", f"{s23['mucin_Jkg']:.1f} J/kg", f"{s24_raw['mucin_Jkg']:.1f} J/kg", f"{s24_sens['mucin_Jkg']:.1f} J/kg"),
-        ("Nível do LCL", f"{s12['lcl_p_hPa']:.1f} hPa", f"{s23['lcl_p_hPa']:.1f} hPa", f"{s24_raw['lcl_p_hPa']:.1f} hPa", f"{s24_sens['lcl_p_hPa']:.1f} hPa"),
-        ("Cisalhamento Bulk 0–6 km", f"{s12['bulk_shear_0_6km_ms']:.1f} m/s ({s12['bulk_shear_0_6km_kt']:.1f} kt)", f"{s23['bulk_shear_0_6km_ms']:.1f} m/s ({s23['bulk_shear_0_6km_kt']:.1f} kt)", f"{s24_raw['bulk_shear_0_6km_ms']:.1f} m/s ({s24_raw['bulk_shear_0_6km_kt']:.1f} kt)", f"{s24_sens['bulk_shear_0_6km_ms']:.1f} m/s ({s24_sens['bulk_shear_0_6km_kt']:.1f} kt)"),
-        ("Vento Observado em 925 hPa", f"{s12['wind_925_spd_kt']:.1f} kt de {s12['wind_925_dir_deg']:.0f}°", f"{s23['wind_925_spd_kt']:.1f} kt de {s23['wind_925_dir_deg']:.0f}°", f"{s24_raw['wind_925_spd_kt']:.1f} kt de {s24_raw['wind_925_dir_deg']:.0f}°", "Nível omitido"),
-        ("SRH 0–3 km (Bunkers Left-Mover)", f"{s12['srh_0_3km_lm_m2s2']:.1f} m²/s²", f"{s23['srh_0_3km_lm_m2s2']:.1f} m²/s²", f"{s24_raw['srh_0_3km_lm_m2s2']:.1f} m²/s²", f"{s24_sens['srh_0_3km_lm_m2s2']:.1f} m²/s²"),
+        ("Água Precipitável (PW)", f"{s12['pw_mm']:.1f} mm", f"{s22['pw_mm']:.1f} mm", f"{s24_raw['pw_mm']:.1f} mm", f"{s24_sens['pw_mm']:.1f} mm"),
+        ("SBCAPE (Superfície)", f"{s12['sbcape_Jkg']:.1f} J/kg", f"{s22['sbcape_Jkg']:.1f} J/kg", f"{s24_raw['sbcape_Jkg']:.1f} J/kg", f"{s24_sens['sbcape_Jkg']:.1f} J/kg"),
+        ("SBCIN (Inibição de Superfície)", f"{s12['sbcin_Jkg']:.1f} J/kg", f"{s22['sbcin_Jkg']:.1f} J/kg", f"{s24_raw['sbcin_Jkg']:.1f} J/kg", f"{s24_sens['sbcin_Jkg']:.1f} J/kg"),
+        ("MUCAPE (Parcela Mais Instável)", f"{s12['mucape_Jkg']:.1f} J/kg", f"{s22['mucape_Jkg']:.1f} J/kg", f"{s24_raw['mucape_Jkg']:.1f} J/kg", f"{s24_sens['mucape_Jkg']:.1f} J/kg"),
+        ("MUCIN", f"{s12['mucin_Jkg']:.1f} J/kg", f"{s22['mucin_Jkg']:.1f} J/kg", f"{s24_raw['mucin_Jkg']:.1f} J/kg", f"{s24_sens['mucin_Jkg']:.1f} J/kg"),
+        ("Nível do LCL", f"{s12['lcl_p_hPa']:.1f} hPa", f"{s22['lcl_p_hPa']:.1f} hPa", f"{s24_raw['lcl_p_hPa']:.1f} hPa", f"{s24_sens['lcl_p_hPa']:.1f} hPa"),
+        ("Cisalhamento Bulk 0–6 km", f"{s12['bulk_shear_0_6km_ms']:.1f} m/s ({s12['bulk_shear_0_6km_kt']:.1f} kt)", f"{s22['bulk_shear_0_6km_ms']:.1f} m/s ({s22['bulk_shear_0_6km_kt']:.1f} kt)", f"{s24_raw['bulk_shear_0_6km_ms']:.1f} m/s ({s24_raw['bulk_shear_0_6km_kt']:.1f} kt)", f"{s24_sens['bulk_shear_0_6km_ms']:.1f} m/s ({s24_sens['bulk_shear_0_6km_kt']:.1f} kt)"),
+        ("Vento Observado em 925 hPa", f"{s12['wind_925_spd_kt']:.1f} kt de {s12['wind_925_dir_deg']:.0f}°", f"{s22['wind_925_spd_kt']:.1f} kt de {s22['wind_925_dir_deg']:.0f}°", f"{s24_raw['wind_925_spd_kt']:.1f} kt de {s24_raw['wind_925_dir_deg']:.0f}°", "Nível omitido"),
+        ("SRH 0–3 km (Bunkers Left-Mover)", f"{s12['srh_0_3km_lm_m2s2']:.1f} m²/s²", f"{s22['srh_0_3km_lm_m2s2']:.1f} m²/s²", f"{s24_raw['srh_0_3km_lm_m2s2']:.1f} m²/s²", f"{s24_sens['srh_0_3km_lm_m2s2']:.1f} m²/s²"),
     ]
     master_diag_tbody = "\n".join([
         f"<tr><td style='text-align:left;'><strong>{row[0]}</strong></td><td>{row[1]}</td><td>{row[2]}</td><td>{row[3]}</td><td>{row[4]}</td></tr>"
@@ -73,8 +73,8 @@ def generate_html():
     # 3. Tabela de Conferência Wyoming vs Calculado (Seção 3)
     comp_wy = m.get('comparativo_wyoming_metpy', {})
     comp_tables_html = []
-    color_map = {'19951212': '#1f77b4', '19951223': '#d97706', '19951224': '#dc2626'}
-    for date_key in ['19951212', '19951223', '19951224']:
+    color_map = {'19951212': '#1f77b4', '19951222': '#d97706', '19951224': '#dc2626'}
+    for date_key in ['19951212', '19951222', '19951224']:
         c_info = comp_wy.get(date_key, {})
         dt_label = c_info.get('data', date_key)
         c_theme = color_map.get(date_key, '#0f172a')
@@ -82,7 +82,7 @@ def generate_html():
         for row in c_info.get('linhas', []):
             diff_str = f"{row['diferenca']:+}" if row.get('diferenca') is not None else "-"
             w_str = f"{row['wyoming']}" if row.get('wyoming') is not None else "N/A"
-            calc_val = row.get('siphon_metpy', row.get('calculado'))
+            calc_val = row.get('metpy', row.get('siphon_metpy', row.get('calculado')))
             c_str = f"{calc_val}" if calc_val is not None else "N/A"
             rows_html.append(f"""
                 <tr>
@@ -104,7 +104,7 @@ def generate_html():
                             <tr>
                                 <th style="text-align:left;">Índice</th>
                                 <th>Wyoming (Oficial)</th>
-                                <th>Siphon / MetPy</th>
+                                <th>MetPy</th>
                                 <th>Diferença (Δ)</th>
                             </tr>
                         </thead>
@@ -153,7 +153,7 @@ def generate_html():
             --text-muted: #475569;
             --border-color: #e2e8f0;
             --color-c12: #1f77b4;
-            --color-c23: #d97706;
+            --color-c22: #d97706;
             --color-c24: #dc2626;
             --color-sens: #7c3aed;
         }
@@ -528,21 +528,21 @@ def generate_html():
 
             <!-- SONDAGEM 1: ESTÁVEL -->
             <div class="figure-wrapper" style="max-width: 1040px; margin: 24px auto;">
-                <h3 style="color: #0284c7; margin-bottom: 8px;">2.1 Sondagem 1: 12/12/1995 12Z — Atmosfera Estável (Pós-Frontal)</h3>
+                <h3 style="color: #0284c7; margin-bottom: 8px;">2.1 Sondagem 1: 12/12/1995 12Z (SBPA) — Atmosfera Estável</h3>
                 <img src="metpack/fig_sounding_1_estavel.png" alt="Sondagem 1 Estável 12/12/1995 12Z" onclick="openModal(this.src)">
                 <div class="figure-caption">Figura 1: Diagrama Skew-T / Log-P com Hodógrafo Polar (lado superior direito) e Painel de Diagnósticos Físicos Completos Ampliado (lado inferior direito). SBCAPE = 16 J/kg, SBCIN = 0 J/kg, Shear 0-6 km = 13.7 m/s (26.6 kt). Clique para ampliar.</div>
             </div>
 
             <!-- SONDAGEM 2: TRANSIÇÃO -->
             <div class="figure-wrapper" style="max-width: 1040px; margin: 24px auto;">
-                <h3 style="color: #0d9488; margin-bottom: 8px;">2.2 Sondagem 2: 23/12/1995 12Z — Atmosfera de Transição / Neutra</h3>
-                <img src="metpack/fig_sounding_2_neutra.png" alt="Sondagem 2 Transição 23/12/1995 12Z" onclick="openModal(this.src)">
-                <div class="figure-caption">Figura 2: Diagrama Skew-T / Log-P com Hodógrafo Polar (lado superior direito) e Painel de Diagnósticos Físicos Completos Ampliado (lado inferior direito). MUCAPE = 2762 J/kg, SBCAPE = 2762 J/kg, PW = 57.0 mm, Shear 0-6 km = 10.2 m/s. Clique para ampliar.</div>
+                <h3 style="color: #0d9488; margin-bottom: 8px;">2.2 Sondagem 2: 22/12/1995 12Z (SBPA) — Atmosfera de Transição</h3>
+                <img src="metpack/fig_sounding_2_neutra.png" alt="Sondagem 2 Transição 22/12/1995 12Z" onclick="openModal(this.src)">
+                <div class="figure-caption">Figura 2: Diagrama Skew-T / Log-P com Hodógrafo Polar (lado superior direito) e Painel de Diagnósticos Físicos Completos Ampliado (lado inferior direito). MUCAPE = 836 J/kg, SBCAPE = 836 J/kg, SBCIN = -222 J/kg, PW = 43.9 mm, Shear 0-6 km = 2.8 m/s (5.5 kt). Clique para ampliar.</div>
             </div>
 
             <!-- SONDAGEM 3: INSTÁVEL -->
             <div class="figure-wrapper" style="max-width: 1040px; margin: 24px auto;">
-                <h3 style="color: #dc2626; margin-bottom: 8px;">2.3 Sondagem 3: 24/12/1995 12Z — Atmosfera Severamente Instável (Enchente de Natal)</h3>
+                <h3 style="color: #dc2626; margin-bottom: 8px;">2.3 Sondagem 3: 24/12/1995 12Z (SBPA) — Atmosfera Instável</h3>
                 <img src="metpack/fig_sounding_3_instavel.png" alt="Sondagem 3 Instável 24/12/1995 12Z" onclick="openModal(this.src)">
                 <div class="figure-caption">Figura 3: Diagrama Skew-T / Log-P com Hodógrafo Polar (lado superior direito) e Painel de Diagnósticos Físicos Completos Ampliado (lado inferior direito). MUCAPE = 7810 J/kg, SBCAPE = 1862 J/kg, Shear 0-6 km = 12.6 m/s (24.5 kt), SRH 0-3 km = -123.3 m²/s² (Left-Mover). Clique para ampliar.</div>
             </div>
@@ -555,7 +555,7 @@ def generate_html():
                     <li>Linhas pontilhadas horizontais indicam o Nível de Condensação por Levantamento (LCL), Nível de Convecção Livre (LFC) e Nível de Equilíbrio (EL).</li>
                     <li>Área sombreada em vermelho = CAPE; área sombreada em azul = CIN.</li>
                     <li>O hodógrafo polar no canto superior direito exibe a estrutura vertical dos ventos horizontais em nós (kt), divididos por camadas coloridas de altitude, além do vetor de tempestades anômalas (Bunkers Left-Mover).</li>
-                    <li>O painel diagnóstico no canto inferior direito sintetiza com fontes grandes e alta legibilidade os índices de convecção calculados via Siphon/MetPy.</li>
+                    <li>O painel diagnóstico no canto inferior direito sintetiza com fontes grandes e alta legibilidade os índices de convecção calculados via MetPy.</li>
                 </ul>
             </div>
 
@@ -586,7 +586,7 @@ def generate_html():
                         <tr>
                             <th style="text-align:left;">Parâmetro Diagnóstico</th>
                             <th style="color:var(--color-c12);">12/12/1995 12Z<br>(Estável)</th>
-                            <th style="color:var(--color-c23);">23/12/1995 12Z<br>(Transição)</th>
+                            <th style="color:var(--color-c22);">22/12/1995 12Z<br>(Transição)</th>
                             <th style="color:var(--color-c24);">24/12/1995 12Z<br>(Oficial Completa)</th>
                             <th style="color:var(--color-sens);">24/12/1995 12Z<br>(Sensibilidade sem 925)</th>
                         </tr>
@@ -614,7 +614,7 @@ def generate_html():
                 </table>
             </div>
 
-            <div class="block-title">Tabela de Conferência Completa: Wyoming Oficial (INDICES) vs. Siphon / MetPy</div>
+            <div class="block-title">Tabela de Conferência Completa: Wyoming Oficial (INDICES) vs. MetPy</div>
             <div class="table-grid-3">
                 __WYOMING_COMP_SECTION__
             </div>
@@ -622,8 +622,8 @@ def generate_html():
             <div class="how-to-read">
                 <strong>Como ler e interpretar os dados de conferência:</strong>
                 <ul>
-                    <li><strong>Índices Clássicos com Concordância Exata (\(\Delta = 0.0\)):</strong> Os índices K (KINX), Total Totals (TOTL), Cross Totals (CTOT), Vertical Totals (VTOT), Showalter (SHOW), SWEAT e Água Precipitável (PWAT) calculados via Siphon / MetPy coincidem perfeitamente com os dados oficiais publicados pela Universidade de Wyoming nas 3 sondagens.</li>
-                    <li><strong>MUCAPE Extremo em 24/12/1995:</strong> O Wyoming registra 7808,7 J/kg e o cálculo via Siphon / MetPy resulta em 7810,0 J/kg (\(\Delta = +1,3\text{ J/kg}\), precisão de 99,98%), confirmando a captura idêntica da parcela mais instável em 925 hPa.</li>
+                    <li><strong>Índices Clássicos com Concordância Exata (\(\Delta = 0.0\)):</strong> Os índices K (KINX), Total Totals (TOTL), Cross Totals (CTOT), Vertical Totals (VTOT), Showalter (SHOW) e Água Precipitável (PWAT) calculados via MetPy coincidem com os dados oficiais publicados pela Universidade de Wyoming nas 3 sondagens. Já o índice SWEAT, recalculado com velocidade em nós (conforme a formulação original de Miller 1972), difere dos valores do Wyoming devido ao uso de velocidades em m/s na rotina do servidor remoto.</li>
+                    <li><strong>MUCAPE Extremo em 24/12/1995:</strong> O Wyoming registra 7808,7 J/kg e o cálculo via MetPy resulta em 7810,0 J/kg (\(\Delta = +1,3\text{ J/kg}\), precisão de 99,98%), confirmando a captura idêntica da parcela mais instável em 925 hPa.</li>
                     <li><strong>Diferença entre SBCAPE e MUCAPE:</strong> Em 24/12, a parcela de superfície possui SBCAPE de 1862 J/kg com forte inibição (SBCIN = -186 J/kg), enquanto o MUCAPE atinge 7810 J/kg com CIN nulo (0 J/kg), caracterizando uma convecção elevada de extrema violência.</li>
                     <li><strong>Três Métodos de DCAPE:</strong> Kerry Emanuel (1994) avalia a descida de parcela individual camada a camada com microfísica detalhada; MetPy integra a descida a partir da camada de mínimo \(\theta_e\); e Wyoming utiliza formulação empírica de coluna.</li>
                 </ul>
@@ -632,7 +632,7 @@ def generate_html():
             <div class="student-questions">
                 <strong>Perguntas para o estudante responder:</strong>
                 <ol>
-                    <li>Por que os índices cinemáticos e termodinâmicos padrão (K, TT, Showalter, SWEAT e PW) apresentam concordância exata entre Siphon/MetPy e Wyoming, enquanto o LCL e o CAPE de superfície apresentam pequenas divergências numéricas de interpolação vertical?</li>
+                    <li>Por que os índices termodinâmicos padrão (K, TT, Showalter e PW) apresentam concordância exata entre MetPy e Wyoming, enquanto o SWEAT diverge quando calculado estritamente com velocidades em nós (Miller 1972) em vez de m/s?</li>
                     <li>Em 24/12/1995, compare o MUCAPE oficial (7808,7 J/kg) com o valor do teste de sensibilidade sem o nível de 925 hPa (1860 J/kg). Qual a justificativa física para a presença do Jato de Baixos Níveis (JBN) com vento de 44 nós em 925 hPa?</li>
                 </ol>
             </div>
@@ -641,22 +641,22 @@ def generate_html():
         <!-- SEÇÃO 4: PERFIS VERTICAIS DE ESTABILIDADE -->
         <section class="tutorial-section" id="sec-perfis">
             <div class="section-header">
-                <h2>4. Perfis Verticais de Estabilidade: \(\theta, \theta_e, \theta_{es}\), \(N^2\) e \(S\) (Topo em 300 hPa)</h2>
+                <h2>4. Perfis Verticais de Estabilidade: \(\theta, \theta_e, \theta_{es}\), \(N^2\) e \(S\) (Topo em 200 hPa)</h2>
             </div>
             <div class="explanation-text">
-                Análise da estrutura de estabilidade estática e convectiva da troposfera até 300 hPa, baseada nas formulações do Cap. 2 de Kerry Emanuel (1994).
+                Análise da estrutura de estabilidade estática e convectiva da troposfera até 200 hPa, baseada nas formulações do Cap. 2 de Kerry Emanuel (1994).
                 A frequência de Brunt-Väisälä ao quadrado (\(N^2 = \frac{g}{\theta}\frac{\partial\theta}{\partial z}\)) permite evidenciar camadas estaticamente instáveis (\(N^2 < 0\)), 
                 enquanto a estabilidade estática em coordenadas de pressão (\(S = -\frac{T}{\theta}\frac{\partial\theta}{\partial p}\)) quantifica a resistência ao deslocamento vertical em K/hPa.
             </div>
 
             <div class="figure-wrapper">
                 <img src="metpack/fig_perfis_theta_triplice.png" alt="Perfis de Theta Triplice" onclick="openModal(this.src)">
-                <div class="figure-caption">Perfis de \(\theta\) (seca), \(\theta_e\) (equivalente) e \(\theta_{es}\) (saturação) para as Três Sondagens (Mesmos Eixos até 300 hPa) — Clique para ampliar</div>
+                <div class="figure-caption">Perfis de \(\theta\) (seca), \(\theta_e\) (equivalente) e \(\theta_{es}\) (saturação) para as Três Sondagens (Mesmos Eixos até 200 hPa) — Clique para ampliar</div>
             </div>
 
             <div class="figure-wrapper">
                 <img src="metpack/fig_3_soundings_profiles_comparison.png" alt="Comparação Tríplice de Perfis" onclick="openModal(this.src)">
-                <div class="figure-caption">Comparação Tríplice: \(\theta_e\), \(N^2\), \(S = -(T/\theta)\partial\theta/\partial p\) e razão de mistura \(r\) até 300 hPa — Clique para ampliar</div>
+                <div class="figure-caption">Comparação Tríplice: \(\theta_e\), \(N^2\), \(S = -(T/\theta)\partial\theta/\partial p\) e razão de mistura \(r\) até 200 hPa — Clique para ampliar</div>
             </div>
 
             <div class="how-to-read">

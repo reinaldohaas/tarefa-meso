@@ -17,7 +17,7 @@
             --text-muted: #475569;
             --border-color: #e2e8f0;
             --color-c12: #1f77b4;
-            --color-c23: #d97706;
+            --color-c22: #d97706;
             --color-c24: #dc2626;
             --color-sens: #7c3aed;
         }
@@ -523,21 +523,21 @@
 
             <!-- SONDAGEM 1: ESTÁVEL -->
             <div class="figure-wrapper" style="max-width: 1040px; margin: 24px auto;">
-                <h3 style="color: #0284c7; margin-bottom: 8px;">2.1 Sondagem 1: 12/12/1995 12Z — Atmosfera Estável (Pós-Frontal)</h3>
+                <h3 style="color: #0284c7; margin-bottom: 8px;">2.1 Sondagem 1: 12/12/1995 12Z (SBPA) — Atmosfera Estável</h3>
                 <img src="metpack/fig_sounding_1_estavel.png" alt="Sondagem 1 Estável 12/12/1995 12Z" onclick="openModal(this.src)">
                 <div class="figure-caption">Figura 1: Diagrama Skew-T / Log-P com Hodógrafo Polar (lado superior direito) e Painel de Diagnósticos Físicos Completos Ampliado (lado inferior direito). SBCAPE = 16 J/kg, SBCIN = 0 J/kg, Shear 0-6 km = 13.7 m/s (26.6 kt). Clique para ampliar.</div>
             </div>
 
             <!-- SONDAGEM 2: TRANSIÇÃO -->
             <div class="figure-wrapper" style="max-width: 1040px; margin: 24px auto;">
-                <h3 style="color: #0d9488; margin-bottom: 8px;">2.2 Sondagem 2: 23/12/1995 12Z — Atmosfera de Transição / Neutra</h3>
-                <img src="metpack/fig_sounding_2_neutra.png" alt="Sondagem 2 Transição 23/12/1995 12Z" onclick="openModal(this.src)">
-                <div class="figure-caption">Figura 2: Diagrama Skew-T / Log-P com Hodógrafo Polar (lado superior direito) e Painel de Diagnósticos Físicos Completos Ampliado (lado inferior direito). MUCAPE = 2762 J/kg, SBCAPE = 2762 J/kg, PW = 57.0 mm, Shear 0-6 km = 10.2 m/s. Clique para ampliar.</div>
+                <h3 style="color: #0d9488; margin-bottom: 8px;">2.2 Sondagem 2: 22/12/1995 12Z (SBPA) — Atmosfera de Transição</h3>
+                <img src="metpack/fig_sounding_2_neutra.png" alt="Sondagem 2 Transição 22/12/1995 12Z" onclick="openModal(this.src)">
+                <div class="figure-caption">Figura 2: Diagrama Skew-T / Log-P com Hodógrafo Polar (lado superior direito) e Painel de Diagnósticos Físicos Completos Ampliado (lado inferior direito). MUCAPE = 836 J/kg, SBCAPE = 836 J/kg, SBCIN = -222 J/kg, PW = 43.9 mm, Shear 0-6 km = 2.8 m/s (5.5 kt). Clique para ampliar.</div>
             </div>
 
             <!-- SONDAGEM 3: INSTÁVEL -->
             <div class="figure-wrapper" style="max-width: 1040px; margin: 24px auto;">
-                <h3 style="color: #dc2626; margin-bottom: 8px;">2.3 Sondagem 3: 24/12/1995 12Z — Atmosfera Severamente Instável (Enchente de Natal)</h3>
+                <h3 style="color: #dc2626; margin-bottom: 8px;">2.3 Sondagem 3: 24/12/1995 12Z (SBPA) — Atmosfera Instável</h3>
                 <img src="metpack/fig_sounding_3_instavel.png" alt="Sondagem 3 Instável 24/12/1995 12Z" onclick="openModal(this.src)">
                 <div class="figure-caption">Figura 3: Diagrama Skew-T / Log-P com Hodógrafo Polar (lado superior direito) e Painel de Diagnósticos Físicos Completos Ampliado (lado inferior direito). MUCAPE = 7810 J/kg, SBCAPE = 1862 J/kg, Shear 0-6 km = 12.6 m/s (24.5 kt), SRH 0-3 km = -123.3 m²/s² (Left-Mover). Clique para ampliar.</div>
             </div>
@@ -550,7 +550,7 @@
                     <li>Linhas pontilhadas horizontais indicam o Nível de Condensação por Levantamento (LCL), Nível de Convecção Livre (LFC) e Nível de Equilíbrio (EL).</li>
                     <li>Área sombreada em vermelho = CAPE; área sombreada em azul = CIN.</li>
                     <li>O hodógrafo polar no canto superior direito exibe a estrutura vertical dos ventos horizontais em nós (kt), divididos por camadas coloridas de altitude, além do vetor de tempestades anômalas (Bunkers Left-Mover).</li>
-                    <li>O painel diagnóstico no canto inferior direito sintetiza com fontes grandes e alta legibilidade os índices de convecção calculados via Siphon/MetPy.</li>
+                    <li>O painel diagnóstico no canto inferior direito sintetiza com fontes grandes e alta legibilidade os índices de convecção calculados via MetPy.</li>
                 </ul>
             </div>
 
@@ -581,21 +581,21 @@
                         <tr>
                             <th style="text-align:left;">Parâmetro Diagnóstico</th>
                             <th style="color:var(--color-c12);">12/12/1995 12Z<br>(Estável)</th>
-                            <th style="color:var(--color-c23);">23/12/1995 12Z<br>(Transição)</th>
+                            <th style="color:var(--color-c22);">22/12/1995 12Z<br>(Transição)</th>
                             <th style="color:var(--color-c24);">24/12/1995 12Z<br>(Oficial Completa)</th>
                             <th style="color:var(--color-sens);">24/12/1995 12Z<br>(Sensibilidade sem 925)</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr><td style='text-align:left;'><strong>Água Precipitável (PW)</strong></td><td>35.1 mm</td><td>57.0 mm</td><td>55.4 mm</td><td>50.8 mm</td></tr>
-<tr><td style='text-align:left;'><strong>SBCAPE (Superfície)</strong></td><td>15.7 J/kg</td><td>2761.7 J/kg</td><td>1861.9 J/kg</td><td>1860.1 J/kg</td></tr>
-<tr><td style='text-align:left;'><strong>SBCIN (Inibição de Superfície)</strong></td><td>0.0 J/kg</td><td>0.0 J/kg</td><td>-186.3 J/kg</td><td>-5.2 J/kg</td></tr>
-<tr><td style='text-align:left;'><strong>MUCAPE (Parcela Mais Instável)</strong></td><td>0.9 J/kg</td><td>2761.7 J/kg</td><td>7810.0 J/kg</td><td>1860.1 J/kg</td></tr>
-<tr><td style='text-align:left;'><strong>MUCIN</strong></td><td>-159.0 J/kg</td><td>0.0 J/kg</td><td>0.0 J/kg</td><td>-5.2 J/kg</td></tr>
-<tr><td style='text-align:left;'><strong>Nível do LCL</strong></td><td>968.3 hPa</td><td>988.5 hPa</td><td>988.4 hPa</td><td>988.4 hPa</td></tr>
-<tr><td style='text-align:left;'><strong>Cisalhamento Bulk 0–6 km</strong></td><td>13.7 m/s (26.6 kt)</td><td>10.2 m/s (19.8 kt)</td><td>12.6 m/s (24.5 kt)</td><td>12.6 m/s (24.5 kt)</td></tr>
-<tr><td style='text-align:left;'><strong>Vento Observado em 925 hPa</strong></td><td>8.9 kt de 160°</td><td>21.0 kt de 230°</td><td>43.9 kt de 60°</td><td>Nível omitido</td></tr>
-<tr><td style='text-align:left;'><strong>SRH 0–3 km (Bunkers Left-Mover)</strong></td><td>-52.2 m²/s²</td><td>-54.9 m²/s²</td><td>-123.3 m²/s²</td><td>-116.9 m²/s²</td></tr>
+                        <tr><td style='text-align:left;'><strong>Água Precipitável (PW)</strong></td><td>35.1 mm</td><td>43.9 mm</td><td>55.4 mm</td><td>50.8 mm</td></tr>
+<tr><td style='text-align:left;'><strong>SBCAPE (Superfície)</strong></td><td>15.7 J/kg</td><td>836.0 J/kg</td><td>1861.9 J/kg</td><td>1860.1 J/kg</td></tr>
+<tr><td style='text-align:left;'><strong>SBCIN (Inibição de Superfície)</strong></td><td>0.0 J/kg</td><td>-221.8 J/kg</td><td>-186.3 J/kg</td><td>-5.2 J/kg</td></tr>
+<tr><td style='text-align:left;'><strong>MUCAPE (Parcela Mais Instável)</strong></td><td>0.9 J/kg</td><td>836.0 J/kg</td><td>7810.0 J/kg</td><td>1860.1 J/kg</td></tr>
+<tr><td style='text-align:left;'><strong>MUCIN</strong></td><td>-159.0 J/kg</td><td>-221.8 J/kg</td><td>0.0 J/kg</td><td>-5.2 J/kg</td></tr>
+<tr><td style='text-align:left;'><strong>Nível do LCL</strong></td><td>968.3 hPa</td><td>882.1 hPa</td><td>988.4 hPa</td><td>988.4 hPa</td></tr>
+<tr><td style='text-align:left;'><strong>Cisalhamento Bulk 0–6 km</strong></td><td>13.7 m/s (26.6 kt)</td><td>2.8 m/s (5.5 kt)</td><td>12.6 m/s (24.5 kt)</td><td>12.6 m/s (24.5 kt)</td></tr>
+<tr><td style='text-align:left;'><strong>Vento Observado em 925 hPa</strong></td><td>8.9 kt de 160°</td><td>8.9 kt de 10°</td><td>43.9 kt de 60°</td><td>Nível omitido</td></tr>
+<tr><td style='text-align:left;'><strong>SRH 0–3 km (Bunkers Left-Mover)</strong></td><td>-52.2 m²/s²</td><td>-5.2 m²/s²</td><td>-123.3 m²/s²</td><td>-116.9 m²/s²</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -622,10 +622,10 @@
         
 
             <tr>
-                <td style="text-align:left;"><strong>23/12/1995 (Transição)</strong></td>
-                <td style="color:#0284c7;">530.6 J/kg</td>
-                <td style="color:#16a34a; font-weight:600;">524.7 J/kg</td>
-                <td style="color:#d97706; font-weight:600;">44.8 J/kg (910 hPa)</td>
+                <td style="text-align:left;"><strong>22/12/1995 (Transição)</strong></td>
+                <td style="color:#0284c7;">1352.5 J/kg</td>
+                <td style="color:#16a34a; font-weight:600;">1338.5 J/kg</td>
+                <td style="color:#d97706; font-weight:600;">195.5 J/kg (905 hPa)</td>
             </tr>
         
 
@@ -648,7 +648,7 @@
                 </table>
             </div>
 
-            <div class="block-title">Tabela de Conferência Completa: Wyoming Oficial (INDICES) vs. Siphon / MetPy</div>
+            <div class="block-title">Tabela de Conferência Completa: Wyoming Oficial (INDICES) vs. MetPy</div>
             <div class="table-grid-3">
                 
             <div class="table-card">
@@ -661,7 +661,7 @@
                             <tr>
                                 <th style="text-align:left;">Índice</th>
                                 <th>Wyoming (Oficial)</th>
-                                <th>Siphon / MetPy</th>
+                                <th>MetPy</th>
                                 <th>Diferença (Δ)</th>
                             </tr>
                         </thead>
@@ -774,8 +774,8 @@
                 <tr>
                     <td style="text-align:left;"><strong>SWEAT Index (SWET)</strong></td>
                     <td style="color:#0284c7;">98.4</td>
-                    <td style="color:#16a34a; font-weight:600;">98.4</td>
-                    <td style="color:#475569; font-weight:600;">+0.0</td>
+                    <td style="color:#16a34a; font-weight:600;">118.8</td>
+                    <td style="color:#475569; font-weight:600;">+20.4</td>
                 </tr>
             
 
@@ -802,7 +802,7 @@
 
             <div class="table-card">
                 <h4 style="color:#d97706; margin-top:0; margin-bottom:10px; font-size:1.0rem; border-bottom: 2px solid #d97706; padding-bottom: 4px;">
-                    Sondagem 23/12/1995 12Z
+                    Sondagem 22/12/1995 12Z
                 </h4>
                 <div class="table-responsive">
                     <table class="data-table">
@@ -810,7 +810,7 @@
                             <tr>
                                 <th style="text-align:left;">Índice</th>
                                 <th>Wyoming (Oficial)</th>
-                                <th>Siphon / MetPy</th>
+                                <th>MetPy</th>
                                 <th>Diferença (Δ)</th>
                             </tr>
                         </thead>
@@ -818,32 +818,32 @@
                             
                 <tr>
                     <td style="text-align:left;"><strong>PW (Água Precipitável)</strong></td>
-                    <td style="color:#0284c7;">57.0</td>
-                    <td style="color:#16a34a; font-weight:600;">56.98</td>
-                    <td style="color:#475569; font-weight:600;">-0.02</td>
+                    <td style="color:#0284c7;">43.9</td>
+                    <td style="color:#16a34a; font-weight:600;">43.89</td>
+                    <td style="color:#475569; font-weight:600;">-0.01</td>
                 </tr>
             
 
                 <tr>
                     <td style="text-align:left;"><strong>MUCAPE (Most Unstable CAPE)</strong></td>
-                    <td style="color:#0284c7;">2031.9</td>
-                    <td style="color:#16a34a; font-weight:600;">2761.7</td>
-                    <td style="color:#475569; font-weight:600;">+729.8</td>
+                    <td style="color:#0284c7;">415.2</td>
+                    <td style="color:#16a34a; font-weight:600;">836.0</td>
+                    <td style="color:#475569; font-weight:600;">+420.8</td>
                 </tr>
             
 
                 <tr>
                     <td style="text-align:left;"><strong>MUCIN (Most Unstable CIN)</strong></td>
-                    <td style="color:#0284c7;">0.0</td>
-                    <td style="color:#16a34a; font-weight:600;">0.0</td>
-                    <td style="color:#475569; font-weight:600;">+0.0</td>
+                    <td style="color:#0284c7;">-294.5</td>
+                    <td style="color:#16a34a; font-weight:600;">-221.8</td>
+                    <td style="color:#475569; font-weight:600;">+72.7</td>
                 </tr>
             
 
                 <tr>
                     <td style="text-align:left;"><strong>SBCAPE (Surface-Based CAPE)</strong></td>
                     <td style="color:#0284c7;">N/A</td>
-                    <td style="color:#16a34a; font-weight:600;">2761.7</td>
+                    <td style="color:#16a34a; font-weight:600;">836.0</td>
                     <td style="color:#475569; font-weight:600;">-</td>
                 </tr>
             
@@ -851,23 +851,23 @@
                 <tr>
                     <td style="text-align:left;"><strong>SBCIN (Surface-Based CIN)</strong></td>
                     <td style="color:#0284c7;">N/A</td>
-                    <td style="color:#16a34a; font-weight:600;">0.0</td>
+                    <td style="color:#16a34a; font-weight:600;">-221.8</td>
                     <td style="color:#475569; font-weight:600;">-</td>
                 </tr>
             
 
                 <tr>
                     <td style="text-align:left;"><strong>LCL Pressão (LCLP)</strong></td>
-                    <td style="color:#0284c7;">970.0</td>
-                    <td style="color:#16a34a; font-weight:600;">988.5</td>
-                    <td style="color:#475569; font-weight:600;">+18.5</td>
+                    <td style="color:#0284c7;">865.0</td>
+                    <td style="color:#16a34a; font-weight:600;">882.1</td>
+                    <td style="color:#475569; font-weight:600;">+17.1</td>
                 </tr>
             
 
                 <tr>
                     <td style="text-align:left;"><strong>LFC Pressão (LFCP)</strong></td>
                     <td style="color:#0284c7;">N/A</td>
-                    <td style="color:#16a34a; font-weight:600;">876.3</td>
+                    <td style="color:#16a34a; font-weight:600;">710.2</td>
                     <td style="color:#475569; font-weight:600;">-</td>
                 </tr>
             
@@ -875,72 +875,72 @@
                 <tr>
                     <td style="text-align:left;"><strong>EL Pressão (EQLV)</strong></td>
                     <td style="color:#0284c7;">N/A</td>
-                    <td style="color:#16a34a; font-weight:600;">156.3</td>
+                    <td style="color:#16a34a; font-weight:600;">238.6</td>
                     <td style="color:#475569; font-weight:600;">-</td>
                 </tr>
             
 
                 <tr>
                     <td style="text-align:left;"><strong>K-Index (KINX)</strong></td>
-                    <td style="color:#0284c7;">36.2</td>
-                    <td style="color:#16a34a; font-weight:600;">36.2</td>
+                    <td style="color:#0284c7;">34.9</td>
+                    <td style="color:#16a34a; font-weight:600;">34.9</td>
                     <td style="color:#475569; font-weight:600;">+0.0</td>
                 </tr>
             
 
                 <tr>
                     <td style="text-align:left;"><strong>Total Totals (TOTL)</strong></td>
-                    <td style="color:#0284c7;">45.8</td>
-                    <td style="color:#16a34a; font-weight:600;">45.8</td>
+                    <td style="color:#0284c7;">48.4</td>
+                    <td style="color:#16a34a; font-weight:600;">48.4</td>
                     <td style="color:#475569; font-weight:600;">+0.0</td>
                 </tr>
             
 
                 <tr>
                     <td style="text-align:left;"><strong>Cross Totals (CTOT)</strong></td>
-                    <td style="color:#0284c7;">19.9</td>
-                    <td style="color:#16a34a; font-weight:600;">19.9</td>
+                    <td style="color:#0284c7;">18.7</td>
+                    <td style="color:#16a34a; font-weight:600;">18.7</td>
                     <td style="color:#475569; font-weight:600;">+0.0</td>
                 </tr>
             
 
                 <tr>
                     <td style="text-align:left;"><strong>Vertical Totals (VTOT)</strong></td>
-                    <td style="color:#0284c7;">25.9</td>
-                    <td style="color:#16a34a; font-weight:600;">25.9</td>
+                    <td style="color:#0284c7;">29.7</td>
+                    <td style="color:#16a34a; font-weight:600;">29.7</td>
                     <td style="color:#475569; font-weight:600;">+0.0</td>
                 </tr>
             
 
                 <tr>
                     <td style="text-align:left;"><strong>Showalter Index (SHOW)</strong></td>
-                    <td style="color:#0284c7;">0.3</td>
-                    <td style="color:#16a34a; font-weight:600;">0.2</td>
+                    <td style="color:#0284c7;">-0.5</td>
+                    <td style="color:#16a34a; font-weight:600;">-0.6</td>
                     <td style="color:#475569; font-weight:600;">-0.1</td>
                 </tr>
             
 
                 <tr>
                     <td style="text-align:left;"><strong>SWEAT Index (SWET)</strong></td>
-                    <td style="color:#0284c7;">251.6</td>
-                    <td style="color:#16a34a; font-weight:600;">251.7</td>
-                    <td style="color:#475569; font-weight:600;">+0.1</td>
+                    <td style="color:#0284c7;">148.3</td>
+                    <td style="color:#16a34a; font-weight:600;">161.6</td>
+                    <td style="color:#475569; font-weight:600;">+13.3</td>
                 </tr>
             
 
                 <tr>
                     <td style="text-align:left;"><strong>Lifted Index (LFVT/LIFT)</strong></td>
-                    <td style="color:#0284c7;">-6.1</td>
-                    <td style="color:#16a34a; font-weight:600;">-6.51</td>
-                    <td style="color:#475569; font-weight:600;">-0.41</td>
+                    <td style="color:#0284c7;">-3.1</td>
+                    <td style="color:#16a34a; font-weight:600;">-3.53</td>
+                    <td style="color:#475569; font-weight:600;">-0.43</td>
                 </tr>
             
 
                 <tr>
                     <td style="text-align:left;"><strong>DCAPE (Downdraft CAPE)</strong></td>
-                    <td style="color:#0284c7;">530.6</td>
-                    <td style="color:#16a34a; font-weight:600;">524.7</td>
-                    <td style="color:#475569; font-weight:600;">-5.9</td>
+                    <td style="color:#0284c7;">1352.5</td>
+                    <td style="color:#16a34a; font-weight:600;">1338.5</td>
+                    <td style="color:#475569; font-weight:600;">-14.0</td>
                 </tr>
             
                         </tbody>
@@ -959,7 +959,7 @@
                             <tr>
                                 <th style="text-align:left;">Índice</th>
                                 <th>Wyoming (Oficial)</th>
-                                <th>Siphon / MetPy</th>
+                                <th>MetPy</th>
                                 <th>Diferença (Δ)</th>
                             </tr>
                         </thead>
@@ -1072,8 +1072,8 @@
                 <tr>
                     <td style="text-align:left;"><strong>SWEAT Index (SWET)</strong></td>
                     <td style="color:#0284c7;">204.9</td>
-                    <td style="color:#16a34a; font-weight:600;">205.0</td>
-                    <td style="color:#475569; font-weight:600;">+0.1</td>
+                    <td style="color:#16a34a; font-weight:600;">254.6</td>
+                    <td style="color:#475569; font-weight:600;">+49.7</td>
                 </tr>
             
 
@@ -1102,8 +1102,8 @@
             <div class="how-to-read">
                 <strong>Como ler e interpretar os dados de conferência:</strong>
                 <ul>
-                    <li><strong>Índices Clássicos com Concordância Exata (\(\Delta = 0.0\)):</strong> Os índices K (KINX), Total Totals (TOTL), Cross Totals (CTOT), Vertical Totals (VTOT), Showalter (SHOW), SWEAT e Água Precipitável (PWAT) calculados via Siphon / MetPy coincidem perfeitamente com os dados oficiais publicados pela Universidade de Wyoming nas 3 sondagens.</li>
-                    <li><strong>MUCAPE Extremo em 24/12/1995:</strong> O Wyoming registra 7808,7 J/kg e o cálculo via Siphon / MetPy resulta em 7810,0 J/kg (\(\Delta = +1,3\text{ J/kg}\), precisão de 99,98%), confirmando a captura idêntica da parcela mais instável em 925 hPa.</li>
+                    <li><strong>Índices Clássicos com Concordância Exata (\(\Delta = 0.0\)):</strong> Os índices K (KINX), Total Totals (TOTL), Cross Totals (CTOT), Vertical Totals (VTOT), Showalter (SHOW) e Água Precipitável (PWAT) calculados via MetPy coincidem com os dados oficiais publicados pela Universidade de Wyoming nas 3 sondagens. Já o índice SWEAT, recalculado com velocidade em nós (conforme a formulação original de Miller 1972), difere dos valores do Wyoming devido ao uso de velocidades em m/s na rotina do servidor remoto.</li>
+                    <li><strong>MUCAPE Extremo em 24/12/1995:</strong> O Wyoming registra 7808,7 J/kg e o cálculo via MetPy resulta em 7810,0 J/kg (\(\Delta = +1,3\text{ J/kg}\), precisão de 99,98%), confirmando a captura idêntica da parcela mais instável em 925 hPa.</li>
                     <li><strong>Diferença entre SBCAPE e MUCAPE:</strong> Em 24/12, a parcela de superfície possui SBCAPE de 1862 J/kg com forte inibição (SBCIN = -186 J/kg), enquanto o MUCAPE atinge 7810 J/kg com CIN nulo (0 J/kg), caracterizando uma convecção elevada de extrema violência.</li>
                     <li><strong>Três Métodos de DCAPE:</strong> Kerry Emanuel (1994) avalia a descida de parcela individual camada a camada com microfísica detalhada; MetPy integra a descida a partir da camada de mínimo \(\theta_e\); e Wyoming utiliza formulação empírica de coluna.</li>
                 </ul>
@@ -1112,7 +1112,7 @@
             <div class="student-questions">
                 <strong>Perguntas para o estudante responder:</strong>
                 <ol>
-                    <li>Por que os índices cinemáticos e termodinâmicos padrão (K, TT, Showalter, SWEAT e PW) apresentam concordância exata entre Siphon/MetPy e Wyoming, enquanto o LCL e o CAPE de superfície apresentam pequenas divergências numéricas de interpolação vertical?</li>
+                    <li>Por que os índices termodinâmicos padrão (K, TT, Showalter e PW) apresentam concordância exata entre MetPy e Wyoming, enquanto o SWEAT diverge quando calculado estritamente com velocidades em nós (Miller 1972) em vez de m/s?</li>
                     <li>Em 24/12/1995, compare o MUCAPE oficial (7808,7 J/kg) com o valor do teste de sensibilidade sem o nível de 925 hPa (1860 J/kg). Qual a justificativa física para a presença do Jato de Baixos Níveis (JBN) com vento de 44 nós em 925 hPa?</li>
                 </ol>
             </div>
@@ -1121,22 +1121,22 @@
         <!-- SEÇÃO 4: PERFIS VERTICAIS DE ESTABILIDADE -->
         <section class="tutorial-section" id="sec-perfis">
             <div class="section-header">
-                <h2>4. Perfis Verticais de Estabilidade: \(\theta, \theta_e, \theta_{es}\), \(N^2\) e \(S\) (Topo em 300 hPa)</h2>
+                <h2>4. Perfis Verticais de Estabilidade: \(\theta, \theta_e, \theta_{es}\), \(N^2\) e \(S\) (Topo em 200 hPa)</h2>
             </div>
             <div class="explanation-text">
-                Análise da estrutura de estabilidade estática e convectiva da troposfera até 300 hPa, baseada nas formulações do Cap. 2 de Kerry Emanuel (1994).
+                Análise da estrutura de estabilidade estática e convectiva da troposfera até 200 hPa, baseada nas formulações do Cap. 2 de Kerry Emanuel (1994).
                 A frequência de Brunt-Väisälä ao quadrado (\(N^2 = \frac{g}{\theta}\frac{\partial\theta}{\partial z}\)) permite evidenciar camadas estaticamente instáveis (\(N^2 < 0\)), 
                 enquanto a estabilidade estática em coordenadas de pressão (\(S = -\frac{T}{\theta}\frac{\partial\theta}{\partial p}\)) quantifica a resistência ao deslocamento vertical em K/hPa.
             </div>
 
             <div class="figure-wrapper">
                 <img src="metpack/fig_perfis_theta_triplice.png" alt="Perfis de Theta Triplice" onclick="openModal(this.src)">
-                <div class="figure-caption">Perfis de \(\theta\) (seca), \(\theta_e\) (equivalente) e \(\theta_{es}\) (saturação) para as Três Sondagens (Mesmos Eixos até 300 hPa) — Clique para ampliar</div>
+                <div class="figure-caption">Perfis de \(\theta\) (seca), \(\theta_e\) (equivalente) e \(\theta_{es}\) (saturação) para as Três Sondagens (Mesmos Eixos até 200 hPa) — Clique para ampliar</div>
             </div>
 
             <div class="figure-wrapper">
                 <img src="metpack/fig_3_soundings_profiles_comparison.png" alt="Comparação Tríplice de Perfis" onclick="openModal(this.src)">
-                <div class="figure-caption">Comparação Tríplice: \(\theta_e\), \(N^2\), \(S = -(T/\theta)\partial\theta/\partial p\) e razão de mistura \(r\) até 300 hPa — Clique para ampliar</div>
+                <div class="figure-caption">Comparação Tríplice: \(\theta_e\), \(N^2\), \(S = -(T/\theta)\partial\theta/\partial p\) e razão de mistura \(r\) até 200 hPa — Clique para ampliar</div>
             </div>
 
             <div class="how-to-read">

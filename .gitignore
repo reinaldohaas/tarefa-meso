@@ -7,4 +7,6 @@ screenshot_*.png
 emanuel_*/
 /*.png
 /wyoming_*.txt
+/wyoming_*.csv
 /wyoming*.f
+metpack/fig_sat_ir_*.png

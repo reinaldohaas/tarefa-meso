@@ -28,7 +28,7 @@ def run_tcon(sounding_file=None, show=False):
     # Resolução de argumentos da linha de comando
     if sounding_file is None and len(sys.argv) > 1:
         arg = sys.argv[1].strip()
-        if arg in ('19951212', '19951223', '19951224'):
+        if arg in ('19951212', '19951222', '19951224'):
             sounding_file = f"sounding_{arg}_12Z.txt"
         elif os.path.exists(arg):
             sounding_file = arg

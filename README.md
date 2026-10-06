@@ -15,7 +15,7 @@
 Este repositório é um tutorial prático e reprodutível para análise termodinâmica e cinemática de radiossondagens observadas na América do Sul. A tarefa consiste em diagnosticar comparativamente **três regimes atmosféricos observados distintos**:
 
 1. **Atmosfera Estável:** Perfil com inversão ou forte estabilidade térmica, inibição de flutuabilidade positiva e ausência de convecção profunda. *(Exemplo do tutorial: Porto Alegre — SBPA 83971 em 12/12/1995 12Z)*.
-2. **Atmosfera de Transição:** Perfil com umedecimento progressivo da troposfera e flutuabilidade moderada. *(Exemplo do tutorial: Porto Alegre — SBPA 83971 em 23/12/1995 12Z)*.
+2. **Atmosfera de Transição:** Perfil com umedecimento progressivo da troposfera e flutuabilidade moderada. *(Exemplo do tutorial: Porto Alegre — SBPA 83971 em 22/12/1995 12Z)*.
 3. **Atmosfera Instável:** Perfil com elevado empuxo térmico, gradiente vertical de $\theta_e$ decrescente com a altura, forte influxo úmido em baixos níveis e suporte cinemático. *(Exemplo do tutorial: Porto Alegre — SBPA 83971 em 24/12/1995 12Z)*.
 
 > **Importante:** Todos os números de diagnóstico (CAPE, CIN, cisalhamento, SRH, PW, DCAPE) são calculados dinamicamente pelos scripts a partir dos dados do Wyoming e centralizados em `metpack/metricas.json`. Para consultar os valores exatos de diagnóstico, tabelas de conferência e matrizes de Emanuel, consulte o [Tutorial Interativo (index.html)](https://reinaldohaas.github.io/tarefa-meso/) ou o arquivo `metpack/metricas.json`.
@@ -31,7 +31,7 @@ Este repositório é um tutorial prático e reprodutível para análise termodin
 3. **Cálculo dos Diagnósticos e Conferência:**  
    Execute os scripts de cálculo termodinâmico (MetPy e rotinas de Kerry Emanuel 1994) para gerar as métricas e comparar com os índices oficiais publicados pelo Wyoming.
 4. **Geração das Figuras Didáticas:**  
-   Gere os diagramas Skew-T individuais e comparativos, perfis verticais de $\theta_e, N^2, S, r$ até 300 hPa, hodógrafo com convenções do Hemisfério Sul (Bunkers Left-Mover) e matrizes 2D de Emanuel ($T_\rho$ vs $T_v$).
+   Gere os diagramas Skew-T individuais e comparativos, perfis verticais de $\theta_e, N^2, S, r$ até 200 hPa, hodógrafo com convenções do Hemisfério Sul (Bunkers Left-Mover) e matrizes 2D de Emanuel ($T_\rho$ vs $T_v$).
 5. **Preparação da Apresentação Final:**  
    Compile a apresentação de 10 slides (20 minutos) no formato estabelecido para defesa técnica perante os previsores da Defesa Civil de Santa Catarina.
 
@@ -48,7 +48,6 @@ tarefa-meso/
 ├── apresentacao_meso.pptx       # Apresentação oficial para a Defesa Civil de SC
 ├── ROTEIRO_ESTUDANTES.md        # Roteiro passo a passo com critérios de avaliação
 ├── Seminario_plot_sounding_revisado.ipynb # Notebook oficial para execução no Google Colab
-├── analise_sondagens.ipynb      # Notebook com análise observacional de satélite
 └── metpack/                     # Módulo de processamento meteorológico
     ├── metricas.json            # Fonte única de verdade de todas as métricas calculadas
     ├── calc_metricas.py         # Script que calcula métricas e grava o metricas.json
@@ -72,7 +71,7 @@ uv run --with metpy --with pandas --with numpy python metpack/calc_metricas.py
 # 2. Gerar as matrizes 2D de Kerry Emanuel (1994)
 uv run --with matplotlib --with numpy python metpack/tcon.py
 
-# 3. Gerar todas as figuras científicas (Skew-T, perfis até 300 hPa, hodógrafo)
+# 3. Gerar todas as figuras científicas (Skew-T, perfis até 200 hPa, hodógrafo)
 uv run --with metpy --with cartopy --with matplotlib --with numpy python generate_figures.py
 
 # 4. Gerar o tutorial web para GitHub Pages

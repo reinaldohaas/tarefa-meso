@@ -118,7 +118,7 @@ def set_speaker_notes(slide, notes_text):
 def build_presentation():
     metrics = load_metrics()
     m12 = metrics['19951212']
-    m23 = metrics['19951223']
+    m22 = metrics['19951222']
     m24_raw = metrics['19951224_raw']
     m24_sens = metrics.get('19951224_sensibilidade', metrics.get('19951224_qc', {}))
 
@@ -176,8 +176,8 @@ def build_presentation():
     p_sub.space_before = Pt(4)
 
     cards_data = [
-        ("📍 3 Casos Analisados", f"1. Estável: 12/12/1995 12Z\n2. Transição: 23/12/1995 12Z\n3. Instável: 24/12/1995 12Z\nEstação: SBPA (Porto Alegre)", C_CYAN),
-        ("⚡ Diagnóstico Auditado", f"• Flutuabilidade e CAPE/CIN\n• Emanuel Tρ e Water Loading\n• Freq. Brunt-Väisälä N² e Lid\n• Cisalhamento e Bunkers LM", C_ROSE),
+        ("📍 3 Casos Analisados", f"1. Estável: 12/12/1995 12Z\n2. Transição: 22/12/1995 12Z\n3. Instável: 24/12/1995 12Z\nEstação: SBPA (Porto Alegre)", C_CYAN),
+        ("⚡ Diagnóstico Auditado", f"• Flutuabilidade e CAPE/CIN\n• Emanuel Tρ e Water Loading\n• Freq. Brunt-Väisälä N² e Estabilidade\n• Cisalhamento e Bunkers LM", C_ROSE),
         ("📚 Arcabouço Teórico", "• Kerry Emanuel (1994)\n• MIT OCW 12.811\n• MetPy (Algoritmos Oficiais)\n• Wyoming Sounding Archive", C_EMERALD)
     ]
     for i, (ctitle, cdesc, ccol) in enumerate(cards_data):
@@ -294,11 +294,11 @@ Em 925 hPa, registrou-se vento de {m24_raw['wind_925_spd_kt']:.0f} nós ({m24_ra
 A confirmação dos padrões sinóticos em escala continental na América do Sul será realizada via reanálise oficial em grade.""")
 
     # --------------------------------------------------------------------------
-    # SLIDE 3: As 3 Sondagens - Estável (12/12) vs Transição (23/12)
+    # SLIDE 3: As 3 Sondagens - Estável (12/12) vs Transição (22/12)
     # --------------------------------------------------------------------------
     s3 = prs.slides.add_slide(blank_layout)
     set_slide_background(s3)
-    add_header(s3, "As Três Sondagens & Três Análises: Estável (12/12) vs Transição (23/12)",
+    add_header(s3, "As Três Sondagens & Três Análises: Estável (12/12) vs Transição (22/12)",
                "Diagnóstico Físico dos Primeiros Casos: Atmosfera Estável e Caso de Transição em Auditoria",
                "03 - 07 min", 3)
 
@@ -318,12 +318,12 @@ A confirmação dos padrões sinóticos em escala continental na América do Sul
             f"Emanuel (1994): CAPE reversível = {m12['emanuel']['surface_cape_rev_Jkg']:.1f} J/kg; pseudo = {m12['emanuel']['surface_cape_pseudo_Jkg']:.1f} J/kg.",
             f"Cinemática: Cisalhamento 0-6 km = {m12['bulk_shear_0_6km_ms']:.1f} m/s ({m12['bulk_shear_0_6km_kt']:.1f} kt); SRH 0-3km LM = {m12['srh_0_3km_lm_m2s2']:.1f} m²/s²."
         ], C_CYAN),
-        ("ANÁLISE 2: Caso de Transição / Mod. Instável (23/12/1995 12Z)", [
+        ("ANÁLISE 2: Caso de Transição / Mod. Instável (22/12/1995 12Z)", [
             "Perfil Observado: Coluna troposférica mais úmida e aquecida em relação ao caso estável.",
-            f"Termodinâmica Auditada: SBCAPE = {m23['sbcape_Jkg']:.1f} J/kg; MUCAPE = {m23['mucape_Jkg']:.1f} J/kg; PW = {m23['pw_mm']:.1f} mm.",
-            f"Emanuel (1994): CAPE reversível = {m23['emanuel']['surface_cape_rev_Jkg']:.1f} J/kg; pseudo = {m23['emanuel']['surface_cape_pseudo_Jkg']:.1f} J/kg.",
-            f"Cinemática: Cisalhamento 0-6 km = {m23['bulk_shear_0_6km_ms']:.1f} m/s ({m23['bulk_shear_0_6km_kt']:.1f} kt); SRH 0-3km LM = {m23['srh_0_3km_lm_m2s2']:.1f} m²/s².",
-            "Nota de Classificação: O SBCAPE calculado é moderado (~2.762 J/kg). Discute-se com o orientador se este caso deve ser mantido como transição ou substituído por data puramente neutra."
+            f"Termodinâmica Auditada: SBCAPE = {m22['sbcape_Jkg']:.1f} J/kg; MUCAPE = {m22['mucape_Jkg']:.1f} J/kg; SBCIN = {m22['sbcin_Jkg']:.1f} J/kg; PW = {m22['pw_mm']:.1f} mm.",
+            f"Emanuel (1994): CAPE reversível = {m22['emanuel']['surface_cape_rev_Jkg']:.1f} J/kg; pseudo = {m22['emanuel']['surface_cape_pseudo_Jkg']:.1f} J/kg; DCAPE máx = {m22['emanuel']['max_dcape_emanuel_Jkg']:.1f} J/kg.",
+            f"Cinemática: Cisalhamento 0-6 km = {m22['bulk_shear_0_6km_ms']:.1f} m/s ({m22['bulk_shear_0_6km_kt']:.1f} kt); SRH 0-3km LM = {m22['srh_0_3km_lm_m2s2']:.1f} m²/s².",
+            f"Nota de Classificação: Regime autêntico de transição: empuxo moderado (SBCAPE = {m22['sbcape_Jkg']:.0f} J/kg) com expressiva inibição convectiva (SBCIN = {m22['sbcin_Jkg']:.1f} J/kg) que impede convecção espontânea sem forçamento dinâmico."
         ], C_AMBER)
     ]
     for stitle, sbullets, scol in sections_s3:
@@ -347,8 +347,8 @@ Na ANÁLISE 1 (12/12/1995 12Z - Estável):
 A atmosfera observada exibe forte ar seco em médios níveis. O SBCAPE calculado é de apenas {m12['sbcape_Jkg']:.1f} J/kg e MUCAPE de {m12['mucape_Jkg']:.1f} J/kg, com água precipitável de {m12['pw_mm']:.1f} mm.
 A estratificação estável inibe convecção profunda.
 
-Na ANÁLISE 2 (23/12/1995 12Z):
-A auditoria revelou que esta sondagem possui SBCAPE de {m23['sbcape_Jkg']:.1f} J/kg e PW de {m23['pw_mm']:.1f} mm. Logo, ela não é rigorosamente neutra, mas sim um caso de instabilidade moderada. O cisalhamento 0-6 km é de {m23['bulk_shear_0_6km_ms']:.1f} m/s e SRH com Left-Mover é de {m23['srh_0_3km_lm_m2s2']:.1f} m²/s². Apresentamos este resultado com transparência para avaliação do orientador.""")
+Na ANÁLISE 2 (22/12/1995 12Z - Transição):
+A sondagem de 22/12 representa a transição ideal entre o regime estável e o severo. O SBCAPE e MUCAPE são de {m22['sbcape_Jkg']:.1f} J/kg, acompanhados por moderada inibição convectiva (SBCIN = {m22['sbcin_Jkg']:.1f} J/kg) e água precipitável de {m22['pw_mm']:.1f} mm. O cisalhamento 0-6 km é de {m22['bulk_shear_0_6km_ms']:.1f} m/s. Trata-se de um caso clássico de equilíbrio condicional.""")
 
     # --------------------------------------------------------------------------
     # SLIDE 4: As 3 Sondagens - Atmosfera Instável (24/12) & Matriz Comparativa
@@ -382,7 +382,7 @@ A auditoria revelou que esta sondagem possui SBCAPE de {m23['sbcape_Jkg']:.1f} J
         ], C_CYAN),
         ("MATRIZ COMPARATIVA DOS TRÊS CASOS (OFICIAL):", [
             f"• Estável (12/12): SBCAPE = {m12['sbcape_Jkg']:.1f} J/kg | Shear 0-6km = {m12['bulk_shear_0_6km_ms']:.1f} m/s",
-            f"• Transição (23/12): SBCAPE = {m23['sbcape_Jkg']:.1f} J/kg | Shear 0-6km = {m23['bulk_shear_0_6km_ms']:.1f} m/s",
+            f"• Transição (22/12): SBCAPE = {m22['sbcape_Jkg']:.1f} J/kg | Shear 0-6km = {m22['bulk_shear_0_6km_ms']:.1f} m/s",
             f"• Instável (24/12): SBCAPE = {m24_raw['sbcape_Jkg']:.1f} J/kg | Shear 0-6km = {m24_raw['bulk_shear_0_6km_ms']:.1f} m/s"
         ], C_AMBER)
     ]
@@ -440,7 +440,7 @@ Apresentamos ambos os resultados lado a lado com transparência técnica para di
         ], C_AMBER),
         ("Resultados Auditados nas Três Sondagens:", [
             f"12/12 (Estável): Tρ negativo em quase toda a coluna. CAPE rev = {m12['emanuel']['surface_cape_rev_Jkg']:.1f} J/kg; pseudo = {m12['emanuel']['surface_cape_pseudo_Jkg']:.1f} J/kg.",
-            f"23/12 (Transição): Camada de empuxo positiva. CAPE rev = {m23['emanuel']['surface_cape_rev_Jkg']:.1f} J/kg; pseudo = {m23['emanuel']['surface_cape_pseudo_Jkg']:.1f} J/kg.",
+            f"22/12 (Transição): Camada de empuxo positiva moderada. CAPE rev = {m22['emanuel']['surface_cape_rev_Jkg']:.1f} J/kg; pseudo = {m22['emanuel']['surface_cape_pseudo_Jkg']:.1f} J/kg.",
             f"24/12 (Instável): Na superfície, CAPE rev = {m24_raw['emanuel']['surface_cape_rev_Jkg']:.1f} J/kg vs pseudo = {m24_raw['emanuel']['surface_cape_pseudo_Jkg']:.1f} J/kg. No pico de 925 hPa, atinge {m24_raw['emanuel']['max_cape_rev_Jkg']:.1f} J/kg (rev) e {m24_raw['emanuel']['max_cape_pseudo_Jkg']:.1f} J/kg (pseudo)."
         ], C_EMERALD)
     ]
@@ -465,7 +465,7 @@ A linha superior mostra a ascensão Reversível (temperatura de densidade Tρ co
 
 Os dados do arquivo cape.out confirmam:
 No dia 12/12 (Estável), os valores são quase nulos ({m12['emanuel']['surface_cape_pseudo_Jkg']:.1f} J/kg pseudoadiabático).
-No dia 23/12, há empuxo considerável ({m23['emanuel']['surface_cape_pseudo_Jkg']:.1f} J/kg pseudoadiabático e {m23['emanuel']['surface_cape_rev_Jkg']:.1f} J/kg reversível).
+No dia 22/12, há empuxo moderado ({m22['emanuel']['surface_cape_pseudo_Jkg']:.1f} J/kg pseudoadiabático e {m22['emanuel']['surface_cape_rev_Jkg']:.1f} J/kg reversível).
 No dia 24/12, a parcela de superfície fornece {m24_raw['emanuel']['surface_cape_pseudo_Jkg']:.1f} J/kg (pseudo) e {m24_raw['emanuel']['surface_cape_rev_Jkg']:.1f} J/kg (rev), enquanto o nível de 925 hPa sustenta valores máximos de {m24_raw['emanuel']['max_cape_pseudo_Jkg']:.1f} J/kg e {m24_raw['emanuel']['max_cape_rev_Jkg']:.1f} J/kg.""")
 
     # --------------------------------------------------------------------------
@@ -474,7 +474,7 @@ No dia 24/12, a parcela de superfície fornece {m24_raw['emanuel']['surface_cape
     s6 = prs.slides.add_slide(blank_layout)
     set_slide_background(s6)
     add_header(s6, "Perfis Verticais de Mesoescala: θ, θe, θs, N, S e r",
-               "Comparação dos Três Regimes Atmosféricos em Porto Alegre (SBPA - 83971) - Topo em 300 hPa",
+               "Comparação dos Três Regimes Atmosféricos em Porto Alegre (SBPA - 83971) - Topo em 200 hPa",
                "10 - 14 min", 6)
 
     img_p2 = 'metpack/fig_3_soundings_profiles_comparison.png'
@@ -488,8 +488,8 @@ No dia 24/12, a parcela de superfície fornece {m24_raw['emanuel']['surface_cape
 
     sections_p = [
         ("Temperatura Potencial Equivalente (θe):", [
-            f"Superfície: 12/12 = {m12['theta_e_925_K']:.1f} K | 23/12 = {m23['theta_e_925_K']:.1f} K | 24/12 = {m24_raw['theta_e_925_K']:.1f} K (em 925 hPa).",
-            "Instabilidade Convectiva: Camada com ∂θe/∂z < 0 bem estabelecida nos dias 23 e 24/12."
+            f"Superfície: 12/12 = {m12['theta_e_925_K']:.1f} K | 22/12 = {m22['theta_e_925_K']:.1f} K | 24/12 = {m24_raw['theta_e_925_K']:.1f} K (em 925 hPa).",
+            "Instabilidade Convectiva: Camada com ∂θe/∂z < 0 bem estabelecida nos dias 22 e 24/12."
         ], C_CYAN),
         ("Frequência de Brunt-Väisälä (N²):", [
             "N² = (g / θv) · (∂θv / ∂z).",
@@ -517,9 +517,9 @@ No dia 24/12, a parcela de superfície fornece {m24_raw['emanuel']['surface_cape
             p_bullet.space_before = Pt(2)
 
     set_speaker_notes(s6, f"""ROTEIRO DO ORADOR (10:00 - 12:00):
-No slide 6, examinamos os perfis verticais do Colab limitados ao topo de 300 hPa com legendas no topo, conforme as orientações metodológicas.
+No slide 6, examinamos os perfis verticais do Colab limitados ao topo de 200 hPa com legendas no topo, conforme as orientações metodológicas.
 O Painel 1 exibe a temperatura potencial equivalente (θe): no dia 24/12, a camada abaixo de 600 hPa exibe decréscimo vertical acentuado (∂θe/∂z < 0), caracterizando instabilidade potencial profunda.
-No Painel 2, a frequência de Brunt-Väisälä (N) mostra o pico de estabilidade da tampa térmica perto de 925 hPa.
+No Painel 2, a frequência de Brunt-Väisälä (N) mostra a estabilidade estática perto de 925 hPa.
 Os Painéis 3 e 4 confirmam a estabilidade estática e a alta concentração de umidade (PW de {m24_raw['pw_mm']:.1f} mm).""")
 
     # --------------------------------------------------------------------------
@@ -645,28 +645,27 @@ O cálculo rigoroso com MetPy fornece um vetor Bunkers LM de ({m24_raw['bunkers_
     # --------------------------------------------------------------------------
     s9 = prs.slides.add_slide(blank_layout)
     set_slide_background(s9)
-    add_header(s9, "Monitoramento por Satélite: Imagem Infravermelho (IR)",
-               "Alta Resolução Espacial (GridSat-B1 0,07°) vs Médias em Grade de 1°",
+    add_header(s9, "Monitoramento por Satélite: Resolução Espacial",
+               "Limitações da Grade de 1° (ISCCP) vs Necessidades de Mesoescala",
                "17 - 19 min", 9)
 
-    # Painel da Esquerda: Marcador Formal para Imagem IR de Alta Resolução (GridSat-B1)
+    # Painel da Esquerda: Análise da Resolução Espacial
     card_sl = create_card(s9, Inches(0.8), Inches(1.75), Inches(7.2), Inches(5.15), bg_color=RGBColor(15, 23, 42), border_color=C_CYAN)
     tb_sl = s9.shapes.add_textbox(Inches(1.1), Inches(2.1), Inches(6.6), Inches(4.5))
     tf_sl = tb_sl.text_frame
     tf_sl.word_wrap = True
     p_sl1 = tf_sl.paragraphs[0]
-    p_sl1.text = "🛰️ MONITORAMENTO POR SATÉLITE EM MESOESCALA"
+    p_sl1.text = "🛰️ RESOLUÇÃO ESPACIAL EM SATÉLITE E MESOESCALA"
     p_sl1.font.size = Pt(16)
     p_sl1.font.bold = True
     p_sl1.font.color.rgb = C_CYAN
 
     p_sl2 = tf_sl.add_paragraph()
-    p_sl2.text = "[imagem IR GridSat-B1 0,07° — gerada pelo analise_sondagens.ipynb]\n\n" \
-                "Auditoria de Integridade Científica:\n" \
-                "• A grade ISCCP-H de 1° foi removida por tratar-se de média espacial grosseira (~110 km), inadequada para resolver topos convectivos de mesoescala.\n" \
-                "• O processamento oficial com alta resolução espacial (~0,07° / ~8 km) foi implementado diretamente no notebook analise_sondagens.ipynb a partir do acervo NOAA GridSat-B1.\n\n" \
-                "Diretriz Didática e Operacional:\n" \
-                "• Apresentar aos previsores da Defesa Civil de SC os mapas de satélite gerados diretamente pelo notebook interativo em escala padrão de cinza."
+    p_sl2.text = "Limitação Física e Espacial de Grades Climatológicas:\n\n" \
+                "• A grade ISCCP-H de 1° (~110 km) promedia a temperatura de brilho sobre áreas muito superiores às células convectivas individuais.\n" \
+                "• Topos de nuvens com convecção profunda e temperaturas de brilho inferiores a -60 °C são diluídos quando integrados com áreas vizinhas sem nuvens, mascarando a severidade real do sistema.\n\n" \
+                "Critério de Validação Operacional:\n" \
+                "• Para monitoramento em mesoescala e defesa civil, produtos de resolução fina (como GOES em ~0,07° / ~8 km ou sensores modernos em 2 km) são indispensáveis para detectar núcleos ascendentes e overshooting tops."
     p_sl2.font.size = Pt(11)
     p_sl2.font.color.rgb = C_WHITE
     p_sl2.space_before = Pt(8)
@@ -677,17 +676,19 @@ O cálculo rigoroso com MetPy fornece um vetor Bunkers LM de ({m24_raw['bunkers_
     tf_s9.word_wrap = True
 
     sections_s9 = [
-        ("Base de Satélite de Alta Resolução:", [
-            "Sensor: Imager GOES-8 (Canal 4 - IR 11 µm).",
-            "Produto: NOAA GridSat-B1 CDR (resolução espacial de 0,07° / ~8 km).",
-            "Paleta: Escala operacional padrão de 256 níveis de cinza (Preto = Quente | Branco = Frio)."
+        ("Impacto da Resolução Espacial:", [
+            "Grades de 1° (~110 km): realizam média espacial que suaviza extremos térmicos.",
+            "Diluição de topos: topos convectivos frios perdem contraste térmico.",
+            "Subestimação do topo: mascara convecção penetrativa e severidade."
         ], C_CYAN),
-        ("Processamento no Notebook:", [
-            "O script correspondente no notebook analise_sondagens.ipynb processa os arquivos NetCDF do GridSat-B1.",
-            "Permite inspeção pixel a pixel da temperatura de brilho sem suavizações espaciais artificiais."
+        ("Escalas Fenomenológicas:", [
+            "Células convectivas: escala horizontal típica de 5 a 20 km.",
+            "Complexos Convectivos de Mesoescala (CCM): escala meso-alfa (> 100 km), mas núcleos ativos concentrados.",
+            "Resolução necessária: produtos de alta resolução (≤ 8 km / 0,07°) para resolver núcleos."
         ], C_AMBER),
-        ("Recomendação para a Defesa Civil de SC:", [
-            "Para monitoramento em tempo real e estudos de caso de tempo severo, privilegiar produtos de satélite com resolução adequada à escala das células convectivas."
+        ("Diretriz para a Defesa Civil de SC:", [
+            "Não utilizar produtos de grade climatológica grosseira para diagnóstico de eventos severos.",
+            "Privilegiar canais infravermelho de alta taxa temporal e espacial para emissão de alertas precoces."
         ], C_EMERALD)
     ]
     for stitle, sbullets, scol in sections_s9:
@@ -705,10 +706,10 @@ O cálculo rigoroso com MetPy fornece um vetor Bunkers LM de ({m24_raw['bunkers_
             p_bullet.space_before = Pt(2)
 
     set_speaker_notes(s9, """ROTEIRO DO ORADOR (17:00 - 18:30):
-No Slide 9, abordamos o monitoramento por satélite meteorológico.
-A auditoria científica identificou que arquivos ISCCP-H em grade de 1° realizam médias espaciais que diluem topos de nuvens de mesoescala.
-Por isso, a análise visual de satélite foi transferida para o produto de alta resolução NOAA GridSat-B1 (0,07° / ~8 km), processado no notebook analise_sondagens.ipynb.
-Recomendamos demonstrar aos previsores da Defesa Civil os mapas gerados diretamente pelo notebook em 256 tons de cinza.""")
+No Slide 9, discutimos o critério de resolução espacial no monitoramento por satélite meteorológico.
+A auditoria científica identificou que arquivos em grade de 1° (como ISCCP-H, ~110 km) realizam médias espaciais que diluem topos de nuvens convectivas de mesoescala.
+Topos frios de convecção severa têm escala de 5 a 20 km; ao promediar sobre uma célula de 110 km, o sinal térmico extremo é atenuado.
+Ressaltamos para os previsores da Defesa Civil a importância de utilizar produtos em resolução espacial condizente com a escala dos fenômenos monitorados.""")
 
     # --------------------------------------------------------------------------
     # SLIDE 10: Conclusão & Tabela Resumo dos Parâmetros Auditados
@@ -731,17 +732,17 @@ Recomendamos demonstrar aos previsores da Defesa Civil os mapas gerados diretame
     p_rt.font.color.rgb = C_AMBER
 
     summary_rows = [
-        ("SBCAPE (J/kg):", f"12/12: {m12['sbcape_Jkg']:.0f} | 23/12: {m23['sbcape_Jkg']:.0f} | 24/12: {m24_raw['sbcape_Jkg']:.0f}", C_ROSE),
-        ("MUCAPE (J/kg):", f"12/12: {m12['mucape_Jkg']:.0f} | 23/12: {m23['mucape_Jkg']:.0f} | 24/12: {m24_raw['mucape_Jkg']:.0f} (Sensibilidade: {m24_sens['mucape_Jkg']:.0f})", C_ROSE),
-        ("SBCIN (J/kg):", f"12/12: {m12['sbcin_Jkg']:.1f} | 23/12: {m23['sbcin_Jkg']:.1f} | 24/12: {m24_raw['sbcin_Jkg']:.1f}", C_CYAN),
-        ("Água Precipitável PW:", f"12/12: {m12['pw_mm']:.1f} mm | 23/12: {m23['pw_mm']:.1f} mm | 24/12: {m24_raw['pw_mm']:.1f} mm", C_CYAN),
-        ("Vento 925 hPa (kt):", f"12/12: {m12['wind_925_spd_kt']:.0f} kt | 23/12: {m23['wind_925_spd_kt']:.0f} kt | 24/12: {m24_raw['wind_925_spd_kt']:.0f} kt ({m24_raw['wind_925_spd_ms']:.1f} m/s)", C_AMBER),
-        ("Bulk Shear 0-6 km:", f"12/12: {m12['bulk_shear_0_6km_ms']:.1f} m/s | 23/12: {m23['bulk_shear_0_6km_ms']:.1f} m/s | 24/12: {m24_raw['bulk_shear_0_6km_ms']:.1f} m/s", C_EMERALD),
-        ("SRH 0-3 km LM (m²/s²):", f"12/12: {m12['srh_0_3km_lm_m2s2']:.1f} | 23/12: {m23['srh_0_3km_lm_m2s2']:.1f} | 24/12: {m24_raw['srh_0_3km_lm_m2s2']:.1f}", C_EMERALD),
-        ("DCAPE Wyoming (J/kg):", f"12/12: {metrics['dcape_comparativo']['19951212']['wyoming_Jkg']:.0f} | 23/12: {metrics['dcape_comparativo']['19951223']['wyoming_Jkg']:.0f} | 24/12: {metrics['dcape_comparativo']['19951224_raw']['wyoming_Jkg']:.0f}", C_WHITE),
-        ("DCAPE MetPy (J/kg):", f"12/12: {metrics['dcape_comparativo']['19951212']['metpy_Jkg']:.0f} | 23/12: {metrics['dcape_comparativo']['19951223']['metpy_Jkg']:.0f} | 24/12: {metrics['dcape_comparativo']['19951224_raw']['metpy_Jkg']:.0f}", C_WHITE),
-        ("DCAPE Emanuel Máx (J/kg):", f"12/12: {metrics['dcape_comparativo']['19951212']['emanuel_max_Jkg']:.1f} | 23/12: {metrics['dcape_comparativo']['19951223']['emanuel_max_Jkg']:.1f} | 24/12: {metrics['dcape_comparativo']['19951224_raw']['emanuel_max_Jkg']:.1f}", C_WHITE),
-        ("Satélite GridSat-B1:", "[gerada pelo analise_sondagens.ipynb (alta resolução 0,07°)]", C_AMBER)
+        ("SBCAPE (J/kg):", f"12/12: {m12['sbcape_Jkg']:.0f} | 22/12: {m22['sbcape_Jkg']:.0f} | 24/12: {m24_raw['sbcape_Jkg']:.0f}", C_ROSE),
+        ("MUCAPE (J/kg):", f"12/12: {m12['mucape_Jkg']:.0f} | 22/12: {m22['mucape_Jkg']:.0f} | 24/12: {m24_raw['mucape_Jkg']:.0f} (Sensibilidade: {m24_sens['mucape_Jkg']:.0f})", C_ROSE),
+        ("SBCIN (J/kg):", f"12/12: {m12['sbcin_Jkg']:.1f} | 22/12: {m22['sbcin_Jkg']:.1f} | 24/12: {m24_raw['sbcin_Jkg']:.1f}", C_CYAN),
+        ("Água Precipitável PW:", f"12/12: {m12['pw_mm']:.1f} mm | 22/12: {m22['pw_mm']:.1f} mm | 24/12: {m24_raw['pw_mm']:.1f} mm", C_CYAN),
+        ("Vento 925 hPa (kt):", f"12/12: {m12['wind_925_spd_kt']:.0f} kt | 22/12: {m22['wind_925_spd_kt']:.0f} kt | 24/12: {m24_raw['wind_925_spd_kt']:.0f} kt ({m24_raw['wind_925_spd_ms']:.1f} m/s)", C_AMBER),
+        ("Bulk Shear 0-6 km:", f"12/12: {m12['bulk_shear_0_6km_ms']:.1f} m/s | 22/12: {m22['bulk_shear_0_6km_ms']:.1f} m/s | 24/12: {m24_raw['bulk_shear_0_6km_ms']:.1f} m/s", C_EMERALD),
+        ("SRH 0-3 km LM (m²/s²):", f"12/12: {m12['srh_0_3km_lm_m2s2']:.1f} | 22/12: {m22['srh_0_3km_lm_m2s2']:.1f} | 24/12: {m24_raw['srh_0_3km_lm_m2s2']:.1f}", C_EMERALD),
+        ("DCAPE Wyoming (J/kg):", f"12/12: {metrics['dcape_comparativo']['19951212']['wyoming_Jkg']:.0f} | 22/12: {metrics['dcape_comparativo']['19951222']['wyoming_Jkg']:.0f} | 24/12: {metrics['dcape_comparativo']['19951224_raw']['wyoming_Jkg']:.0f}", C_WHITE),
+        ("DCAPE MetPy (J/kg):", f"12/12: {metrics['dcape_comparativo']['19951212']['metpy_Jkg']:.0f} | 22/12: {metrics['dcape_comparativo']['19951222']['metpy_Jkg']:.0f} | 24/12: {metrics['dcape_comparativo']['19951224_raw']['metpy_Jkg']:.0f}", C_WHITE),
+        ("DCAPE Emanuel Máx (J/kg):", f"12/12: {metrics['dcape_comparativo']['19951212']['emanuel_max_Jkg']:.1f} | 22/12: {metrics['dcape_comparativo']['19951222']['emanuel_max_Jkg']:.1f} | 24/12: {metrics['dcape_comparativo']['19951224_raw']['emanuel_max_Jkg']:.1f}", C_WHITE),
+        ("Resolução de Satélite:", "Grade de 1° ISCCP descartada por diluição espacial", C_MUTED)
     ]
     for lbl, val, vcol in summary_rows:
         pr = tf_res.add_paragraph()
@@ -799,7 +800,7 @@ Recomendamos demonstrar aos previsores da Defesa Civil os mapas gerados diretame
 Chegamos à conclusão com a tabela síntese consolidada a partir do arquivo único metricas.json.
 Os diagnósticos demonstram o contraste entre os três regimes:
 1. O caso de 12/12 foi caracterizado por ausência de instabilidade (SBCAPE de {m12['sbcape_Jkg']:.0f} J/kg) e ar seco.
-2. O caso de 23/12 apresentou umidade e SBCAPE moderado ({m23['sbcape_Jkg']:.0f} J/kg), mas com cisalhamento moderado ({m23['bulk_shear_0_6km_ms']:.1f} m/s).
+2. O caso de 22/12 apresentou umidade intermediária e SBCAPE moderado ({m22['sbcape_Jkg']:.0f} J/kg), com inibição convectiva significativa ({m22['sbcin_Jkg']:.1f} J/kg).
 3. O caso de 24/12 reuniu alto teor de vapor ({m24_raw['pw_mm']:.1f} mm), vento intenso em baixos níveis ({m24_raw['wind_925_spd_kt']:.0f} kt em 925 hPa), bulk shear 0-6 km de {m24_raw['bulk_shear_0_6km_ms']:.1f} m/s e helicidade SRH 0-3 km de {m24_raw['srh_0_3km_lm_m2s2']:.1f} m²/s² com o vetor Bunkers Left-Mover relevante para o Hemisfério Sul.
 
 Agradeço ao Professor Reinaldo Haas e aos previsores da Defesa Civil de SC. Concluo no tempo regulamentar e coloco-me à disposição para a discussão técnica e operacional.""")

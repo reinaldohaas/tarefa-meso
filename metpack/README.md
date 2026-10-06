@@ -11,7 +11,7 @@
 Cada aluno ou grupo de trabalho **DEVE ESCOLHER OBRIGATORIAMENTE TRÊS RADIOSSONDAGENS ATMOSFÉRICAS REAIS DISTINTAS**, contemplando os três estados fundamentais da troposfera:
 
 1. **Atmosfera ESTÁVEL:** Perfil dominado por estratificação térmica estável, ar seco em altitude, CAPE baixo/nulo, estabilidade estática profunda ($N^2 > 0$) e ausência de convecção profunda. *(Exemplo: 12/12/1995)*.
-2. **Atmosfera de TRANSIÇÃO:** Perfil com umidade e equilíbrio convectivo, exibindo flutuabilidade moderada. *(Exemplo: 23/12/1995)*.
+2. **Atmosfera de TRANSIÇÃO:** Perfil com umidade e equilíbrio convectivo, exibindo flutuabilidade moderada. *(Exemplo: 22/12/1995)*.
 3. **Atmosfera INSTÁVEL:** Perfil com acúmulo de energia convectiva, vento intenso em baixos níveis, cisalhamento vertical profundo e helicidade relativa à tempestade ciclônica (SRH negativa no Hemisfério Sul com o vetor Bunkers Left-Mover). *(Exemplo: 24/12/1995)*.
 
 > **Flexibilidade de Escolha:** As 3 sondagens podem ser da **mesma estação em datas diferentes** (como no nosso caso modelo de Porto Alegre - SBPA em dez/1995) **OU de estações e regiões geográficas diferentes** na América do Sul via Universidade de Wyoming.
@@ -87,8 +87,8 @@ cd C:\Users\haas\github\tarefa-meso
 ```
 Figuras geradas em `metpack/`:
 - `fig_colab_severe_skewt.png`: Skew-T + Hodógrafo + Tabela de índices convectivos do MetPy.
-- `fig_3_soundings_skewt.png`: Comparação das 3 sondagens (12/12 estável, 23/12 moderado, 24/12 severo).
-- `fig_cap2_profiles.png`: Perfis verticais do Cap. 2 de Emanuel ($\theta/\theta_e/\theta_s$, Brunt-Väisälä $N$, estabilidade $S$, razão de mistura $r$) com topo em 300 hPa.
+- `fig_3_soundings_skewt.png`: Comparação das 3 sondagens (12/12 estável, 22/12 moderado, 24/12 severo).
+- `fig_cap2_profiles.png`: Perfis verticais do Cap. 2 de Emanuel ($\theta/\theta_e/\theta_s$, Brunt-Väisälä $N$, estabilidade $S$, razão de mistura $r$) com topo em 200 hPa.
 - `fig_kinematics_hodograph.png`: Hodógrafo polar com Bunkers Left-Mover no Hemisfério Sul, cisalhamento 0–6 km e SRH 0–3 km.
 
 ### Passo 3.5: Gerar a Apresentação em PowerPoint (`generate_pptx.py`)

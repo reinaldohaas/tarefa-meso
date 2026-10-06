@@ -42,7 +42,6 @@
 <div id="leftmenu">
 <p>Other data for Station 83971</p>
 <ul>
-<li><a href="/wsgi/sounding?datetime=1995-12-23 12:00:00&id=83971&type=INDICES&src=FM35">12Z Dec 23 </a></li>
 <li><a href="/wsgi/sounding?datetime=1995-12-25 12:00:00&id=83971&type=INDICES&src=FM35">12Z Dec 25 </a></li>
 <li><a href="/wsgi/sounding?datetime=1995-12-24 12:00:00&id=83971&type=TEXT:LIST&src=FM35">
               Profile and Indices</a></li>

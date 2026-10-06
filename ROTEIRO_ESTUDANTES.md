@@ -3,7 +3,7 @@
 **Disciplina:** Meteorologia de Mesoescala (FSC7116)  
 **Docente:** Prof. Dr. Reinaldo Haas  
 **Instituição:** Universidade Federal de Santa Catarina (UFSC)  
-**Repositório Base:** [tarefa-meso](https://github.com/haasreinaldo/tarefa-meso)  
+**Repositório Base:** [tarefa-meso](https://github.com/reinaldohaas/tarefa-meso)  
 
 ---
 
@@ -23,7 +23,7 @@ Cada aluno ou dupla deve selecionar e analisar **três radiossondagens obrigator
 | Regime Atmosférico | Assinatura Termodinâmica Típica | Comportamento Físico Esperado | Caso de Referência (SBPA 83971) |
 | :--- | :--- | :--- | :--- |
 | **1. Atmosfera ESTÁVEL** | Inversão térmica ou isotermia em baixos níveis; ar seco na média troposfera; estratificação estável com $N > 0$; $\text{SBCAPE} < 50\text{ J/kg}$. | Estratificação térmica e hidrostática estável; ausência de convecção profunda. | `12/12/1995 12Z`<br>($\text{SBCAPE} = 15.7\text{ J/kg}$, $\text{MUCAPE} = 0.9\text{ J/kg}$, $\text{PW} = 35.1\text{ mm}$) |
-| **2. Atmosfera NEUTRA / TRANSIÇÃO** | Camada limite com umidade moderada; fraca flutuabilidade; cisalhamento e convergência fracos. | Transição convectiva; umedecimento progressivo da troposfera. | `23/12/1995 12Z` *(sob avaliação)*<br>($\text{SBCAPE} = 2761.7\text{ J/kg}$, $\text{PW} = 57.0\text{ mm}$, Shear 0–6 km = $10.2\text{ m/s}$)<br>*Aviso: Este caso apresenta instabilidade moderada na sondagem, estando sob revisão docente para eventual substituição.* |
+| **2. Atmosfera NEUTRA / TRANSIÇÃO** | Camada limite com umidade moderada; fraca flutuabilidade; cisalhamento e convergência fracos. | Transição convectiva; umedecimento progressivo da troposfera. | `22/12/1995 12Z`<br>($\text{SBCAPE} = 836.0\text{ J/kg}$, $\text{MUCAPE} = 836.0\text{ J/kg}$, $\text{SBCIN} = -221.8\text{ J/kg}$, $\text{PW} = 43.9\text{ mm}$, Shear 0–6 km = $2.8\text{ m/s}$) |
 | **3. Atmosfera INSTÁVEL** | Camada limite quente e úmida; forte gradiente vertical de $\theta_e$ ($\partial \theta_e / \partial z < 0$); elevado CAPE; vento intenso em baixos níveis e suporte cinemático. | Potencial para convecção profunda e tempestades severas. | `24/12/1995 12Z`<br>Sondagem Completa (Oficial): $\text{MUCAPE} = 7810.0\text{ J/kg}$, $\text{SBCAPE} = 1861.9\text{ J/kg}$<br>Teste de Sensibilidade: $\text{MUCAPE} = 1860.1\text{ J/kg}$ (sem os níveis próximos a 925 hPa)<br>Vento 925 hPa: $43.9\text{ kt}$ ($22.6\text{ m/s}$) de $060^\circ$<br>Shear 0–6 km: $12.6\text{ m/s}$ ($24.5\text{ kt}$)<br>SRH 0–3 km (LM): $-123.3\text{ m}^2/\text{s}^2$ |
 
 ---
@@ -73,10 +73,10 @@ python metpack/wyoming.py
 ## 3. ⚙️ Execução Prática do Ambiente Computacional
 
 ### 3.1. Opção A: Execução no Google Colab
-1. Abra o notebook de referência da disciplina: [Google Colab de Mesoescala](https://colab.research.google.com/drive/1JumiIUyt3lyDhfuA0EtSB3hAlkS3lSUA?usp=sharing).
-2. Execute as células sequencialmente para instalar o `MetPy` e bibliotecas auxiliares (`cartopy`, `matplotlib`, `numpy`, `pandas`).
-3. Substitua os parâmetros de data (`YEAR`, `MONTH`, `FROM`, `TO`, `STNM`) para cada uma das suas 3 sondagens selecionadas.
-4. Execute as rotinas de cálculo para extrair os índices e perfis de cada uma das 3 atmosferas.
+1. Abra o notebook oficial da disciplina: [Seminario_plot_sounding_revisado.ipynb](https://colab.research.google.com/github/reinaldohaas/tarefa-meso/blob/master/Seminario_plot_sounding_revisado.ipynb).
+2. Execute as células sequencialmente para instalar o `metpy` e `siphon` e compilar o modelo de Kerry Emanuel (`wyoming.f`).
+3. Defina os parâmetros das suas 3 sondagens na lista `CASOS` (`station`, `date`, `regime`).
+4. Execute as rotinas de cálculo para gerar as tabelas comparativas (MetPy vs. Wyoming), diagramas Skew-T, perfis até 200 hPa e matrizes de flutuabilidade de Emanuel.
 
 ### 3.2. Opção B: Execução Local com `uv` (Recomendada)
 O gerenciador de ambientes [uv](https://github.com/astral-sh/uv) permite rodar os scripts sem conflitos de dependências:
@@ -87,7 +87,7 @@ uv run --with metpy --with pandas --with numpy python metpack/calc_metricas.py
 # 2. Gerar as matrizes 2D de Emanuel (tcon.py)
 uv run --with matplotlib --with numpy python metpack/tcon.py
 
-# 3. Gerar todas as figuras científicas (perfis até 300 hPa, Skew-T, hodógrafo)
+# 3. Gerar todas as figuras científicas (perfis até 200 hPa, Skew-T, hodógrafo)
 uv run --with metpy --with cartopy --with matplotlib --with numpy python generate_figures.py
 
 # 4. Gerar a apresentação em PowerPoint (10 slides)
@@ -111,9 +111,9 @@ uv run python build_index_html.py
 3. **Diagramas Termodinâmicos Skew-T / Log-P (para as 3 Sondagens):**
    - Curvas de temperatura do ar ($T$), ponto de orvalho ($T_d$) e trajetória da parcela.
    - Identificação dos níveis característicos: LCL, LFC e EL.
-4. **Perfis Verticais Completos de Estabilidade (até 300 hPa):**
+4. **Perfis Verticais Completos de Estabilidade (até 200 hPa):**
    - **Temperaturas Potenciais:** $\theta$ (seca), $\theta_e$ (equivalente) e $\theta_s$ (saturação). Identificar camadas com $\partial \theta_e / \partial z < 0$ (instabilidade convectiva).
-   - **Frequência de Brunt-Väisälä ($N$):** Identificar inversões térmicas e camadas de alta estabilidade estática que atuam como tampa (*capping lid*).
+   - **Frequência de Brunt-Väisälä ($N$):** Identificar inversões térmicas e camadas de alta estabilidade estática ($N^2 > 0$).
    - **Estabilidade Estática ($S$):** Perfis de estabilidade estática e cisalhamento vertical.
 5. **Perfis de Umidade e Conteúdo de Água:**
    - Razão de mistura ($r$, $\text{g/kg}$) ao longo da troposfera.
@@ -133,13 +133,13 @@ uv run python build_index_html.py
 | :---: | :---: | :--- | :--- | :--- |
 | **01** | `00:00 - 01:30` | **Título & Objetivos da Investigação** | Contextualizar a investigação dos três regimes atmosféricos; enunciar a relevância da previsão operacional de tempestades para a Defesa Civil de SC e a aplicação das teorias de Kerry Emanuel (1994). | Slide de capa institucional |
 | **02** | `01:30 - 03:30` | **Forçamento Sinótico & Suporte de Mesoescala** | Analisar o contexto em 500 hPa e baixos níveis a partir de evidências observadas na sondagem.<br>*[carta sinótica: a fazer com reanálise real (ERA5 / NCEP)]*. | Marcador de reanálise real |
-| **03** | `03:30 - 05:30` | **Tríplice Diagnóstico: Estável vs. Transição vs. Instável** | Comparar os três perfis Skew-T lado a lado (`fig_3_soundings_complete_analysis.png`). Contrastar a estratificação estável do caso de 12/12 com a instabilidade moderada de 23/12 e a severa de 24/12. | `fig_3_soundings_complete_analysis.png` |
+| **03** | `03:30 - 05:30` | **Tríplice Diagnóstico: Estável vs. Transição vs. Instável** | Comparar os três perfis Skew-T lado a lado (`fig_3_soundings_complete_analysis.png`). Contrastar a estratificação estável do caso de 12/12 com a instabilidade moderada de 22/12 e a severa de 24/12. | `fig_3_soundings_complete_analysis.png` |
 | **04** | `05:30 - 07:30` | **Balanço Energético: CAPE vs. CIN e Teste de Sensibilidade** | Comparar os valores de CAPE e CIN para as 3 sondagens. No caso de 24/12, apresentar o impacto da camada em 925 hPa: versão Completa Oficial ($\text{MUCAPE} = 7810.0\text{ J/kg}$) versus teste de sensibilidade ($\text{MUCAPE} = 1860.1\text{ J/kg}$, $\text{SBCAPE} = 1860.1\text{ J/kg}$) sem os níveis de 925 hPa. | `fig_colab_severe_skewt.png` |
 | **05** | `07:30 - 10:00` | **Termodinâmica Avançada de Emanuel: Matrizes 2D e $T_\rho$** | Explicar o código de Kerry Emanuel (1994). Demonstrar como a retenção de hidrometeoros no modo reversível reduz a flutuabilidade real frente ao cálculo pseudoadiabático tradicional (24/12 na superfície: $402.0\text{ J/kg}$ reversível vs $1479.7\text{ J/kg}$ pseudoadiabático). | `fig_3_soundings_emanuel_matrices.png` |
-| **06** | `10:00 - 12:30` | **Perfis Verticais de Estabilidade ($\theta_e, N, S, r$ até 300 hPa)** | Analisar os perfis com topo padronizado em 300 hPa e legendas superiores. Destacar a camada de estabilidade em 925 hPa, a estrutura vertical de $\theta_e$ e a disponibilidade de vapor. | `fig_3_soundings_profiles_comparison.png` |
-| **07** | `12:30 - 14:30` | **Diagnóstico de Umidade, Água Precipitável e DCAPE** | Avaliar o conteúdo de água precipitável ($PW$: 12/12 = $35.1\text{ mm}$, 23/12 = $57.0\text{ mm}$, 24/12 Oficial = $55.4\text{ mm}$, Sensibilidade = $50.8\text{ mm}$) e os valores de DCAPE comparando métodos: Emanuel (1994, descida de parcela: máx $60.7\text{ J/kg}$ em 905 hPa; $0.0\text{ J/kg}$ na superfície) versus MetPy (coluna a partir do mín $\theta_e$: $1096.8\text{ J/kg}$). | Perfis de umidade e métricas do JSON |
+| **06** | `10:00 - 12:30` | **Perfis Verticais de Estabilidade ($\theta_e, N, S, r$ até 200 hPa)** | Analisar os perfis com topo padronizado em 200 hPa e legendas superiores. Destacar a camada de estabilidade em 925 hPa, a estrutura vertical de $\theta_e$ e a disponibilidade de vapor. | `fig_3_soundings_profiles_comparison.png` |
+| **07** | `12:30 - 14:30` | **Diagnóstico de Umidade, Água Precipitável e DCAPE** | Avaliar o conteúdo de água precipitável ($PW$: 12/12 = $35.1\text{ mm}$, 22/12 = $43.9\text{ mm}$, 24/12 Oficial = $55.4\text{ mm}$, Sensibilidade = $50.8\text{ mm}$) e os valores de DCAPE comparando métodos: Emanuel (1994, descida de parcela: máx $195.5\text{ J/kg}$ em 905 hPa para 22/12; máx $60.7\text{ J/kg}$ em 905 hPa para 24/12) versus MetPy (coluna a partir do mín $\theta_e$: $1338.5\text{ J/kg}$ para 22/12 e $1096.8\text{ J/kg}$ para 24/12). | Perfis de umidade e métricas do JSON |
 | **08** | `14:30 - 17:00` | **Cinemática: Hodógrafo, JBN e Helicidade no Hemisfério Sul** | Apresentar o hodógrafo (`fig_kinematics_hodograph.png`). Destacar que no Hemisfério Sul o vetor relevante é o Bunkers Left-Mover (LM = $11.4\text{ kt}$ de $048^\circ$), com helicidade ciclônica negativa ($\text{SRH } 0-3\text{ km} = -123.3\text{ m}^2/\text{s}^2$). Vento em 925 hPa de $43.9\text{ kt}$ ($22.6\text{ m/s}$) de $060^\circ$ e cisalhamento bulk 0–6 km de $12.6\text{ m/s}$ ($24.5\text{ kt}$). | `fig_kinematics_hodograph.png` |
-| **09** | `17:00 - 19:00` | **Monitoramento por Satélite: Imagem Infravermelho (GridSat-B1 0,07°)** | Explicar que a grade ISCCP-H de 1° foi removida por ser média espacial grosseira. Utilizar o marcador `[imagem IR GridSat-B1 0,07° — gerada pelo analise_sondagens.ipynb]` e exibir os mapas em alta resolução em 256 níveis de cinza gerados pelo notebook interativo. | Marcador de imagem GridSat-B1 do notebook |
+| **09** | `17:00 - 19:00` | **Limitações de Dados em Mesoescala: Resolução Espacial de Satélite** | Explicar por que a grade ISCCP de 1° (~110 km) é inadequada para monitoramento de topos convectivos de mesoescala (média espacial que dilui extremos térmicos). Discutir a necessidade de dados em alta resolução espacial (< 4 km) para estudos operacionais da Defesa Civil de SC. | Análise conceitual de resolução espacial |
 | **10** | `19:00 - 20:00` | **Conclusões Finais & Abertura para Discussão Técnica** | Recapitular as conclusões termodinâmicas e cinemáticas, pontuar o teste de sensibilidade e abrir formalmente para a arguição técnica dos previsores da Defesa Civil de SC. | Slide final de encerramento |
 
 ---
@@ -170,15 +170,15 @@ uv run python build_index_html.py
 
 ## 7. 📦 Recursos Prontos Disponíveis no Repositório
 - **Arquivo Mestre de Métricas:** `metpack/metricas.json` (fonte única de todos os índices diagnósticos verificados e da tabela de conferência oficial com Wyoming).
-- **Notebook Interativo de Apoio:** `analise_sondagens.ipynb` (processamento de satélite NOAA GridSat-B1 0,07° em alta resolução e análise interativa).
+- **Notebook Oficial da Disciplina:** [Seminario_plot_sounding_revisado.ipynb](https://colab.research.google.com/github/reinaldohaas/tarefa-meso/blob/master/Seminario_plot_sounding_revisado.ipynb) (processamento via Siphon/MetPy, conferência com Wyoming e modelagem de parcelas de Emanuel).
 - **Apresentação PPTX Formatada:** `apresentacao_meso.pptx` (10 slides 16:9 widescreen gerados por script, com notas de orador completas para os previsores da Defesa Civil de SC).
-- **Dashboard Web:** `index.html` (aba de comparação tríplice com tabelas e perfis até 300 hPa, e aba de roteiro pedagógico).
+- **Dashboard Web:** `index.html` (aba de comparação tríplice com tabelas e perfis até 200 hPa, e aba de roteiro pedagógico).
 - **Scripts de Processamento:**
   - `metpack/calc_metricas.py`: Consolidação de métricas diagnósticas, índices de Wyoming e teste de sensibilidade.
   - `metpack/wyoming.py`: Algoritmo de Emanuel em Python puro (suporta `corte=None|-4.0`).
-  - `metpack/wyoming.f`: Código clássico de Kerry Emanuel compilado em Fortran (`wyoming.exe`).
+  - `metpack/wyoming.f`: Código clássico de Kerry Emanuel em Fortran.
   - `metpack/compare_wyoming.py`: Script de validação Fortran vs Python.
   - `metpack/tcon.py`: Geração das matrizes 2D de diferença térmica de Emanuel.
-  - `generate_figures.py`: Geração dos perfis até 300 hPa, Skew-T e hodógrafos.
+  - `generate_figures.py`: Geração dos perfis até 200 hPa, Skew-T e hodógrafos.
   - `generate_pptx.py`: Geração da apresentação em PowerPoint.
   - `build_index_html.py`: Compilador do `index.html`.
