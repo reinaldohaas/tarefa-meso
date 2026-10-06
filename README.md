@@ -71,6 +71,12 @@ tarefa-meso/
 
 Veja o **[ROTEIRO_ESTUDANTES.md](https://github.com/reinaldohaas/tarefa-meso/blob/master/ROTEIRO_ESTUDANTES.md)**, item 3: as três formas de rodar (notebook no Colab ou em IDE com Jupyter, linha de comando com o `uv` e MATLAB Online), com o que instalar e os comandos.
 
+Para rodar no seu computador (opções A2 e B) ou enviar a pasta `metpack/` ao MATLAB Online (opção C), baixe antes o repositório:
+```bash
+git clone https://github.com/reinaldohaas/tarefa-meso.git
+```
+ou, no GitHub, **Code → Download ZIP**. (O endereço `https://reinaldohaas.github.io/tarefa-meso/` é só o tutorial na web; não serve para o `git clone`.)
+
 ---
 
 ## 📚 Referências Bibliográficas

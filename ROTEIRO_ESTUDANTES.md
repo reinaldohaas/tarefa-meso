@@ -68,7 +68,11 @@ Um erro clássico ocorre ao passar o HTML bruto ou saídas do `html2text`, que q
 
 ## 3. ⚙️ Execução Prática do Ambiente Computacional
 
-Há **três opções**; escolha uma. Todas precisam de internet para baixar as suas sondagens do Wyoming. Para as opções que rodam no seu computador, baixe antes o repositório: `git clone https://github.com/reinaldohaas/tarefa-meso.git` ou, no GitHub, **Code → Download ZIP**.
+Há **três opções**; escolha uma. Todas precisam de internet para baixar as suas sondagens do Wyoming. Para as opções que usam os arquivos do repositório (A2, B e C), baixe-o antes:
+```bash
+git clone https://github.com/reinaldohaas/tarefa-meso.git
+```
+ou, no GitHub, **Code → Download ZIP**. (O endereço `https://reinaldohaas.github.io/tarefa-meso/` é só o tutorial na web; não serve para o `git clone`.)
 
 | Opção | Onde roda | O que produz |
 | :--- | :--- | :--- |

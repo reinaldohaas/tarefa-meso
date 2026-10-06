@@ -823,6 +823,8 @@ def generate_html():
                     </tbody>
                 </table>
             </div>
+            <p style="color:#334155; font-size:0.95rem;">Para as opções que usam os arquivos do repositório (notebook numa IDE local, <code>uv</code> e MATLAB Online),
+            baixe-o antes com <code>git clone https://github.com/reinaldohaas/tarefa-meso.git</code> ou, no GitHub, <strong>Code → Download ZIP</strong>.</p>
             <p style="color:#334155; font-size:0.95rem;">Em todas, troque as três sondagens do exemplo em <code>CASOS</code> pelas suas.
             Depois, prepare as apresentações descritas nos itens 4 e 5 do roteiro.</p>
 
