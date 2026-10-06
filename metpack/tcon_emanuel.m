@@ -55,6 +55,7 @@ xlabel(cb, 'Diferença de temperatura de densidade parcela - ambiente (K)');
 if exist('sgtitle', 'file')
     sgtitle(['Matrizes de flutuabilidade de Emanuel - ' titulo], 'FontWeight', 'bold');
 end
+print(gcf, fullfile(pasta, 'matrizes_emanuel.png'), '-dpng', '-r130');
 end
 
 function grava_saidas(pasta, E)

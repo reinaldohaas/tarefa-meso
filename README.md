@@ -32,7 +32,7 @@ Resumo das três formas de rodar (detalhes, downloads e comandos no item 3 do RO
 | :--- | :--- | :--- |
 | **A. Notebook Jupyter** — [abrir no Colab](https://colab.research.google.com/github/reinaldohaas/tarefa-meso/blob/master/Seminario_plot_sounding_revisado.ipynb) ou em qualquer IDE com Jupyter (VS Code, JupyterLab, PyCharm…) | Navegador ou seu computador | Tudo: índices do MetPy e conferência com o Wyoming, Skew-T com hodógrafo, perfis até 200 hPa e matrizes de Emanuel |
 | **B. Linha de comando com o `uv`** — `metpack/tarefa_sondagens.py` | Seu computador | Skew-T e matrizes de Emanuel |
-| **C. MATLAB Online** — `metpack/tarefa_sondagens.m` | Navegador | Skew-T e matrizes de Emanuel |
+| **C. MATLAB Online** — `metpack/tarefa_sondagens.m` | Navegador | Skew-T com barbelas, hodógrafo (Bunkers), perfis até 200 hPa e matrizes de Emanuel |
 
 Em todas, troque as três sondagens do exemplo em `CASOS` pelas suas.
 
@@ -58,6 +58,7 @@ tarefa-meso/
     ├── getsounding_wyoming.py / .m  # Baixa a sondagem do Wyoming e grava o sounding.txt do wyoming.f
     ├── tcon_emanuel.py / .m     # Roda o wyoming.f e desenha as matrizes de flutuabilidade
     ├── wyoming_emanuel.m        # Tradução do wyoming.f para MATLAB (MATLAB Online, sem Fortran)
+    ├── figuras_sondagem.m       # MATLAB: Skew-T com barbelas, hodógrafo (Bunkers) e perfis de estabilidade
     ├── skewt.py / skewt.m       # Diagrama Skew-T de Emanuel
     ├── getsounding.m, tcon.m    # Originais de Kerry Emanuel (texmex.mit.edu), só como referência
     ├── sounding_*_12Z.txt, indices_*_12Z.txt  # Cópias das sondagens do exemplo (Wyoming)

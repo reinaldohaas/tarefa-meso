@@ -21,6 +21,7 @@ Programas de Kerry Emanuel ([texmex.mit.edu/pub/emanuel/soundings](https://texme
 | `wyoming.f` | `wyoming_emanuel.m` (tradução, sem Fortran) | `wyoming.f` (compilado com gfortran) | Ascensão de parcelas reversível e pseudoadiabática: gera `cape.out`, `p.out`, `porig.out`, `tdifrev.out` e `tdifpseudo.out`. |
 | `tcon.m` | `tcon_emanuel.m` | `tcon_emanuel.py` | Calcula (MATLAB: `wyoming_emanuel.m`; Python: `wyoming.f`) e desenha as matrizes de flutuabilidade, sem o piso artificial de −4 K. |
 | `skewt.m` | `skewt.m` | `skewt.py` | Diagrama Skew-T de Emanuel: `skewt(p, T, UR 0-1)`. |
+| `skew_sounding.m` | `figuras_sondagem.m` | — | Skew-T com barbelas (`windbarb.m`), hodógrafo com Bunkers LM/RM e perfis de $\theta$, $\theta_e$, $\theta_{es}$ (`thermo_td.m`), $N^2$ e $S$. |
 | — | `tarefa_sondagens.m` | `tarefa_sondagens.py` | Script principal: roda as três sondagens de `CASOS`. |
 
 Os arquivos `getsounding.m` e `tcon.m` são os originais de Emanuel, mantidos só como referência (o endereço do Wyoming que eles usam não existe mais).

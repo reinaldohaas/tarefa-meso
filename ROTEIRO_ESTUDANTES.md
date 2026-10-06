@@ -78,7 +78,7 @@ ou, no GitHub, **Code → Download ZIP**. (O endereço `https://reinaldohaas.git
 | :--- | :--- | :--- |
 | **A. Notebook Jupyter** (Colab ou qualquer IDE com Jupyter) | Navegador (Colab) ou seu computador | Tudo: índices do MetPy e conferência com o Wyoming, Skew-T com hodógrafo (Bunkers LM/RM), perfis de $\theta$, $\theta_e$, $\theta_{es}$, $N^2$ e $S$ até 200 hPa e matrizes de Emanuel |
 | **B. Linha de comando com o `uv`** | Seu computador | Skew-T de Emanuel e matrizes de Emanuel (mesmos passos do MATLAB) |
-| **C. MATLAB Online** | Navegador | Skew-T de Emanuel e matrizes de Emanuel (programas originais adaptados) |
+| **C. MATLAB Online** | Navegador | Skew-T de Emanuel com barbelas, hodógrafo (Bunkers LM/RM), perfis de $\theta$, $\theta_e$, $\theta_{es}$, $N^2$ e $S$ até 200 hPa e matrizes de Emanuel (programas do metpack) |
 
 ### 3.1. Opção A: Notebook Jupyter (Google Colab ou qualquer IDE que rode Jupyter)
 O notebook `Seminario_plot_sounding_revisado.ipynb` é a opção completa.
@@ -152,6 +152,7 @@ Os programas em MATLAB de Kerry Emanuel ([texmex.mit.edu/pub/emanuel/soundings](
 | `tcon.m` | `tcon_emanuel.m` | Calcula e desenha as matrizes reversível e pseudoadiabática lado a lado, na mesma escala, sem o piso artificial de −4 K, e grava os mesmos arquivos do `wyoming.f` (`p.out`, `porig.out`, `tdifrev.out`, `tdifpseudo.out`, `cape.out`). |
 | `wyoming.f` | `wyoming_emanuel.m` | Tradução do `wyoming.f` para MATLAB: não precisa de compilador Fortran e dá os mesmos resultados (diferença menor que 0,001 K nas matrizes e que 0,1 J/kg na CAPE). |
 | `skewt.m` | `skewt.m` (sem mudança) | `skewt(p, T, UR/100)`. |
+| `skew_sounding.m` (exemplo do metpack) | `figuras_sondagem.m` | Como o `skew_sounding.m`: Skew-T (`skewt.m`) com barbelas de vento (`windbarb.m`, `wswd_to_uv.m`), mais o hodógrafo com o movimento de tempestade de Bunkers (LM e RM) e os perfis de $\theta$, $\theta_e$, $\theta_{es}$ (`thermo_td.m`), $N^2$ e $S$ até 200 hPa. |
 | — | `tarefa_sondagens.m` | Script principal: roda as três sondagens de `CASOS`. |
 
 O **MATLAB Online** é o MATLAB no navegador, com o MATLAB Drive para guardar os arquivos. Acesse [matlab.mathworks.com](https://matlab.mathworks.com) com uma conta MathWorks: com licença da instituição o uso é completo; sem ela, a versão básica gratuita tem limite de 20 h por mês e sessões de 15 min de cálculo contínuo.
@@ -166,7 +167,7 @@ Passos:
        'INSTÁVEL',   XXXXX,    [AAAA MM DD HH];
    };
    ```
-3. Clique em **Run**. Para cada caso saem o Skew-T de Emanuel e as matrizes de flutuabilidade; no Command Window aparecem a fonte dos dados e as CAPE reversível e pseudoadiabática (superfície e máxima).
+3. Clique em **Run**. Para cada caso saem: o Skew-T de Emanuel com barbelas e o hodógrafo com Bunkers LM/RM (`skewt_hodografo.png`), os perfis de estabilidade até 200 hPa (`perfis_estabilidade.png`) e as matrizes de flutuabilidade (`matrizes_emanuel.png`); no Command Window aparecem a fonte dos dados, as CAPE reversível e pseudoadiabática (superfície e máxima) e os vetores de Bunkers.
 4. Os arquivos `p.out`, `porig.out`, `tdifrev.out`, `tdifpseudo.out` e `cape.out` de cada caso ficam na pasta `emanuel_AAAAMMDD_HH`.
 
 Os valores de CAPE de Emanuel obtidos pelo MATLAB (ou pelo `tarefa_sondagens.py`) devem ser iguais aos do notebook para as mesmas sondagens (o mesmo cálculo do `wyoming.f` com a mesma entrada); confira e comente qualquer diferença.
@@ -229,7 +230,7 @@ Os valores de CAPE de Emanuel obtidos pelo MATLAB (ou pelo `tarefa_sondagens.py`
 - **Scripts de Processamento:**
   - `metpack/calc_metricas.py`: Consolidação de métricas diagnósticas, índices de Wyoming e teste de sensibilidade.
   - `metpack/wyoming.f`: Código clássico de Kerry Emanuel em Fortran.
-  - `metpack/tarefa_sondagens.m`, `metpack/getsounding_wyoming.m`, `metpack/tcon_emanuel.m`, `metpack/wyoming_emanuel.m`, `metpack/skewt.m`: versão MATLAB (MATLAB Online) dos programas de Kerry Emanuel.
+  - `metpack/tarefa_sondagens.m`, `metpack/getsounding_wyoming.m`, `metpack/figuras_sondagem.m`, `metpack/tcon_emanuel.m`, `metpack/wyoming_emanuel.m`, `metpack/skewt.m`: versão MATLAB (MATLAB Online) dos programas de Kerry Emanuel.
   - `metpack/tarefa_sondagens.py`, `metpack/getsounding_wyoming.py`, `metpack/tcon_emanuel.py`, `metpack/skewt.py`: os mesmos programas em Python.
   - `generate_figures.py`: Geração dos perfis até 200 hPa, Skew-T e hodógrafos.
   - `generate_pptx.py`: Geração da apresentação em PowerPoint.
