@@ -457,6 +457,9 @@ def generate_html():
                 <a class="colab-button" href="https://github.com/reinaldohaas/tarefa-meso/blob/master/ROTEIRO_ESTUDANTES.md" target="_blank" style="margin-left:8px;">
                     Roteiro do estudante (instruções e as três formas de rodar)
                 </a>
+                <a class="colab-button" href="https://github.com/reinaldohaas/tarefa-meso/blob/master/TAREFA_WRF_HIDROMETEOROS.md" target="_blank" style="margin-left:8px;">
+                    Seminário Final (Parte 2): tarefa do WRF, até 5/12/2026
+                </a>
             </div>
         </div>
     </header>
@@ -800,6 +803,14 @@ def generate_html():
                 <strong>Leia o roteiro:</strong> todas as instruções (escolha das sondagens, as três formas de rodar, downloads,
                 o que apresentar e critérios de avaliação) estão no
                 <a href="https://github.com/reinaldohaas/tarefa-meso/blob/master/ROTEIRO_ESTUDANTES.md" target="_blank" style="color:#0284c7; font-weight:700;">ROTEIRO_ESTUDANTES.md</a>.
+            </div>
+
+            <div class="how-to-read" style="border-left-color:#c2410c; background:#fff7ed;">
+                <strong>Seminário Final (Parte 2), WRF:</strong> simular o seu evento com 3 domínios aninhados (3 km ou menos no interno),
+                diagnosticar a água super-resfriada, o graupel e o granizo, visualizar cada hidrometeoro em 3D (ParaView, IDV ou VAPOR),
+                publicar os resultados numa página no GitHub e apresentar em 20 minutos. Entrega no Moodle até 5/12/2026.
+                Enunciado, roteiro dos slides, critérios e prompt para assistente de IA em
+                <a href="https://github.com/reinaldohaas/tarefa-meso/blob/master/TAREFA_WRF_HIDROMETEOROS.md" target="_blank" style="color:#c2410c; font-weight:700;">TAREFA_WRF_HIDROMETEOROS.md</a>.
             </div>
 
             <div class="block-title">Três formas de rodar (escolha uma; detalhes no item 3 do roteiro):</div>
