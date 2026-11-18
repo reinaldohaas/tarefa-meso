@@ -27,6 +27,8 @@ Este repositório é um tutorial prático e reprodutível para análise termodin
 
 **Todas as instruções estão no [ROTEIRO_ESTUDANTES.md](https://github.com/reinaldohaas/tarefa-meso/blob/master/ROTEIRO_ESTUDANTES.md)**: escolha das sondagens, as três formas de rodar, o que apresentar e os critérios de avaliação.
 
+**Tarefa do WRF:** simular o seu evento com 3 domínios aninhados (3 km ou menos no interno) e visualizar cada hidrometeoro em 3D no ParaView, no IDV ou no VAPOR. Enunciado, critérios e um prompt pronto para usar com assistente de IA em [TAREFA_WRF_HIDROMETEOROS.md](https://github.com/reinaldohaas/tarefa-meso/blob/master/TAREFA_WRF_HIDROMETEOROS.md).
+
 Resumo das três formas de rodar (detalhes, downloads e comandos no item 3 do ROTEIRO):
 
 | Opção | Onde roda | O que produz |
