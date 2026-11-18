@@ -811,6 +811,9 @@ def generate_html():
                 publicar os resultados numa página no GitHub e apresentar em 20 minutos. Entrega no Moodle até 5/12/2026.
                 Enunciado, roteiro dos slides, critérios e prompt para assistente de IA em
                 <a href="https://github.com/reinaldohaas/tarefa-meso/blob/master/TAREFA_WRF_HIDROMETEOROS.md" target="_blank" style="color:#c2410c; font-weight:700;">TAREFA_WRF_HIDROMETEOROS.md</a>.
+                Para rodar no VLab: notebook
+                <a href="https://github.com/reinaldohaas/tarefa-meso/blob/master/WRF_VLab_tarefa.ipynb" target="_blank" style="color:#c2410c; font-weight:700;">WRF_VLab_tarefa.ipynb</a>, com todas as etapas.
+                Exemplo de visualização: <a href="https://www.youtube.com/watch?v=2Lr9ajlyrPQ" target="_blank" style="color:#c2410c;">Supercell on a Carousel (Leigh Orf)</a>.
             </div>
 
             <div class="block-title">Três formas de rodar (escolha uma; detalhes no item 3 do roteiro):</div>

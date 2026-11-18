@@ -40,6 +40,8 @@ A pergunta de fundo é a mesma da Parte 1 (sondagens): os hidrometeoros modulam 
 - **Opção B: computador pessoal (Linux nativo ou WSL2 no Windows).** Domínios menores, com o interno centrado só na área da tempestade, para caber na memória e no tempo disponível. A resolução mínima continua 3 km.
 - **Opção C: com um assistente de IA como tutor.** O assistente explica, revisa e faz perguntas; você roda tudo no terminal e escolhe a configuração. Use o prompt do item 12.
 
+**No VLab:** o notebook [WRF_VLab_tarefa.ipynb](https://github.com/reinaldohaas/tarefa-meso/blob/master/WRF_VLab_tarefa.ipynb) leva por todas as etapas, do ERA5 à página no GitHub e ao roteiro dos slides. Ele confere os requisitos mínimos, mas as escolhas da física continuam sendo suas. As funções de diagnóstico e de figura estão em `wrfpack/hidrometeoros.py`.
+
 ## 4. Etapas
 
 1. **O caso.** Retome o evento da Parte 1: data e hora (UTC), local, o que foi observado (granizo, rajada, chuva, tornado) e as fontes (Defesa Civil, imprensa, radar, satélite).
@@ -95,6 +97,8 @@ Se quiser o tamanho máximo do granizo na superfície, ligue `hailcast_opt = 1` 
 | `REFL_10CM` | refletividade equivalente (dBZ) | ecos acima de 50 a 55 dBZ, comparação com o radar |
 
 ## 6. Visualização dos hidrometeoros
+
+Exemplo do tipo de visualização esperado: [Supercell on a Carousel (2005), de Leigh Orf](https://www.youtube.com/watch?v=2Lr9ajlyrPQ), uma supercélula simulada vista em 3D girando em torno da tempestade. A sua não precisa ter esse acabamento, mas cada hidrometeoro deve aparecer separado, na altura certa e com a legenda completa.
 
 ### 6.1 Cuidados que costumam estragar a figura
 

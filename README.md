@@ -27,7 +27,7 @@ Este repositório é um tutorial prático e reprodutível para análise termodin
 
 **Todas as instruções estão no [ROTEIRO_ESTUDANTES.md](https://github.com/reinaldohaas/tarefa-meso/blob/master/ROTEIRO_ESTUDANTES.md)**: escolha das sondagens, as três formas de rodar, o que apresentar e os critérios de avaliação.
 
-**Seminário Final (Parte 2), WRF:** simular o seu evento com 3 domínios aninhados (3 km ou menos no interno), visualizar cada hidrometeoro em 3D no ParaView, no IDV ou no VAPOR, publicar os resultados numa página no GitHub e apresentar em 20 minutos (entrega até 5/12/2026). Enunciado, roteiro dos slides, critérios e um prompt pronto para usar com assistente de IA em [TAREFA_WRF_HIDROMETEOROS.md](https://github.com/reinaldohaas/tarefa-meso/blob/master/TAREFA_WRF_HIDROMETEOROS.md).
+**Seminário Final (Parte 2), WRF:** simular o seu evento com 3 domínios aninhados (3 km ou menos no interno), visualizar cada hidrometeoro em 3D no ParaView, no IDV ou no VAPOR, publicar os resultados numa página no GitHub e apresentar em 20 minutos (entrega até 5/12/2026). Enunciado, roteiro dos slides, critérios e um prompt pronto para usar com assistente de IA em [TAREFA_WRF_HIDROMETEOROS.md](https://github.com/reinaldohaas/tarefa-meso/blob/master/TAREFA_WRF_HIDROMETEOROS.md). Para rodar no VLab, use o notebook [WRF_VLab_tarefa.ipynb](https://github.com/reinaldohaas/tarefa-meso/blob/master/WRF_VLab_tarefa.ipynb), com todas as etapas, do ERA5 à página no GitHub; exemplo de visualização: [Supercell on a Carousel, de Leigh Orf](https://www.youtube.com/watch?v=2Lr9ajlyrPQ).
 
 Resumo das três formas de rodar (detalhes, downloads e comandos no item 3 do ROTEIRO):
 
