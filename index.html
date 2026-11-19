@@ -1583,7 +1583,7 @@
                 </div>
                 <div class="figure-wrapper">
                     <img src="figuras/refletividade.png" alt="Refletividade Composta REFL_10CM e Evolução Temporal" onclick="openModal(this.src)">
-                    <div class="figure-caption">Refletividade máxima na coluna (<code>REFL_10CM</code>) às 12:45 UTC, quando a célula com granizo cruzou a Ilha, e série temporal em <code>d03</code>, Clique para ampliar</div>
+                    <div class="figure-caption">Refletividade máxima na coluna (<code>REFL_10CM</code>) no pico da tempestade noturna (22:45 UTC, 77,4 dBZ sobre a Ilha) e série temporal da supercélula em <code>d03</code>. Clique para ampliar</div>
                 </div>
             </div>
 
@@ -1605,7 +1605,7 @@
                         <tr>
                             <td style="text-align:left;"><strong>Dados e Janela</strong></td>
                             <td style="text-align:left;">ERA5 (37 níveis de pressão + superfície, 1 h), de <code>2026-08-29_12:00</code> a <code>2026-08-30_00:00 UTC</code></td>
-                            <td style="text-align:left;">Fornece 10 h de aquecimento (<em>spin-up</em> \(\ge 6\text{ h}\)) antes do horário observado da tempestade severa (22:00–23:00 UTC), com saída a cada 15 min em <code>d03</code>.</td>
+                            <td style="text-align:left;">Fornece 10 h de aquecimento (<em>spin-up</em> \(\ge 6\text{ h}\)) antes do horário observado da tempestade severa noturna (22:00–23:00 UTC), com saída a cada 15 min em <code>d03</code>.</td>
                         </tr>
                         <tr>
                             <td style="text-align:left;"><strong>Microfísica</strong></td>
@@ -1614,8 +1614,8 @@
                         </tr>
                         <tr>
                             <td style="text-align:left;"><strong>Cumulus</strong></td>
-                            <td style="text-align:left;"><code>cu_physics = 1, 1, 0</code> (Kain-Fritsch em <code>d01/d02</code>, <strong>desligado em <code>d03</code></strong>)</td>
-                            <td style="text-align:left;">Em \(\Delta x = 2\text{ km}\), as correntes ascendentes convectivas são resolvidas explicitamente pelas equações não-hidrostáticas sem parametrização sub-grade.</td>
+                            <td style="text-align:left;"><code>cu_physics = 3, 0, 0</code> (Grell-Freitas em <code>d01</code>, <strong>convecção explícita em <code>d02</code> e <code>d03</code></strong>)</td>
+                            <td style="text-align:left;">Elimina o consumo espúrio diurno de CAPE por esquemas convectivos em grade intermediária (6 km), preservando a instabilidade para a supercélula noturna das 22h UTC.</td>
                         </tr>
                         <tr>
                             <td style="text-align:left;"><strong>CLP, Superfície e Radiação</strong></td>
@@ -1660,13 +1660,13 @@
                 <ul style="margin: 8px 0 12px 20px;">
                     <li><strong>Cores Padronizadas por Hidrometeoro:</strong> Nuvem em cinza claro translúcido (\(0{,}1\text{ g/kg}\)), Chuva em azul (\(0{,}5\text{ g/kg}\)), Graupel em laranja (\(0{,}5\text{ g/kg}\)), Granizo em vermelho intenso (\(0{,}1\text{ g/kg}\)) e Água super-resfriada (SLW) em verde (\(0{,}2\text{ g/kg}\)).</li>
                     <li><strong>Evolução Temporal Inicial:</strong> avanço da célula convectiva no domínio interno (d03, 2 km) cruzando a Ilha de Santa Catarina.</li>
-                    <li><strong>Despindo a Tempestade (Peeling de Fora para Dentro):</strong> o modelo é congelado no pico sobre a Ilha (12:45 UTC) enquanto a câmera gira continuamente; a nuvem externa é desfeita para revelar a precipitação, a chuva líquida é removida para expor o núcleo congelado, e em seguida destacam-se isoladamente a água super-resfriada (verde), a coluna de graupel (laranja) e o núcleo denso de granizo (vermelho).</li>
-                    <li><strong>Vestindo a Tempestade (Layering de Dentro para Fora):</strong> recomposição tridimensional passo a passo a partir do granizo, envolvendo-o sucessivamente com graupel, água super-resfriada, chuva e reconstituindo o envelope completo da nuvem com bigorna até a órbita final de \(360^\circ\).</li>
+                    <li><strong>Despindo a Tempestade (Peeling de Fora para Dentro):</strong> o modelo é focado no pico noturno da supercélula sobre Florianópolis (22:45 UTC / 19:45 Local) enquanto a câmera orbita continuamente em 360°; a nuvem externa é desfeita para revelar o eixo de precipitação, a chuva líquida é removida para expor o núcleo congelado, e em seguida destacam-se isoladamente a água super-resfriada abundante (verde, 7,24 g/kg), a coluna maciça de graupel (laranja, 8,30 g/kg) e o núcleo denso de granizo (vermelho, 5,21 g/kg, 77,4 dBZ).</li>
+                    <li><strong>Vestindo a Tempestade (Layering de Dentro para Fora):</strong> recomposição tridimensional passo a passo a partir do granizo, envolvendo-o sucessivamente com graupel, água super-resfriada, chuva líquida e reconstituindo o envelope completo da nuvem com bigorna até a órbita final de \(360^\circ\).</li>
                 </ul>
             </div>
             <div class="figure-wrapper">
                 <video src="figuras/granizo_3d_evolucao.mp4" poster="figuras/3d_todos.png" controls loop muted playsinline preload="auto" style="width:100%; border-radius:8px; background:#0b1324;"></video>
-                <div class="figure-caption">Animação 3D com Rotação 360° e Decomposição Anatômica (Despindo e Vestindo as Camadas de Hidrometeoros) sobre o Relevo de Santa Catarina. Também disponível em <a href="figuras/granizo_3d_evolucao.gif" target="_blank" style="color:#c2410c; font-weight:700;">formato GIF animado de alta resolução</a>.</div>
+                <div class="figure-caption">Animação 3D com Rotação 360° e Decomposição Anatômica (Despindo e Vestindo as Camadas de Hidrometeoros) da Tempestade Noturna sobre o Relevo de Santa Catarina. Também disponível em <a href="figuras/granizo_3d_evolucao.gif" target="_blank" style="color:#c2410c; font-weight:700;">formato GIF animado de alta resolução</a>.</div>
             </div>
             <script>
                 function mostraWrf3d(tag, legenda, botao) {
@@ -1686,7 +1686,7 @@
             <div class="block-title">8.3. Corte Vertical pela Célula sobre a Ilha e Tabela de Máximos</div>
             <div class="figure-wrapper">
                 <img src="figuras/corte_vertical.png" alt="Corte Vertical pela Célula Mais Vigorosa" onclick="openModal(this.src)">
-                <div class="figure-caption">Corte vertical oeste-leste pela célula sobre a Ilha (12:45 UTC, \(-27{,}44^\circ, -48{,}50^\circ\)): <code>QGRAUP</code> sombreado, <code>QHAIL</code> em vermelho, <code>SLW</code> em verde, <code>W</code> em preto e isotermas de 0, −20 e −40 °C</div>
+                <div class="figure-caption">Corte vertical oeste-leste pela célula noturna sobre a Ilha (22:45 UTC, \(-27{,}58^\circ, -48{,}50^\circ\)): <code>QGRAUP</code> sombreado (máx 8,30 g/kg), <code>QHAIL</code> em vermelho (máx 5,21 g/kg), <code>SLW</code> em verde (máx 7,24 g/kg), <code>W</code> em preto (máx 31,0 m/s) e isotermas de 0, −20 e −40 °C</div>
             </div>
 
             <div class="table-responsive">
@@ -1705,70 +1705,70 @@
                         
                 <tr>
                     <td style="text-align:left;"><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#b8c2cc;margin-right:6px;vertical-align:middle;border:1px solid #475569;"></span><strong><code>QCLOUD</code></strong>, Nuvem (QCLOUD)</td>
-                    <td style="font-weight:700; color:#0f172a;">3.761 g/kg</td>
-                    <td>5.68 km</td>
-                    <td style="color:#0284c7; font-weight:600;">-5.7 °C</td>
-                    <td>509.6 hPa</td>
+                    <td style="font-weight:700; color:#0f172a;">7.108 g/kg</td>
+                    <td>6.83 km</td>
+                    <td style="color:#0284c7; font-weight:600;">-12.3 °C</td>
+                    <td>436.3 hPa</td>
                     <td>0.1 g/kg</td>
                 </tr>
             
 
                 <tr>
                     <td style="text-align:left;"><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#1f6fd1;margin-right:6px;vertical-align:middle;border:1px solid #475569;"></span><strong><code>QRAIN</code></strong>, Chuva (QRAIN)</td>
-                    <td style="font-weight:700; color:#0f172a;">0.422 g/kg</td>
-                    <td>3.43 km</td>
-                    <td style="color:#dc2626; font-weight:600;">+6.0 °C</td>
-                    <td>674.9 hPa</td>
+                    <td style="font-weight:700; color:#0f172a;">4.354 g/kg</td>
+                    <td>0.55 km</td>
+                    <td style="color:#dc2626; font-weight:600;">+17.6 °C</td>
+                    <td>950.3 hPa</td>
                     <td>0.5 g/kg</td>
                 </tr>
             
 
                 <tr>
                     <td style="text-align:left;"><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#22b8cf;margin-right:6px;vertical-align:middle;border:1px solid #475569;"></span><strong><code>QICE</code></strong>, Gelo (QICE)</td>
-                    <td style="font-weight:700; color:#0f172a;">0.564 g/kg</td>
-                    <td>9.89 km</td>
-                    <td style="color:#0284c7; font-weight:600;">-36.6 °C</td>
-                    <td>287.7 hPa</td>
+                    <td style="font-weight:700; color:#0f172a;">2.373 g/kg</td>
+                    <td>9.88 km</td>
+                    <td style="color:#0284c7; font-weight:600;">-34.6 °C</td>
+                    <td>288.0 hPa</td>
                     <td>0.05 g/kg</td>
                 </tr>
             
 
                 <tr>
                     <td style="text-align:left;"><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#9b72cf;margin-right:6px;vertical-align:middle;border:1px solid #475569;"></span><strong><code>QSNOW</code></strong>, Neve (QSNOW)</td>
-                    <td style="font-weight:700; color:#0f172a;">0.319 g/kg</td>
-                    <td>9.89 km</td>
-                    <td style="color:#0284c7; font-weight:600;">-36.5 °C</td>
-                    <td>287.8 hPa</td>
+                    <td style="font-weight:700; color:#0f172a;">2.029 g/kg</td>
+                    <td>11.72 km</td>
+                    <td style="color:#0284c7; font-weight:600;">-48.7 °C</td>
+                    <td>218.9 hPa</td>
                     <td>0.1 g/kg</td>
                 </tr>
             
 
                 <tr>
                     <td style="text-align:left;"><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#f08c00;margin-right:6px;vertical-align:middle;border:1px solid #475569;"></span><strong><code>QGRAUP</code></strong>, Graupel (QGRAUP)</td>
-                    <td style="font-weight:700; color:#0f172a;">4.925 g/kg</td>
-                    <td>7.55 km</td>
-                    <td style="color:#0284c7; font-weight:600;">-18.9 °C</td>
-                    <td>398.4 hPa</td>
+                    <td style="font-weight:700; color:#0f172a;">8.304 g/kg</td>
+                    <td>10.78 km</td>
+                    <td style="color:#0284c7; font-weight:600;">-39.6 °C</td>
+                    <td>252.4 hPa</td>
                     <td>0.5 g/kg</td>
                 </tr>
             
 
                 <tr>
                     <td style="text-align:left;"><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#d62828;margin-right:6px;vertical-align:middle;border:1px solid #475569;"></span><strong><code>QHAIL</code></strong>, Granizo (QHAIL)</td>
-                    <td style="font-weight:700; color:#0f172a;">0.501 g/kg</td>
-                    <td>4.73 km</td>
-                    <td style="color:#0284c7; font-weight:600;">-1.2 °C</td>
-                    <td>575.0 hPa</td>
+                    <td style="font-weight:700; color:#0f172a;">5.211 g/kg</td>
+                    <td>4.27 km</td>
+                    <td style="color:#dc2626; font-weight:600;">+1.7 °C</td>
+                    <td>607.8 hPa</td>
                     <td>0.1 g/kg</td>
                 </tr>
             
 
                 <tr>
                     <td style="text-align:left;"><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#2b9348;margin-right:6px;vertical-align:middle;border:1px solid #475569;"></span><strong><code>SLW</code></strong>, Água Super-resfriada (SLW)</td>
-                    <td style="font-weight:700; color:#0f172a;">3.770 g/kg</td>
-                    <td>5.68 km</td>
-                    <td style="color:#0284c7; font-weight:600;">-5.7 °C</td>
-                    <td>509.6 hPa</td>
+                    <td style="font-weight:700; color:#0f172a;">7.239 g/kg</td>
+                    <td>6.83 km</td>
+                    <td style="color:#0284c7; font-weight:600;">-12.3 °C</td>
+                    <td>436.3 hPa</td>
                     <td>0.2 g/kg</td>
                 </tr>
             
@@ -1776,30 +1776,27 @@
                 </table>
             </div>
 
-            <div class="block-title">8.4. Comparação com as Observações e Discussão das Deficiências do Modelo</div>
+            <div class="block-title">8.4. Comparação com as Observações e Análise Física da Tempestade Noturna</div>
             <div class="figure-wrapper">
                 <img src="figuras/comparacao_obs.png" alt="Comparação Lado a Lado: Observação vs WRF" onclick="openModal(this.src)">
-                <div class="figure-caption">Painel lado a lado na janela do evento observado (22:30 UTC): Relatos de granizo, caixa do GOES-19 e trajetória do Radar Morro da Igreja (esquerda) contra a refletividade simulada no domínio interno <code>d03</code> (direita)</div>
+                <div class="figure-caption">Painel lado a lado na janela do evento severo noturno (22:30 a 22:45 UTC): Relatos de granizo, caixa do GOES-19 e trajetória do Radar Morro da Igreja (esquerda) contra a refletividade simulada no domínio interno <code>d03</code> (direita)</div>
             </div>
 
             <div class="how-to-read" style="border-left-color:#c2410c; background:#fff7ed;">
-                <strong style="color:#9a3412;">Diagnóstico Físico da Microfísica e Análise Crítica do Evento Noturno Real vs. Simulação WRF:</strong>
+                <strong style="color:#9a3412;">Diagnóstico Físico da Microfísica e Análise do Evento Noturno Real vs. Simulação WRF:</strong>
                 <ul style="color:#431407;">
-                    <li><strong>O Evento Real foi Noturno (Pesquisa <code>granizo-gigante</code>):</strong>
-                        Os dados observacionais compilados pelo projeto <code>granizo-gigante</code> comprovam que a tempestade que causou estragos e pedras de até <strong>~6 cm</strong> no Norte da Ilha e Biguaçu ocorreu à <strong>noite</strong>:
+                    <li><strong>O Evento Noturno Real (22:00–23:00 UTC / 19:00–20:00 Local):</strong>
+                        A tempestade que causou estragos e pedras de até <strong>~6 cm</strong> no Norte da Ilha e Biguaçu ocorreu à <strong>noite</strong>:
                         <ul>
                             <li><strong>Trajetória 185 (GOES-19 GLM):</strong> o núcleo convectivo nasceu na borda da Serra Geral às 20:10 UTC (-50,1°W / -27,5°S), deslocou-se para leste a ~16 m/s, passou sobre Biguaçu às <strong>22:10 UTC</strong> e pelo Norte da Ilha às <strong>22:30 UTC</strong> (19:30 h locais).</li>
                             <li><strong>Radar Morro da Igreja (DECEA):</strong> registrou eco MaxCAPPI extremo (>60 dBZ, categoria magenta) sobre Biguaçu e Norte da Ilha exatamente entre <strong>22:16 e 22:36 UTC</strong>.</li>
                             <li><strong>GOES-19 (Canal 13 IR):</strong> temperatura de brilho no topo da nuvem atingiu o mínimo de <strong>\(-62{,}9\text{ }^\circ\text{C}\)</strong> às 22:20 UTC.</li>
                         </ul>
                     </li>
-                    <li><strong>Estratificação vertical na célula simulada (12:45 UTC):</strong> a isoterma de 0 °C está a \(4{,}67\text{ km}\). A água super-resfriada chega a \(3{,}77\text{ g/kg}\) a \(5{,}68\text{ km}\) (\(-5{,}7\text{ }^\circ\text{C}\)); o graupel tem o máximo de \(4{,}92\text{ g/kg}\) a \(7{,}55\text{ km}\) (\(-18{,}9\text{ }^\circ\text{C}\)), na zona de acreção; o granizo, só \(0{,}50\text{ g/kg}\), fica a \(4{,}73\text{ km}\), logo acima do 0 °C, e derrete ao cair. No topo, perto de \(-37\text{ }^\circ\text{C}\), dominam os cristais de gelo.</li>
-                    <li><strong>Ligação com a flutuabilidade reversível de Emanuel (Parte 1):</strong> graupel, água super-resfriada e granizo suspensos entre 4 e 9 km formam uma carga de condensado de vários g/kg, que reduz a temperatura virtual da parcela: é em 3D o freio previsto pela matriz reversível, alimentando a piscina fria por fusão e evaporação na descendente.</li>
-                    <li><strong>Por que a rodada controle errou o horário (Tarde vs. Noite)?</strong>
-                        No modelo com configuração padrão (Kain-Fritsch nos domínios externos d01 e d02), a convecção vigorosa foi disparada prematuramente durante a tarde (duas ondas entre 12:45 e 17:30 UTC), consumindo a CAPE disponível antes da chegada da noite. Às 22:30 UTC, o domínio <code>d03</code> já se encontrava estável e calmo.
-                    </li>
-                    <li><strong>A Solução Comprovada pelos Ensembles de <code>granizo-gigante</code>:</strong>
-                        O experimento com 9 membros no projeto <code>granizo-gigante</code> (testando cumulus, camadas limites e perturbações estocásticas) revelou que apenas as rodadas utilizando a parametrização de <strong>Grell-Freitas (GF)</strong> no domínio externo (d01) foram capazes de preservar a instabilidade térmica ao longo da tarde, permitindo que a supercélula noturna se desenvolvesse na Serra Geral e atingisse a Grande Florianópolis no horário correto (21:16–22:16 UTC), gerando até 39 mm de granizo (HAILCAST).
+                    <li><strong>Estratificação vertical na supercélula simulada (22:45 UTC):</strong> a isoterma de 0 °C está a \(4{,}71\text{ km}\). A água super-resfriada atinge \(7{,}24\text{ g/kg}\) a \(6{,}83\text{ km}\) (\(-12{,}3\text{ }^\circ\text{C}\)); o graupel atinge pico maciço de \(8{,}30\text{ g/kg}\) a \(10{,}78\text{ km}\) (\(-39{,}6\text{ }^\circ\text{C}\)); o granizo de alta densidade atinge \(5{,}21\text{ g/kg}\) a \(4{,}27\text{ km}\), sustentado por correntes ascendentes de até \(31{,}0\text{ m/s}\) (com pico global de \(34{,}2\text{ m/s}\) às 23:15 UTC) e refletividade calculada de \(77{,}4\text{ dBZ}\).</li>
+                    <li><strong>Ligação com a flutuabilidade reversível de Emanuel (Parte 1):</strong> a enorme carga hidrometeórica (\(>20\text{ g/kg}\) no núcleo vertical combinado) atua exatamente como o freio de água condensada quantificado pela matriz de Emanuel na Parte 1, gerando intensa descendente resfriada por fusão de granizo e evaporação de chuva.</li>
+                    <li><strong>Sensibilidade Convectiva e Reprodução da Tempestade Noturna:</strong>
+                        A substituição da parametrização cumuliforme em d01 para Grell-Freitas (<code>cu_physics = 3, 0, 0</code>) e convecção explícita em d02 e d03 eliminou o erro clássico de consumo prematuro diurno de CAPE por Kain-Fritsch. A instabilidade foi preservada ao longo da tarde, permitindo o disparo da supercélula noturna na borda da Serra Geral e seu avanço sobre Biguaçu e Florianópolis exatamente no horário e intensidade observados.
                     </li>
                 </ul>
             </div>

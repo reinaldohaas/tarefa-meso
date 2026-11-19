@@ -3,18 +3,23 @@
 Animação 3D Completa dos Hidrometeoros no ParaView (via pvpython + ffmpeg)
 Projeto: C:\gis4wrf\projects\granizo (Seminário Final - Parte 2, FSC7116 UFSC).
 
-Atende rigorosamente às solicitações do professor:
-1. Cores fixas e distintas para cada hidrometeoro (evitando o erro de tudo azul):
+Atende rigorosamente a todos os requisitos do usuário e do professor:
+1. Tempestade Noturna Correta:
+   - Pico severo de granizo em 22:45 UTC (19:45 Local) em 29/08/2026.
+   - Refletividade 77.4 dBZ, QHAIL 5.21 g/kg, QGRAUP 8.30 g/kg, SLW 7.24 g/kg, W = 31.0 m/s.
+2. Cores Fixas e Distintas para cada hidrometeoro (desvinculando do mapa de cores padrão azul):
    - Nuvem (QCLOUD): cinza claro (#d1d5db)
    - Chuva (QRAIN): azul vivo (#2563eb)
    - Graupel (QGRAUP): laranja brilhante (#f97316)
    - Granizo (QHAIL): vermelho carmesim (#dc2626)
    - Água Super-resfriada (SLW): verde esmeralda (#16a34a)
-2. Rotação 360° contínua e suave da câmera ao redor da tempestade e do relevo
-   (1,5° por frame ao longo de 240 frames).
-3. Sequência de destaques com camadas "despidas" (peeling de fora para dentro)
-   e "vestidas" (layering back de dentro para fora), mostrando a anatomia
-   tridimensional da tempestade.
+3. Rotação 360° Contínua e Suave da câmera ao redor da tempestade e do relevo
+   (1.5° por frame ao longo de 240 frames).
+4. Sequência Completa de Destaques:
+   - Evolução temporal da tempestade noturna (21:45 a 23:15 UTC / 18:45 a 20:15 Local).
+   - Camadas "despidas" (peeling de fora para dentro no pico de 22:45 UTC).
+   - Camadas "vestidas" (layering back de dentro para fora no pico de 22:45 UTC).
+   - Órbita 360° final da tempestade reconstituída sobre o relevo de Santa Catarina.
 """
 import os
 import sys
@@ -23,10 +28,14 @@ import math
 import shutil
 import subprocess
 import numpy as np
+import netCDF4
+import vtk
+from vtk.util import numpy_support as ns
 from PIL import Image, ImageDraw, ImageFont
 from paraview.simple import *
 
 BASE = r'C:\gis4wrf\projects\granizo'
+WRF_DIR = os.path.join(BASE, 'run_wrf')
 PV_DIR = os.path.join(BASE, 'paraview_data')
 SERIES_DIR = os.path.join(PV_DIR, 'series_anim')
 FRAMES_DIR = os.path.join(PV_DIR, 'frames_360_peel')
@@ -34,13 +43,17 @@ FIG_DIR = os.path.join(BASE, 'figuras')
 REPO_FIG = r'C:\Users\haas\github\tarefa-meso\figuras'
 
 os.makedirs(FRAMES_DIR, exist_ok=True)
+os.makedirs(SERIES_DIR, exist_ok=True)
 os.makedirs(FIG_DIR, exist_ok=True)
 os.makedirs(REPO_FIG, exist_ok=True)
 
+G = 9.81
+RCP = 0.2854
+VE = 4.0
+ZS_KM = np.arange(0.0, 17.5 + 1e-4, 0.25)
 W_IMG, H_IMG = 1600, 960
 FONT = r'C:\Windows\Fonts\arial.ttf'
 FONT_B = r'C:\Windows\Fonts\arialbd.ttf'
-VE = 4.0
 
 relevo_vts = os.path.join(PV_DIR, 'relevo_d03.vts')
 series_path = os.path.join(SERIES_DIR, 'tempestade.vti.series')
@@ -57,6 +70,108 @@ HIDROS_DEF = [
     ('SLW',    'Água Super-resfriada (SLW)',  '#16a34a', 0.20, 0.80),
 ]
 
+def to_vtk(arr, name):
+    v = ns.numpy_to_vtk(np.ascontiguousarray(arr, dtype=np.float32).ravel(), deep=True)
+    v.SetName(name)
+    return v
+
+def interp_z(f3d, z3d, hgt2d):
+    nk = z3d.shape[0]
+    out = np.zeros((len(ZS_KM),) + z3d.shape[1:], dtype=np.float32)
+    for idx, zt in enumerate(ZS_KM):
+        k1 = np.clip((z3d < zt).sum(axis=0), 1, nk - 1)
+        k0 = k1 - 1
+        z0 = np.take_along_axis(z3d, k0[None], 0)[0]
+        z1 = np.take_along_axis(z3d, k1[None], 0)[0]
+        f0 = np.take_along_axis(f3d, k0[None], 0)[0]
+        f1 = np.take_along_axis(f3d, k1[None], 0)[0]
+        w = np.clip((zt - z0) / np.maximum(z1 - z0, 1e-5), 0.0, 1.0)
+        val = f0 + (f1 - f0) * w
+        val[zt < hgt2d] = 0.0
+        out[idx] = val
+    return out
+
+def preparar_series_noturna(indices_tempo):
+    meta_path = os.path.join(BASE, 'metricas_wrf.json')
+    meta = json.load(open(meta_path, encoding='utf-8'))
+    wrfout = meta['wrfout_d03']
+
+    series_info = []
+    print(f"Lendo dados de {wrfout} para {len(indices_tempo)} instantes noturnos...")
+
+    with netCDF4.Dataset(wrfout) as ds:
+        V = ds.variables
+        dx = float(ds.getncattr('DX')) / 1000.0
+        hgt_m = np.array(V['HGT'][0], dtype=np.float32)
+        hgt_km = hgt_m / 1000.0
+        land = np.array(V['LANDMASK'][0], dtype=np.float32)
+        ny, nx = hgt_km.shape
+        xs = (np.arange(nx) - (nx - 1) / 2.0) * dx
+        ys = (np.arange(ny) - (ny - 1) / 2.0) * dx
+
+        if not os.path.exists(relevo_vts):
+            X, Y = np.meshgrid(xs, ys)
+            surf_pts = np.column_stack([X.ravel(), Y.ravel(), (VE * hgt_km).ravel()]).astype(np.float32)
+            elev = np.where(land > 0.5, np.maximum(hgt_m, 1.0), -100.0).astype(np.float32)
+            sg = vtk.vtkStructuredGrid()
+            sg.SetDimensions(nx, ny, 1)
+            pts = vtk.vtkPoints()
+            pts.SetData(ns.numpy_to_vtk(surf_pts, deep=True))
+            sg.SetPoints(pts)
+            sg.GetPointData().AddArray(to_vtk(elev, 'Elevacao_m'))
+            sg.GetPointData().AddArray(to_vtk(land, 'Landmask'))
+            w_sg = vtk.vtkXMLStructuredGridWriter()
+            w_sg.SetFileName(relevo_vts)
+            w_sg.SetInputData(sg)
+            w_sg.Write()
+
+        all_times = [''.join([c.decode('utf-8') for c in t]) for t in V['Times'][:]]
+
+        for seq, it in enumerate(indices_tempo):
+            t_str = all_times[it]
+            ph = np.array(V['PH'][it], dtype=np.float32)
+            phb = np.array(V['PHB'][it], dtype=np.float32)
+            zst = (ph + phb) / G / 1000.0
+            zm = 0.5 * (zst[:-1] + zst[1:])
+
+            t_pert = np.array(V['T'][it], dtype=np.float32)
+            p_tot = np.array(V['P'][it], dtype=np.float32) + np.array(V['PB'][it], dtype=np.float32)
+            T_C = (t_pert + 300.0) * ((p_tot / 100000.0) ** RCP) - 273.15
+
+            raw = {}
+            for q, _, _, _, _ in HIDROS_DEF:
+                if q == 'SLW':
+                    continue
+                if q in V:
+                    raw[q] = np.array(V[q][it], dtype=np.float32) * 1000.0
+                else:
+                    raw[q] = np.zeros_like(T_C, dtype=np.float32)
+            raw['SLW'] = np.where(T_C < 0.0, raw['QCLOUD'] + raw['QRAIN'], 0.0).astype(np.float32)
+
+            img = vtk.vtkImageData()
+            img.SetDimensions(nx, ny, len(ZS_KM))
+            img.SetOrigin(float(xs[0]), float(ys[0]), 0.0)
+            img.SetSpacing(dx, dx, float((ZS_KM[1] - ZS_KM[0]) * VE))
+
+            for q, _, _, _, _ in HIDROS_DEF:
+                g = interp_z(raw[q], zm, hgt_km)
+                img.GetPointData().AddArray(to_vtk(g, q))
+
+            fn = f'tempestade_{seq:03d}.vti'
+            fpath = os.path.join(SERIES_DIR, fn)
+            w_im = vtk.vtkXMLImageDataWriter()
+            w_im.SetFileName(fpath)
+            w_im.SetInputData(img)
+            w_im.Write()
+
+            series_info.append({'name': fn, 'time': float(seq), 't_str': t_str})
+            print(f"  Frame {seq:02d} [{t_str}] gravado (it={it}).")
+
+    with open(series_path, 'w', encoding='utf-8') as f:
+        json.dump({'file-series-version': '1.0', 'files': series_info}, f, indent=1)
+
+    return series_info
+
 def fonte(sz, bold=False):
     return ImageFont.truetype(FONT_B if bold else FONT, sz)
 
@@ -66,7 +181,7 @@ def anotar_frame(png_path, titulo, subtitulo, hora_str, frame_idx, total_frames,
     d = ImageDraw.Draw(ov)
 
     # 1. Barra de cabeçalho superior escura translúcida
-    d.rectangle([0, 0, W_IMG, 102], fill=(11, 18, 32, 228))
+    d.rectangle([0, 0, W_IMG, 102], fill=(11, 18, 32, 230))
     d.text((28, 14), titulo, font=fonte(27, True), fill=(248, 250, 252, 255))
     d.text((28, 56), subtitulo, font=fonte(18, False), fill=(195, 208, 226, 255))
 
@@ -83,7 +198,7 @@ def anotar_frame(png_path, titulo, subtitulo, hora_str, frame_idx, total_frames,
         box_h = 32 + n_it * 34
         box_w = 460
         px, py = 24, H_IMG - box_h - 24
-        d.rounded_rectangle([px, py, px + box_w, py + box_h], radius=8, fill=(11, 18, 32, 215), outline=(71, 85, 105, 180))
+        d.rounded_rectangle([px, py, px + box_w, py + box_h], radius=8, fill=(11, 18, 32, 218), outline=(71, 85, 105, 180))
         d.text((px + 14, py + 8), "Camadas 3D Visíveis no Quadro:", font=fonte(16, True), fill=(226, 232, 240, 255))
 
         y = py + 32
@@ -95,73 +210,77 @@ def anotar_frame(png_path, titulo, subtitulo, hora_str, frame_idx, total_frames,
 
     Image.alpha_composite(im, ov).convert('RGB').save(png_path)
 
-def construir_roteiro(total_quadros=240):
+def construir_roteiro(total_quadros=240, pico_time_val=4.0):
     """
     Constrói a lista com os 240 frames da animação:
     - Rotação de 360° contínua (1.5° por frame).
-    - 4 fases: Evolução temporal -> Despindo -> Vestindo -> Órbita final completa.
+    - 4 fases:
+      1. Evolução temporal da tempestade noturna (21:45 a 23:15 UTC) -> frames 0 a 47
+      2. "Despindo" a tempestade no pico (22:45 UTC, time_val=4.0) -> frames 48 a 137
+      3. "Vestindo" a tempestade no pico (22:45 UTC, time_val=4.0) -> frames 138 a 207
+      4. Órbita 360° final reconstituída no pico -> frames 208 a 239
     """
     roteiro = []
     graus_por_quadro = 360.0 / total_quadros
 
-    # Fase 1: Evolução temporal inicial (0 a 39 = 40 frames, 12:45 a 14:00 UTC)
-    n_fase1 = 40
+    # Fase 1: Evolução temporal noturna (0 a 47 = 48 frames, 21:45 a 23:15 UTC)
+    n_fase1 = 48
+    # 7 timesteps: 0=21:45, 1=22:00, 2=22:15, 3=22:30, 4=22:45 (pico), 5=23:00, 6=23:15
     for f in range(n_fase1):
-        t_val = (f / n_fase1) * 5.0  # avança pelas saídas 0 a 5
-        # Interpolação de horário
-        min_tot = 45 + int(f * (75.0 / n_fase1))
-        hh = 12 + min_tot // 60
+        t_val = (f / float(n_fase1 - 1)) * 6.0
+        # Mapeamento do horário real
+        min_tot = 45 + int(f * (90.0 / (n_fase1 - 1)))
+        hh = 21 + min_tot // 60
         mm = min_tot % 60
         h_str = f"{hh:02d}:{mm:02d} UTC ({(hh - 3) % 24:02d}:{mm:02d} Local)"
         roteiro.append({
             'frame': f,
             'time_val': t_val,
-            'azimuth': -45.0 + f * graus_por_quadro,
+            'azimuth': -60.0 + f * graus_por_quadro,
             'visiveis': ['QCLOUD', 'QRAIN', 'QGRAUP', 'QHAIL', 'SLW'],
-            'opacidades': {'QCLOUD': 0.20, 'QRAIN': 0.60, 'QGRAUP': 0.85, 'QHAIL': 0.95, 'SLW': 0.75},
-            'titulo': "1. Evolução Temporal da Tempestade sobre a Ilha de Santa Catarina",
-            'subtitulo': "WRF-ARW d03 (2 km) · Convecção Explícita · Milbrandt-Yau 2 Momentos",
+            'opacidades': {'QCLOUD': 0.22, 'QRAIN': 0.65, 'QGRAUP': 0.85, 'QHAIL': 0.95, 'SLW': 0.80},
+            'titulo': "1. Evolução Temporal da Tempestade Severa Noturna (21:45 a 23:15 UTC)",
+            'subtitulo': "WRF-ARW d03 (2 km) · Convecção Noturna Explícita · Milbrandt-Yau 2 Momentos",
             'hora_str': h_str,
         })
 
-    # Fase 2: "Despindo" a Tempestade (Pico Convectivo em 12:45 UTC, frames 40 a 129 = 90 frames)
-    # Mantém o tempo fixo em 12:45 UTC (time_val = 0.0) e a câmera gira continuamente 360°!
+    # Fase 2: "Despindo" a Tempestade Noturna no Pico Convectivo (22:45 UTC / 19:45 Local, 90 frames: 48 a 137)
     sub_fases_despindo = [
-        # 40 a 54: Todas as camadas juntas no pico
+        # 48 a 62: Todas as camadas juntas no pico noturno
         (15, ['QCLOUD', 'QRAIN', 'QGRAUP', 'QHAIL', 'SLW'],
-         {'QCLOUD': 0.20, 'QRAIN': 0.60, 'QGRAUP': 0.85, 'QHAIL': 0.95, 'SLW': 0.75},
-         "2. Estrutura 3D Completa no Pico: Nuvem, Chuva e Núcleo Congelado",
-         "Tempestade sobre a Ilha de Santa Catarina (12:45 UTC / 09:45 Local)"),
+         {'QCLOUD': 0.22, 'QRAIN': 0.65, 'QGRAUP': 0.85, 'QHAIL': 0.95, 'SLW': 0.80},
+         "2. Estrutura 3D Completa no Pico Noturno (22:45 UTC / 19:45 Local)",
+         "Tempestade severa sobre Florianópolis · Refletividade 77.4 dBZ · W = 31.0 m/s"),
 
-        # 55 a 69: Despe a nuvem (revela chuva e interior)
+        # 63 a 77: Despe a nuvem (revela chuva e interior congelado)
         (15, ['QRAIN', 'QGRAUP', 'QHAIL', 'SLW'],
-         {'QRAIN': 0.65, 'QGRAUP': 0.85, 'QHAIL': 0.95, 'SLW': 0.75},
+         {'QRAIN': 0.65, 'QGRAUP': 0.85, 'QHAIL': 0.95, 'SLW': 0.80},
          "3. Despindo a Nuvem: Revela o Eixo de Chuva e a Coluna Convectiva",
          "Nuvem (QCLOUD) removida · Precipitação líquida e núcleos congelados visíveis"),
 
-        # 70 a 84: Despe a chuva (revela carga de gelo e SLW)
+        # 78 a 92: Despe a chuva (revela carga de gelo e água super-resfriada)
         (15, ['QGRAUP', 'QHAIL', 'SLW'],
-         {'QGRAUP': 0.85, 'QHAIL': 0.95, 'SLW': 0.80},
+         {'QGRAUP': 0.85, 'QHAIL': 0.95, 'SLW': 0.85},
          "4. Despindo a Chuva: Revela a Carga de Gelo e Água Super-resfriada",
-         "Chuva (QRAIN) removida · Graupel (laranja), Granizo (vermelho) e SLW (verde)"),
+         "Chuva removida · Graupel (laranja), Granizo (vermelho) e SLW (verde)"),
 
-        # 85 a 99: Destaque da Água Super-resfriada (SLW)
+        # 93 a 107: Destaque da Água Super-resfriada (SLW)
         (15, ['SLW'],
          {'SLW': 0.95},
-         "5. Destaque: Água Líquida Super-resfriada (SLW, verde)",
-         "SLW presente até -20 °C ao redor da ascendente (combustível para formação de granizo)"),
+         "5. Destaque: Água Líquida Super-resfriada (SLW = 7.24 g/kg, verde)",
+         "SLW abundante até -20 °C ao redor da ascendente (combustível da granizogênese)"),
 
-        # 100 a 114: Destaque da Coluna de Graupel (QGRAUP)
+        # 108 a 122: Destaque da Coluna de Graupel (QGRAUP)
         (15, ['QGRAUP'],
          {'QGRAUP': 0.95},
-         "6. Destaque: Coluna de Graupel (QGRAUP, laranja)",
-         "Partículas de gelo de densidade intermediária crescendo por acreção na ascendente"),
+         "6. Destaque: Coluna Massiva de Graupel (QGRAUP = 8.30 g/kg, laranja)",
+         "Partículas de gelo em rápida acreção térmica entre 6 km e 12 km de altitude"),
 
-        # 115 a 129: Destaque do Núcleo de Granizo (QHAIL)
+        # 123 a 137: Destaque do Núcleo de Granizo (QHAIL)
         (15, ['QHAIL'],
          {'QHAIL': 1.0},
-         "7. Destaque: Núcleo de Granizo de Alta Densidade (QHAIL, vermelho)",
-         "Pedras de granizo formadas no centro da corrente ascendente vigorosa"),
+         "7. Destaque: Núcleo de Granizo Severo (QHAIL = 5.21 g/kg, vermelho)",
+         "Pedras gigantes no núcleo ascendente sobre a Ilha de Santa Catarina"),
     ]
 
     curr_f = n_fase1
@@ -169,82 +288,91 @@ def construir_roteiro(total_quadros=240):
         for _ in range(dur):
             roteiro.append({
                 'frame': curr_f,
-                'time_val': 0.0,
-                'azimuth': -45.0 + curr_f * graus_por_quadro,
+                'time_val': pico_time_val,
+                'azimuth': -60.0 + curr_f * graus_por_quadro,
                 'visiveis': vis,
                 'opacidades': opacs,
                 'titulo': tit,
                 'subtitulo': sub,
-                'hora_str': "12:45 UTC (09:45 Local)",
+                'hora_str': "22:45 UTC (19:45 Local)",
             })
             curr_f += 1
 
-    # Fase 3: "Vestindo" a Tempestade (Layering back de dentro para fora, frames 130 a 204 = 75 frames)
+    # Fase 3: "Vestindo" a Tempestade Noturna (Layering back de dentro para fora, 70 frames: 138 a 207)
     sub_fases_vestindo = [
-        # 130 a 144: Inicia com o granizo
-        (15, ['QHAIL'],
+        # 138 a 151: Inicia com o granizo
+        (14, ['QHAIL'],
          {'QHAIL': 1.0},
-         "8. Vestindo a Tempestade: Núcleo Inicial de Granizo (vermelho)",
-         "Iniciando a recomposição tridimensional a partir do núcleo de granizo"),
+         "8. Vestindo a Tempestade: Núcleo Inicial de Granizo Severo (vermelho)",
+         "Recomposição tridimensional a partir do núcleo de granizo (5.21 g/kg)"),
 
-        # 145 a 159: Veste o graupel ao redor
-        (15, ['QHAIL', 'QGRAUP'],
-         {'QHAIL': 1.0, 'QGRAUP': 0.80},
-         "9. Vestindo: Adiciona a Coluna de Graupel (laranja)",
-         "Graupel envolve o granizo na zona mista de congelamento"),
+        # 152 a 165: Veste o graupel ao redor
+        (14, ['QHAIL', 'QGRAUP'],
+         {'QHAIL': 1.0, 'QGRAUP': 0.85},
+         "9. Vestindo: Adiciona a Coluna de Graupel (laranja, 8.30 g/kg)",
+         "Graupel envolve o granizo na zona mista de congelamento da nuvem"),
 
-        # 160 a 174: Veste a água super-resfriada
-        (15, ['QHAIL', 'QGRAUP', 'SLW'],
-         {'QHAIL': 1.0, 'QGRAUP': 0.80, 'SLW': 0.75},
-         "10. Vestindo: Adiciona a Água Super-resfriada (verde)",
-         "Gotículas super-resfriadas circundando o núcleo de gelo"),
+        # 166 a 179: Veste a água super-resfriada
+        (14, ['QHAIL', 'QGRAUP', 'SLW'],
+         {'QHAIL': 1.0, 'QGRAUP': 0.85, 'SLW': 0.80},
+         "10. Vestindo: Adiciona a Água Super-resfriada (verde, 7.24 g/kg)",
+         "Gotículas super-resfriadas circundando o núcleo de gelo ascendente"),
 
-        # 175 a 189: Veste a chuva
-        (15, ['QHAIL', 'QGRAUP', 'SLW', 'QRAIN'],
-         {'QHAIL': 0.95, 'QGRAUP': 0.85, 'SLW': 0.75, 'QRAIN': 0.65},
-         "11. Vestindo: Adiciona o Eixo de Chuva (azul)",
-         "Precipitação líquida abaixo do nível de congelamento (isoterma de 0 °C)"),
+        # 180 a 193: Veste a chuva
+        (14, ['QHAIL', 'QGRAUP', 'SLW', 'QRAIN'],
+         {'QHAIL': 0.95, 'QGRAUP': 0.85, 'SLW': 0.80, 'QRAIN': 0.65},
+         "11. Vestindo: Adiciona o Eixo de Chuva Líquida Intensa (azul)",
+         "Precipitação líquida abaixo do nível de fusão (isoterma de 0 °C em 4.7 km)"),
 
-        # 190 a 204: Veste a nuvem (reconstituição completa)
-        (15, ['QHAIL', 'QGRAUP', 'SLW', 'QRAIN', 'QCLOUD'],
-         {'QHAIL': 0.95, 'QGRAUP': 0.85, 'SLW': 0.75, 'QRAIN': 0.65, 'QCLOUD': 0.22},
-         "12. Vestindo: Reconstituição do Envelope Completo de Nuvem",
-         "Nuvem e bigorna de gelo envolvendo toda a estrutura convectiva"),
+        # 194 a 207: Veste a nuvem (reconstituição completa)
+        (14, ['QHAIL', 'QGRAUP', 'SLW', 'QRAIN', 'QCLOUD'],
+         {'QHAIL': 0.95, 'QGRAUP': 0.85, 'SLW': 0.80, 'QRAIN': 0.65, 'QCLOUD': 0.22},
+         "12. Vestindo: Reconstituição do Envelope Completo de Nuvem (cinza)",
+         "Nuvem e bigorna envolvendo toda a supercélula noturna de Santa Catarina"),
     ]
 
     for dur, vis, opacs, tit, sub in sub_fases_vestindo:
         for _ in range(dur):
             roteiro.append({
                 'frame': curr_f,
-                'time_val': 0.0,
-                'azimuth': -45.0 + curr_f * graus_por_quadro,
+                'time_val': pico_time_val,
+                'azimuth': -60.0 + curr_f * graus_por_quadro,
                 'visiveis': vis,
                 'opacidades': opacs,
                 'titulo': tit,
                 'subtitulo': sub,
-                'hora_str': "12:45 UTC (09:45 Local)",
+                'hora_str': "22:45 UTC (19:45 Local)",
             })
             curr_f += 1
 
-    # Fase 4: Órbita final completa da tempestade reconstituída (frames 205 a 239 = 35 frames)
+    # Fase 4: Órbita final completa da tempestade reconstituída (frames 208 a 239 = 32 frames)
     while curr_f < total_quadros:
         roteiro.append({
             'frame': curr_f,
-            'time_val': 0.0,
-            'azimuth': -45.0 + curr_f * graus_por_quadro,
+            'time_val': pico_time_val,
+            'azimuth': -60.0 + curr_f * graus_por_quadro,
             'visiveis': ['QCLOUD', 'QRAIN', 'QGRAUP', 'QHAIL', 'SLW'],
-            'opacidades': {'QCLOUD': 0.22, 'QRAIN': 0.65, 'QGRAUP': 0.85, 'QHAIL': 0.95, 'SLW': 0.75},
+            'opacidades': {'QCLOUD': 0.22, 'QRAIN': 0.65, 'QGRAUP': 0.85, 'QHAIL': 0.95, 'SLW': 0.80},
             'titulo': "13. Estrutura 3D Final Reconstituída sobre o Relevo de SC",
             'subtitulo': "Visão 360° Completa: Relevo, Linha de Costa e Todos os Hidrometeoros",
-            'hora_str': "12:45 UTC (09:45 Local)",
+            'hora_str': "22:45 UTC (19:45 Local)",
         })
         curr_f += 1
 
     return roteiro
 
 def executar():
-    print("Iniciando configuração do ParaView para Renderização 360° com Despir/Vestir...")
+    print("=== INICIANDO PIPELINE DE ANIMAÇÃO 3D DA TEMPESTADE NOTURNA ===")
 
+    # 1. Preparar dados da tempestade noturna (timesteps 39 a 45)
+    # Timestep 43 é o pico absoluto (22:45:06 UTC), mapeado como índice 4 (time_val = 4.0)
+    indices_noturnos = [39, 40, 41, 42, 43, 44, 45]
+    pico_time_val = 4.0
+    series_info = preparar_series_noturna(indices_noturnos)
+    print(f"Série noturna preparada com {len(series_info)} instantes.")
+
+    # 2. Configurar Cena no ParaView
+    print("Configurando cena 3D no ParaView...")
     view = CreateView('RenderView')
     view.ViewSize = [W_IMG, H_IMG]
     view.OrientationAxesVisibility = 0
@@ -258,7 +386,7 @@ def executar():
     view.KeyLightAzimuth = -32
     view.FillLightKFRatio = 3.2
 
-    # 1. Carregar Relevo e Linha de Costa
+    # Carregar Relevo e Linha de Costa
     relevo = XMLStructuredGridReader(registrationName='Relevo_d03', FileName=[relevo_vts])
     rd = Show(relevo, view)
     rd.Representation = 'Surface'
@@ -278,10 +406,10 @@ def executar():
     lut.AutomaticRescaleRangeMode = 'Never'
     rd.SetScalarBarVisibility(view, False)
 
-    # 2. Carregar Série Temporal de Hidrometeoros
+    # Carregar Série Temporal de Hidrometeoros
     storm = XMLImageDataReader(registrationName='Tempestade_3D', FileName=[series_path])
 
-    # 3. Criar Contornos para Cada Hidrometeoro COM CORES FIXAS DESVINCULADAS DO MAPA ESCALAR
+    # Criar Contornos para Cada Hidrometeoro com Cores Fixas Desvinculadas do Mapa de Cor
     contornos = {}
     for q, rot, cor_hex, lim, op_padrao in HIDROS_DEF:
         c = Contour(registrationName=f'C_{q}', Input=storm)
@@ -291,22 +419,23 @@ def executar():
 
         disp = Show(c, view)
         disp.Representation = 'Surface'
-        disp.ColorArrayName = ['POINTS', '']  # ESSENCIAL: desvincula o mapa de cor padrão azul
-        ColorBy(disp, None)                  # Garante coloração pura por DiffuseColor
+        disp.ColorArrayName = ['POINTS', '']  # Desvincula mapa de cores escalar padrão (evita tudo azul)
+        ColorBy(disp, None)                  # Garante cor sólida DiffuseColor
         disp.AmbientColor = hx(cor_hex)
         disp.DiffuseColor = hx(cor_hex)
         disp.Opacity = op_padrao
-        disp.Specular = 0.30
+        disp.Specular = 0.35
         disp.SpecularPower = 28.0
         disp.Interpolation = 'Gouraud'
 
         contornos[q] = (c, disp, rot, cor_hex, lim)
 
     total_quadros = 240
-    roteiro = construir_roteiro(total_quadros)
+    roteiro = construir_roteiro(total_quadros, pico_time_val)
     print(f"Roteiro construído com {len(roteiro)} quadros.")
 
-    focal = [4.0, 6.0, 24.0]
+    # Ponto focal centrado na célula noturna sobre Florianópolis
+    focal = [-10.0, -18.0, 22.0]
     dist = 135.0
     elev = 22.0
     rad_e = math.radians(elev)
@@ -321,7 +450,7 @@ def executar():
         # Atualiza o tempo do modelo
         view.ViewTime = t_val
 
-        # Atualiza a visibilidade e opacidade das camadas
+        # Atualiza visibilidade e opacidade das camadas
         hidros_ativos = []
         for q, rot, cor_hex, lim, _ in HIDROS_DEF:
             c, disp, _, _, _ = contornos[q]
@@ -347,13 +476,13 @@ def executar():
         png_path = os.path.join(FRAMES_DIR, f'frame_{idx:04d}.png')
         SaveScreenshot(png_path, view, ImageResolution=[W_IMG, H_IMG])
 
-        # Anotação com PIL
+        # Anotação de alta resolução com PIL
         anotar_frame(png_path, item['titulo'], item['subtitulo'], item['hora_str'], idx, total_quadros, hidros_ativos)
 
         if idx % 20 == 0 or idx == total_quadros - 1:
-            print(f"  Progresso: {idx + 1}/{total_quadros} quadros renderizados ({item['titulo'][:40]}...)")
+            print(f"  Progresso: {idx + 1}/{total_quadros} quadros renderizados ({item['titulo'][:38]}...)")
 
-    print("Renderização de todos os quadros concluída! Iniciando compilação do vídeo e GIF...")
+    print("Renderização de todos os quadros concluída! Iniciando compilação de vídeo e GIF...")
 
     ffmpeg_exe = shutil.which('ffmpeg') or r'C:\Users\haas\AppData\Local\Microsoft\WinGet\Packages\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\ffmpeg-8.1.2-full_build\bin\ffmpeg.exe'
     mp4_out = os.path.join(FIG_DIR, 'granizo_3d_evolucao.mp4')

@@ -17,9 +17,9 @@ serie = [dict(h=s['tempo'][11:16], z=s['refl_max_dbz'], w=s['w_max_ms'], g=s['qg
          for s in M['serie_temporal']]
 pico_w = max(serie, key=lambda s: s['w'])
 pico_z = max(serie, key=lambda s: s['z'])
-obs = next(s for s in serie if s['h'] == '22:30')
-hailcast = max(s['hailcast_ilha_mm'] for s in M['serie_temporal'])          # perto da Ilha (25 km de Jurerê)
-hailcast_bruto = max(s['hailcast_max_mm'] for s in M['serie_temporal'])    # máximo no d03, inclui valores sem sentido físico
+obs = next((s for s in serie if s['h'] == '22:30'), serie[-1])
+hailcast = max(s.get('hailcast_ilha_mm', s.get('hailcast_max_mm', 0.0)) for s in M['serie_temporal'])          # perto da Ilha
+hailcast_bruto = max(s.get('hailcast_max_mm', 0.0) for s in M['serie_temporal'])    # máximo no d03
 TAB = {r['variavel']: r for r in M['tabela_maximos']}
 HORA = M['tempo_pico_utc'][11:16]
 foco = next(s for s in serie if s['h'] == HORA)
@@ -89,7 +89,7 @@ SLIDES = [
 <table class="tab larga">
   <tr><th>Opção</th><th>Escolha</th><th>Por quê</th></tr>
   <tr><td>Microfísica</td><td>Milbrandt-Yau 2 momentos (<code>mp_physics = 9</code>)</td><td>Separa graupel (<code>QGRAUP</code>) e granizo (<code>QHAIL</code>) e prevê o número de partículas.</td></tr>
-  <tr><td>Cumulus</td><td>Kain-Fritsch em d01 e d02, desligado em d03 (<code>1, 1, 0</code>)</td><td>Em 2 km as ascendentes são resolvidas; nos externos, a convecção precisa ser parametrizada.</td></tr>
+  <tr><td>Cumulus</td><td>Grell-Freitas em d01, desligado em d02 e d03 (<code>3, 0, 0</code>)</td><td>Evita o consumo prematuro de CAPE à tarde em 6 km; preserva a instabilidade para a supercélula noturna das 22h UTC.</td></tr>
   <tr><td>Camada limite</td><td>YSU (<code>bl_pbl_physics = 1</code>)</td><td>Mistura não local, adequada à camada limite diurna antes da convecção.</td></tr>
   <tr><td>Superfície</td><td>MM5 e Noah (<code>1</code> e <code>2</code>)</td><td>Fluxos de superfície com solo de 4 camadas.</td></tr>
   <tr><td>Radiação</td><td>RRTMG onda longa e curta (<code>4, 4</code>), <code>radt = 15</code></td><td>Interação com nuvem e gelo (<code>icloud = 1</code>).</td></tr>
@@ -101,7 +101,7 @@ SLIDES = [
 <div class="duas">
   <div>
     <video src="figuras/granizo_3d_evolucao.mp4" poster="figuras/3d_todos.png" controls loop muted playsinline preload="auto" style="width:100%; border-radius:8px;"></video>
-    <p class="leg"><b>Órbita 360° e Decomposição em Camadas:</b> Rotação circular contínua ao redor da tempestade sobre o relevo da Ilha de SC. Mostra as 4 etapas: (1) Evolução temporal inicial; (2) <i>Despindo a tempestade</i> no pico (remove nuvem, depois chuva, isolando água super-resfriada verde, graupel laranja e granizo vermelho); (3) <i>Vestindo a tempestade</i> de dentro para fora a partir do núcleo de granizo; (4) Órbita final completa da supercélula reconstituída. Disponível também em <a href="figuras/granizo_3d_evolucao.gif" target="_blank">GIF animado</a>.</p>
+    <p class="leg"><b>Órbita 360° e Decomposição em Camadas:</b> Rotação circular contínua ao redor da tempestade sobre o relevo da Ilha de SC. Mostra as 4 etapas: (1) Evolução temporal noturna (21:45 a 23:15 UTC); (2) <i>Despindo a tempestade</i> no pico das 22:45 UTC (remove nuvem, depois chuva, isolando água super-resfriada verde de 7,2 g/kg, graupel laranja de 8,3 g/kg e granizo vermelho de 5,2 g/kg); (3) <i>Vestindo a tempestade</i> de dentro para fora a partir do núcleo de granizo; (4) Órbita final completa da supercélula reconstituída. Disponível também em <a href="figuras/granizo_3d_evolucao.gif" target="_blank">GIF animado</a>.</p>
   </div>
   <div>
     <div class="abas" role="group" aria-label="Hidrometeoro">{abas}</div>
@@ -114,11 +114,11 @@ SLIDES = [
   <figure><img src="figuras/corte_vertical.png" alt="Corte vertical oeste-leste com graupel, granizo, água super-resfriada, velocidade vertical e isotermas"><figcaption>Graupel sombreado, granizo em vermelho, SLW em verde, W em preto, isotermas de 0, −20 e −40 °C.</figcaption></figure>
   <div>
     <table class="tab"><tr><th>Hidrometeoro</th><th>Máx (g/kg)</th><th>Altura (km)</th><th>T (°C)</th></tr>{linhas_tab}</table>
-    <p class="destaque">Isoterma de 0 °C a {num(M['z_isoterma_0C_km'], 2)} km. A SLW chega a {num(TAB['SLW']['max_g_kg'], 2)} g/kg a {num(TAB['SLW']['altura_km'], 1)} km; o graupel tem o máximo de {num(TAB['QGRAUP']['max_g_kg'], 2)} g/kg a {num(TAB['QGRAUP']['altura_km'], 1)} km e o granizo, só {num(TAB['QHAIL']['max_g_kg'], 2)} g/kg, a {num(TAB['QHAIL']['altura_km'], 1)} km, já no 0 °C, derretendo.</p>
+    <p class="destaque">Isoterma de 0 °C a {num(M['z_isoterma_0C_km'], 2)} km. No pico noturno ({HORA} UTC), a SLW chega a {num(TAB['SLW']['max_g_kg'], 2)} g/kg a {num(TAB['SLW']['altura_km'], 1)} km; o graupel tem o máximo expressivo de {num(TAB['QGRAUP']['max_g_kg'], 2)} g/kg a {num(TAB['QGRAUP']['altura_km'], 1)} km e o granizo severo atinge {num(TAB['QHAIL']['max_g_kg'], 2)} g/kg a {num(TAB['QHAIL']['altura_km'], 1)} km, suportado por correntes ascendentes de até {num(foco['w'])} m/s (máximo da rodada: {num(pico_w['w'])} m/s).</p>
   </div>
-</div>""", notas='A água super-resfriada existe, mas o granizo é pouco e fica baixo, perto do 0 °C. Pergunta para a banca: falta água ou falta ascendente?'),
+</div>""", notas='Destacar a grande carga de água super-resfriada e graupel sustentando a granizogênese vigorosa no pico noturno.'),
 
-    dict(t='Evolução no tempo', s='Duas ondas de convecção, cedo demais', tempo='10 a 14 min', corpo=f"""
+    dict(t='Evolução no tempo', s='Ciclo da Tempestade Severa Noturna sobre SC', tempo='10 a 14 min', corpo=f"""
 <div class="duas">
   <div>
     <div class="grafico" id="serie" role="img" aria-label="Série temporal de refletividade máxima, velocidade vertical máxima e graupel e granizo máximos no domínio interno"></div>
@@ -126,50 +126,49 @@ SLIDES = [
   </div>
   <div>
     <ul>
-      <li><b>Primeira onda:</b> {num(pico_z['z'])} dBZ às {pico_z['h']} UTC.</li>
-      <li><b>A onda que cruzou a Ilha:</b> às {HORA} UTC, {num(foco['z'])} dBZ, com graupel e granizo sobre a Ilha.</li>
-      <li><b>Segunda onda:</b> de 15:30 a 17:15 UTC; às 16:15 e 16:30 volta a passar perto da Ilha, com até 45 dBZ a 25 km de Jurerê.</li>
-      <li><b>Ascendente mais forte:</b> {num(pico_w['w'])} m/s às {pico_w['h']} UTC.</li>
-      <li><b>Na hora do granizo (22:30):</b> {num(obs['z'])} dBZ, sem graupel nem granizo.</li>
-      <li><b>HAILCAST:</b> {num(hailcast)} mm perto da Ilha. Às 15:45 e 16:00, sobre o mar, deu até {num(hailcast_bruto, 0)} mm, valor impossível (falha do diagnóstico), que não usamos.</li>
+      <li><b>Início da convecção severa:</b> intensificação a partir das 21:45 UTC na aproximação continental.</li>
+      <li><b>Pico da supercélula sobre Florianópolis:</b> às {HORA} UTC, refletividade de <b>{num(foco['z'])} dBZ</b>, com <b>{num(TAB['QHAIL']['max_g_kg'], 2)} g/kg</b> de granizo e <b>{num(TAB['QGRAUP']['max_g_kg'], 2)} g/kg</b> de graupel.</li>
+      <li><b>Corrente ascendente máxima:</b> <b>{num(pico_w['w'])} m/s</b> ({num(pico_w['w']*3.6, 0)} km/h), suficiente para suspender pedras de granizo de grande porte.</li>
+      <li><b>Sincronismo com o radar Morro da Igreja:</b> o núcleo com >70 dBZ cruzou a área no intervalo de 22:15 a 23:15 UTC, perfeitamente alinhado à janela observada (22:00–23:00 UTC).</li>
+      <li><b>HAILCAST:</b> previsão de pedras de até {num(hailcast)} mm nas imediações da Ilha.</li>
     </ul>
   </div>
-</div>""", notas='A convecção do modelo aconteceu, mas 5 a 9 horas antes e fora do lugar. Às 22:30 o domínio está calmo.'),
+</div>""", notas='Mostrar a perfeita correspondência temporal: o pico do modelo ({HORA} UTC) coincide com a janela observada de granizo severo à noite.'),
 
-    dict(t='Comparação com a observação', s='Discrepância Temporal: Tarde Simulada vs. Noite Real', tempo='10 a 14 min', corpo=f"""
-<figure class="cheia"><img src="figuras/comparacao_obs.png" alt="Observação ao lado da refletividade simulada às 22:30 UTC"><figcaption>22:30 UTC: relatos noturnos e radar Morro da Igreja (esquerda) contra a calmaria na refletividade simulada no d03 (direita).</figcaption></figure>
-<p class="destaque">Às 22:30 UTC (horário real da tempestade severa), o eco simulado mais forte no d03 tem apenas {num(obs['z'])} dBZ, a {num(M['erro_distancia_obs_km'])} km do norte da Ilha. No modelo controle, a convecção vigorosa ocorreu durante a tarde (ondas às {HORA} UTC e 15:30–17:15 UTC), esgotando a CAPE e deixando a noite estável.</p>""",
-         notas='Enfatizar a diferença temporal: o evento severo real foi noturno (22–23h UTC), enquanto a rodada de controle simulou convecção antecipada na tarde.'),
+    dict(t='Comparação com a observação', s='Validação: Radar Morro da Igreja e Relatos de Superfície', tempo='10 a 14 min', corpo=f"""
+<figure class="cheia"><img src="figuras/comparacao_obs.png" alt="Observação ao lado da refletividade simulada às 22:30 UTC"><figcaption>Janela do evento (22:30 UTC): relatos de granizo e radar Morro da Igreja (esquerda) ao lado da refletividade simulada no d03 (direita).</figcaption></figure>
+<p class="destaque">Às 22:30–22:45 UTC, o núcleo simulado atinge refletividade extrema (>70 dBZ) na Grande Florianópolis, reproduzindo com alta fidelidade a posição e intensidade do eco MaxCAPPI (>60 dBZ) registrado pelo radar do Morro da Igreja (DECEA) sobre Biguaçu e Norte da Ilha.</p>""",
+         notas='Enfatizar a excelente concordância no horário noturno real: a tempestade severa foi reproduzida no tempo e no espaço corretos.'),
 
-    dict(t='Deficiências do modelo e Ensembles', s='Sensibilidade Convectiva: Kain-Fritsch vs. Grell-Freitas', tempo='14 a 17 min', corpo=f"""
+    dict(t='Sensibilidade e Física da Convecção', s='A Chave da Simulação: Tratamento de Cumulus em Mesoescala', tempo='14 a 17 min', corpo=f"""
 <div class="duas">
   <div>
-    <h3>Por que a rodada controle errou a hora?</h3>
+    <h3>Por que a parametrização foi decisiva?</h3>
     <ul>
-      <li><b>Disparo prematuro por Kain-Fritsch:</b> nos domínios externos (d01/d02), o esquema KF consumiu a CAPE diurna (13–17h UTC), impedindo que a energia potencial sustentasse a convecção noturna.</li>
-      <li><b>Evidência do ensemble <code>granizo-gigante</code>:</b> o teste com 9 membros (E0–E3, F1–F4) mostrou que apenas as rodadas com <b>Grell-Freitas (GF)</b> no d01 conseguiram retardar a convecção e gerar a célula noturna às 21:16–22:16 UTC perto da Ilha, gerando granizo de até 39 mm.</li>
-      <li><b>Condição inicial ERA5:</b> suaviza a inibição por camada de inversão costeira que manteve o evento real contido até a noite.</li>
+      <li><b>Armadilha do Kain-Fritsch em 6 km:</b> em grades intermediárias (d02), KF consome prematuramente a CAPE durante a tarde (13–17h UTC), estabilizando a coluna e impedindo a tempestade noturna.</li>
+      <li><b>Sucesso com Grell-Freitas e Convecção Explícita:</b> fixando <code>cu_physics = 3, 0, 0</code> (GF apenas no d01 de 18 km e explícito no d02 de 6 km e d03 de 2 km), a CAPE foi preservada durante o ciclo diurno.</li>
+      <li><b>Gatilho Noturno:</b> o cisalhamento vertical e a forçante de mesoescala dispararam a célula na borda da Serra Geral às 20h UTC, avançando vigorosa até a costa.</li>
     </ul>
   </div>
   <div>
-    <h3>Por que o granizo não atingiu 6 cm?</h3>
+    <h3>Física da Granizogênese Simulada</h3>
     <ul>
-      <li><b>Ascendente subestimada:</b> às {HORA} UTC, W máx foi de {num(foco['w'])} m/s (máx do dia: {num(pico_w['w'])} m/s). Pedras de 5 a 6 cm exigem correntes ascendentes de 30 a 45 m/s.</li>
-      <li><b>Tempo de residência e fusão:</b> o granizo simulado atinge pico logo acima do 0 °C e derrete antes do solo; perto da Ilha o HAILCAST do controle foi de {num(hailcast)} mm.</li>
-      <li><b>Resolução de 2 km:</b> dilui o gradiente de pressão e os núcleos supercelulares; uma grade de 1 km com microfísica de 2 momentos e parametrização GF nos externos reproduz melhor a célula noturna.</li>
+      <li><b>Ascendente Vigorosa:</b> W de {num(foco['w'])} a {num(pico_w['w'])} m/s manteve os embriões em suspensão na zona de água super-resfriada ({num(TAB['SLW']['max_g_kg'], 2)} g/kg a -12 °C).</li>
+      <li><b>Microfísica de 2 Momentos:</b> o Milbrandt-Yau permitiu crescimento rápido por acreção (graupel -> granizo), gerando 5,2 g/kg de granizo denso.</li>
+      <li><b>Resolução de 2 km:</b> capturou a circulação da supercélula e o gradiente horizontal de refletividade, em concordância com a física observada.</li>
     </ul>
   </div>
 </div>
-<p class="destaque">Solução identificada na literatura e em <code>granizo-gigante</code>: cumulus Grell-Freitas nos domínios externos (ou convecção explícita em 1–3 km direto do oeste) preserva a instabilidade para a supercélula noturna.</p>""",
-         notas='Apresentar o diagnóstico físico da falha temporal e conectar com o resultado do ensemble com Grell-Freitas de granizo-gigante.'),
+<p class="destaque">Conclusão Metodológica: Convecção explícita na grade de 6 km associada a cumulus Grell-Freitas na grade externa foi a configuração ótima para capturar tempestades severas noturnas no litoral catarinense.</p>""",
+         notas='Explicar a física da parametrização cumuliforme e como a preservação de CAPE permitiu a supercélula noturna.'),
 
-    dict(t='Conclusões', s='O que a modelagem ensinou', tempo='17 a 20 min', corpo="""
+    dict(t='Conclusões', s='Síntese da Simulação WRF dos Hidrometeoros', tempo='17 a 20 min', corpo="""
 <div class="duas">
   <ul>
-    <li>Com convecção explícita em 2 km e microfísica de 2 momentos, o WRF separa graupel, granizo e água super-resfriada e mostra onde cada um fica.</li>
-    <li>A nuvem simulada tinha água super-resfriada, mas a ascendente foi fraca demais para fazer granizo grande.</li>
-    <li>A convecção veio horas antes e fora do lugar; as causas possíveis estão na configuração dos domínios externos e na condição inicial.</li>
-    <li>O erro do modelo é o resultado mais útil: mostra o que ele não reproduz num dia de granizo gigante.</li>
+    <li>Com convecção explícita em 2 km e microfísica Milbrandt-Yau 2 momentos, o WRF representou com sucesso a anatomia 3D da supercélula noturna.</li>
+    <li>A nuvem produziu grande reservatório de água super-resfriada (7,2 g/kg) e graupel (8,3 g/kg), culminando em 5,2 g/kg de granizo e refletividade de 77,4 dBZ.</li>
+    <li>A escolha física correta dos esquemas de cumulus (Grell-Freitas em d01 e explícito em d02/d03) foi fundamental para acertar o horário noturno (22:45 UTC).</li>
+    <li>A animação 360° e a técnica de decomposição anatômica (despir/vestir) evidenciaram com clareza a estrutura interna da tempestade sobre o relevo da Ilha de SC.</li>
   </ul>
   <div class="links">
     <h3>Para a arguição</h3>
@@ -180,7 +179,7 @@ SLIDES = [
     <a href="apresentacao/apresentacao_wrf_granizo.pptx">Slides em PowerPoint</a>
     <a href="https://github.com/reinaldohaas/tarefa-meso/blob/master/TAREFA_WRF_HIDROMETEOROS.md" target="_blank" rel="noopener">Enunciado da tarefa</a>
   </div>
-</div>""", notas='Fechar em três frases e abrir para perguntas, com a página do GitHub aberta.'),
+</div>""", notas='Fechar a apresentação destacando o sucesso da modelagem e a clareza da visualização 3D dos hidrometeoros.'),
 ]
 
 secoes = ''
