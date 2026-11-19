@@ -19,13 +19,12 @@
 - **Sensibilidade Física e Diagnóstico do Horário Noturno:**
   Na rodada inicial de teste com Kain-Fritsch nos domínios d01/d02 (`cu_physics = 1, 1, 0`), a parametrização sub-grade consumiu a CAPE diurna prematuramente (13:00–17:00 UTC), estabilizando a atmosfera antes da noite. Com a mudança para `cu_physics = 3, 0, 0` (Grell-Freitas em d01 e convecção explícita em d02 e d03), a instabilidade foi preservada, disparando a supercélula noturna que avançou da borda da serra para a costa exatamente entre 22:00 e 23:15 UTC.
 - **Resultado em uma frase:** No horário de pico noturno (`2026-08-29_22:45:06 UTC` / 19:45 BRT), a simulação reproduziu uma supercélula severa sobre Florianópolis com refletividade máxima de **77,37 dBZ**, corrente ascendente de **31,04 m/s** (com pico de **34,21 m/s** às 23:15 UTC), reservatório maciço de graupel (**8,30 g/kg** a 10,78 km) e núcleo severo de granizo denso (**5,21 g/kg** a 4,27 km), em perfeita concordância com o radar Morro da Igreja (>60 dBZ) e com os relatos de pedras de até 6 cm no Norte da Ilha.
-- **Animação 3D Completa (Órbita 360°, Despindo e Vestindo as Camadas):**
-  Gerada com ParaView 6.2 (`pvpython`) e FFmpeg em 240 quadros a 15 fps (`figuras/granizo_3d_evolucao.mp4` e `figuras/granizo_3d_evolucao.gif`). Apresenta:
-  1. Evolução temporal noturna (21:45 a 23:15 UTC / 18:45 a 20:15 Local);
-  2. Rotação 360° contínua e suave da câmera ao redor da tempestade e do relevo de SC;
-  3. Despindo a tempestade no pico (22:45 UTC), removendo nuvem e chuva e isolando SLW (verde, 7,24 g/kg), graupel (laranja, 8,30 g/kg) e granizo (vermelho, 5,21 g/kg);
-  4. Vestindo a tempestade de dentro para fora a partir do núcleo de granizo;
-  5. Cores fixas e distintas para cada hidrometeoro (evitando o erro de sobreposição em azul).
+- **Animações 3D (Evolução Temporal 4D e Decomposição Anatômica):**
+  Geradas com ParaView 6.2 (`pvpython`) e FFmpeg a 15 fps com cores fixas e distintas para cada hidrometeoro:
+  1. **`figuras/granizo_3d_evolucao_temporal.mp4` (e `.gif`):** Animação dedicada da **Evolução Temporal 4D** cobrindo todas as 49 saídas do domínio interno (d03, 2 km) a cada 15 min (12:00 às 00:00 UTC / 12 horas completas). Acompanha o ciclo completo da convecção: início diurno, transição da tarde e a explosão da supercélula noturna sobre Biguaçu e Florianópolis (22:15–23:15 UTC) com órbita suave da câmera ao redor do relevo catarinense.
+  2. **`figuras/granizo_3d_evolucao.mp4` (e `.gif`):** Vídeo mestre (240 quadros, 16 s) combinando a evolução temporal contínua das 12 horas (Parte 1) com a rotação 360° e a dessecação anatômica no pico noturno das 22:45 UTC:
+     - *Despindo a tempestade:* remove nuvem e chuva líquida, isolando a água super-resfriada abundante (verde, 7,24 g/kg), a coluna maciça de graupel (laranja, 8,30 g/kg) e o núcleo de granizo severo (vermelho, 5,21 g/kg, 77,4 dBZ);
+     - *Vestindo a tempestade:* recomposição tridimensional de dentro para fora a partir do núcleo de granizo até a supercélula completa reconstituída.
 
 ---
 

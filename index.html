@@ -1631,11 +1631,11 @@
                 </table>
             </div>
 
-            <div class="block-title">8.2. Visualização 3D dos Hidrometeoros no ParaView (Altura Real \(z = (\text{PH}+\text{PHB})/g\), Exagero \(4\times\))</div>
+            <div class="block-title">8.2. Visualização 3D dos Hidrometeoros no ParaView com Textura Realista do Google Earth (Altura Real \(z = (\text{PH}+\text{PHB})/g\), Exagero \(4\times\))</div>
             <div class="explanation-text">
                 As figuras 3D abaixo foram geradas com o ParaView 6.2 (<code>pvpython</code>) a partir do arquivo <code>wrfout_d03</code> interpolado dos níveis \(\eta\)
                 para a altura geométrica real \(z = (\text{PH} + \text{PHB})/9{,}81\) (em km acima do nível do mar), mantendo exatamente o <strong>mesmo ponto de vista de câmera</strong>,
-                exagero vertical de \(4\times\) e paleta de cores fixa por hidrometeoro. Use os botões abaixo para inspecionar a estrutura 3D combinada ou cada hidrometeoro isoladamente:
+                exagero vertical de \(4\times\) e paleta de cores fixa por hidrometeoro. <strong>O relevo topográfico 3D de Santa Catarina conta com mapeamento de textura de ortofoto real de satélite (Google Earth)</strong>, reproduzindo com fidelidade a cobertura vegetal da Mata Atlântica e Serra Geral, as praias, baías Norte/Sul e a hidrografia costeira. Use os botões abaixo para inspecionar a estrutura 3D combinada ou cada hidrometeoro isoladamente:
             </div>
 
             <div style="display:flex; flex-wrap:wrap; gap:8px; margin:14px 0;">
@@ -1655,18 +1655,31 @@
             </div>
 
             <div class="explanation-text" style="margin-top:18px;">
-                <strong>Animação 3D Completa (Rotação 360° e Decomposição Anatômica "Despindo e Vestindo").</strong>
-                Animação contínua em 240 quadros (15 fps, 16 s) com órbita circular completa de \(360^\circ\) ao redor da tempestade e do relevo de Santa Catarina:
+                <strong>1. Animação da Evolução Temporal 4D Completa (12 Horas de Simulação: 12:00 a 00:00 UTC, 49 Saídas WRF).</strong>
+                Animação contínua da evolução tridimensional de todos os hidrometeoros cobrindo todo o ciclo de vida convectivo do domínio interno (d03, 2 km) a cada 15 minutos:
                 <ul style="margin: 8px 0 12px 20px;">
-                    <li><strong>Cores Padronizadas por Hidrometeoro:</strong> Nuvem em cinza claro translúcido (\(0{,}1\text{ g/kg}\)), Chuva em azul (\(0{,}5\text{ g/kg}\)), Graupel em laranja (\(0{,}5\text{ g/kg}\)), Granizo em vermelho intenso (\(0{,}1\text{ g/kg}\)) e Água super-resfriada (SLW) em verde (\(0{,}2\text{ g/kg}\)).</li>
-                    <li><strong>Evolução Temporal Inicial:</strong> avanço da célula convectiva no domínio interno (d03, 2 km) cruzando a Ilha de Santa Catarina.</li>
-                    <li><strong>Despindo a Tempestade (Peeling de Fora para Dentro):</strong> o modelo é focado no pico noturno da supercélula sobre Florianópolis (22:45 UTC / 19:45 Local) enquanto a câmera orbita continuamente em 360°; a nuvem externa é desfeita para revelar o eixo de precipitação, a chuva líquida é removida para expor o núcleo congelado, e em seguida destacam-se isoladamente a água super-resfriada abundante (verde, 7,24 g/kg), a coluna maciça de graupel (laranja, 8,30 g/kg) e o núcleo denso de granizo (vermelho, 5,21 g/kg, 77,4 dBZ).</li>
-                    <li><strong>Vestindo a Tempestade (Layering de Dentro para Fora):</strong> recomposição tridimensional passo a passo a partir do granizo, envolvendo-o sucessivamente com graupel, água super-resfriada, chuva líquida e reconstituindo o envelope completo da nuvem com bigorna até a órbita final de \(360^\circ\).</li>
+                    <li><strong>Ciclo Convectivo Completo:</strong> mostra a convecção diurna inicial (12:45–14:00 UTC), a reorganização vespertina (15:00–18:00 UTC), o avanço da frente de instabilidade da Serra Geral para a costa e a <strong>explosão da supercélula noturna severa entre 21:45 e 23:15 UTC</strong> cruzando Biguaçu e Florianópolis até dissipar no oceano após as 23:45 UTC.</li>
+                    <li><strong>Cores Padronizadas e Não-sobrepostas:</strong> Nuvem em cinza claro (\(0{,}1\text{ g/kg}\)), Chuva líquida em azul (\(0{,}5\text{ g/kg}\)), Graupel em laranja (\(0{,}5\text{ g/kg}\)), Granizo denso em vermelho (\(0{,}1\text{ g/kg}\)) e Água super-resfriada (SLW) em verde (\(0{,}2\text{ g/kg}\)).</li>
+                    <li><strong>Órbita Panorâmica:</strong> a câmera realiza uma órbita suave e contínua ao redor do relevo da Ilha e da linha de costa durante o transcurso das 12 horas de simulação.</li>
+                </ul>
+            </div>
+            <div class="figure-wrapper">
+                <video src="figuras/granizo_3d_evolucao_temporal.mp4" poster="figuras/3d_todos.png" controls loop muted playsinline preload="auto" style="width:100%; border-radius:8px; background:#0b1324;"></video>
+                <div class="figure-caption">Animação 3D da Evolução Temporal 4D (12 Horas Contínuas, 49 Saídas WRF d03 a cada 15 min, 12:00 às 00:00 UTC) com Órbita Suave sobre o Relevo de Santa Catarina. Também disponível em <a href="figuras/granizo_3d_evolucao_temporal.gif" target="_blank" style="color:#c2410c; font-weight:700;">formato GIF animado</a>.</div>
+            </div>
+
+            <div class="explanation-text" style="margin-top:24px;">
+                <strong>2. Animação 3D com Decomposição Anatômica no Pico Noturno ("Despindo e Vestindo as Camadas").</strong>
+                Animação com rotação completa de \(360^\circ\) ao redor da tempestade severa, combinando a evolução temporal com a dissecação estrutural no pico convectivo noturno (22:45 UTC / 19:45 Local, \(77{,}4\text{ dBZ}\)):
+                <ul style="margin: 8px 0 12px 20px;">
+                    <li><strong>Parte 1 (Evolução Temporal 4D):</strong> avanço contínuo do campo hidrometeórico pelas 49 saídas da simulação.</li>
+                    <li><strong>Parte 2 (Despindo as Camadas no Pico Noturno):</strong> congelamento no pico das 22:45 UTC com rotação 360° ininterrupta; a nuvem cinza é desfeita para revelar a chuva líquida, a chuva azul é removida para expor o núcleo congelado, e em seguida destacam-se isoladamente a água super-resfriada (verde, 7,24 g/kg), o graupel (laranja, 8,30 g/kg) e o granizo severo (vermelho, 5,21 g/kg).</li>
+                    <li><strong>Parte 3 (Vestindo as Camadas):</strong> recomposição tridimensional passo a passo a partir do granizo vermelho, somando o graupel, a SLW, a chuva líquida e fechando com o envelope de nuvem até a órbita final.</li>
                 </ul>
             </div>
             <div class="figure-wrapper">
                 <video src="figuras/granizo_3d_evolucao.mp4" poster="figuras/3d_todos.png" controls loop muted playsinline preload="auto" style="width:100%; border-radius:8px; background:#0b1324;"></video>
-                <div class="figure-caption">Animação 3D com Rotação 360° e Decomposição Anatômica (Despindo e Vestindo as Camadas de Hidrometeoros) da Tempestade Noturna sobre o Relevo de Santa Catarina. Também disponível em <a href="figuras/granizo_3d_evolucao.gif" target="_blank" style="color:#c2410c; font-weight:700;">formato GIF animado de alta resolução</a>.</div>
+                <div class="figure-caption">Animação 3D Mestre com Rotação 360° e Decomposição Anatômica (Despindo e Vestindo as Camadas de Hidrometeoros) da Tempestade Noturna sobre Santa Catarina. Também disponível em <a href="figuras/granizo_3d_evolucao.gif" target="_blank" style="color:#c2410c; font-weight:700;">formato GIF animado</a>.</div>
             </div>
             <script>
                 function mostraWrf3d(tag, legenda, botao) {

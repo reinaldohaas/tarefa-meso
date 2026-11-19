@@ -180,10 +180,10 @@ def main():
              "Água super-resfriada (SLW = QCLOUD + QRAIN com T < 0 °C, verde): abundante até 7,24 g/kg a 6,83 km (-12,3 °C).",
              "Graupel (QGRAUP, laranja): coluna maciça de 8,30 g/kg a 10,78 km (-39,6 °C) na zona de crescimento rápido.",
              "Granizo severo (QHAIL, vermelho): núcleo denso de 5,21 g/kg a 4,27 km (+1,7 °C), com refletividade de 77,4 dBZ.",
-             "Animação 3D com rotação 360° contínua e técnica de despir/vestir as camadas disponível em apresentacao_parte2.html.",
+             "Animações 3D: (1) Evolução Temporal 4D contínua das 12h (49 saídas WRF d03); (2) Vídeo mestre com órbita 360° e dissecação (despir/vestir as camadas no pico de 22:45 UTC), ambas disponíveis no site e em apresentacao_parte2.html.",
          ],
          os.path.join(fig_dir, '3d_todos.png'),
-         "Hidrometeoros em 3D às 22:45 UTC: cores fixas sobre o relevo de Santa Catarina"),
+         "Hidrometeoros em 3D às 22:45 UTC sobre relevo com textura Google Earth (vegetação e costa de SC)"),
 
         ("Slide 6: Corte Vertical pela Célula Noturna e Tabela de Máximos",
          "Corrente ascendente W (31 m/s), SLW (7,2 g/kg), Graupel (8,3 g/kg) e Granizo (5,2 g/kg)",
