@@ -97,17 +97,17 @@ SLIDES = [
   <tr><td>Diagnósticos</td><td><code>do_radar_ref = 1</code>, <code>hailcast_opt = 0, 0, 1</code></td><td>Refletividade para comparar com o radar; tamanho do granizo no d03.</td></tr>
 </table>""", notas='Não ler a tabela inteira: destacar microfísica e cumulus, que são as escolhas que mais pesam no resultado.'),
 
-    dict(t='Microfísica em 3D', s='Animação Temporal e Isosuperfícies em Altura Real', tempo='06 a 10 min', corpo=f"""
+    dict(t='Microfísica em 3D', s='Animação 360°: Decomposição Anatômica (Despindo e Vestindo as Camadas)', tempo='06 a 10 min', corpo=f"""
 <div class="duas">
   <div>
     <video src="figuras/granizo_3d_evolucao.mp4" poster="figuras/3d_todos.png" controls loop muted playsinline preload="auto" style="width:100%; border-radius:8px;"></video>
-    <p class="leg"><b>Animação Temporal 3D (12:45 a 17:45 UTC, 21 saídas):</b> evolução da tempestade no domínio interno (d03, 2 km). Isosuperfícies em altitude geométrica real \(z = (PH+PHB)/g\) (exagero vertical 4×): nuvem (cinza, 0,1 g/kg), chuva (azul, 0,5 g/kg), graupel (laranja, 0,5 g/kg), granizo (vermelho, 0,1 g/kg) e SLW (verde, 0,2 g/kg). Também disponível em <a href="figuras/granizo_3d_evolucao.gif" target="_blank">GIF animado</a>.</p>
+    <p class="leg"><b>Órbita 360° e Decomposição em Camadas:</b> Rotação circular contínua ao redor da tempestade sobre o relevo da Ilha de SC. Mostra as 4 etapas: (1) Evolução temporal inicial; (2) <i>Despindo a tempestade</i> no pico (remove nuvem, depois chuva, isolando água super-resfriada verde, graupel laranja e granizo vermelho); (3) <i>Vestindo a tempestade</i> de dentro para fora a partir do núcleo de granizo; (4) Órbita final completa da supercélula reconstituída. Disponível também em <a href="figuras/granizo_3d_evolucao.gif" target="_blank">GIF animado</a>.</p>
   </div>
   <div>
     <div class="abas" role="group" aria-label="Hidrometeoro">{abas}</div>
     <figure><img id="img3d" src="figuras/3d_todos.png" alt="Hidrometeoros em 3D às {HORA} UTC sobre a Ilha"><figcaption>{HORA} UTC, célula sobre a Ilha, ParaView, z = (PH + PHB)/9,81, exagero vertical 4×, limiares na legenda.</figcaption></figure>
   </div>
-</div>""", notas='Executar o vídeo da evolução temporal 3D dos hidrometeoros (12:45 a 17:45 UTC). Depois alternar entre as abas para mostrar a distribuição tridimensional de graupel, água super-resfriada e granizo.'),
+</div>""", notas='Executar o vídeo 360° destacando as fases em que as camadas são despidas (revelando o núcleo interno de granizo e SLW) e vestidas de volta de dentro para fora.'),
 
     dict(t='Corte vertical e máximos', s=f'A célula sobre a Ilha, {HORA} UTC', tempo='06 a 10 min', corpo=f"""
 <div class="duas">

@@ -1655,15 +1655,18 @@
             </div>
 
             <div class="explanation-text" style="margin-top:18px;">
-                <strong>Animação Temporal 3D da Tempestade.</strong> Evolução temporal tridimensional completa dos hidrometeoros simulados no domínio interno (d03, 2 km) ao longo de 21 saídas do modelo (12:45 a 17:45 UTC, intervalos de 15 min), interpolados em altura geométrica real \(z = (\text{PH}+\text{PHB})/9{,}81\) com exagero vertical de \(4\times\) no ParaView e codificados via FFmpeg:
+                <strong>Animação 3D Completa (Rotação 360° e Decomposição Anatômica "Despindo e Vestindo").</strong>
+                Animação contínua em 240 quadros (15 fps, 16 s) com órbita circular completa de \(360^\circ\) ao redor da tempestade e do relevo de Santa Catarina:
+                <ul style="margin: 8px 0 12px 20px;">
+                    <li><strong>Cores Padronizadas por Hidrometeoro:</strong> Nuvem em cinza claro translúcido (\(0{,}1\text{ g/kg}\)), Chuva em azul (\(0{,}5\text{ g/kg}\)), Graupel em laranja (\(0{,}5\text{ g/kg}\)), Granizo em vermelho intenso (\(0{,}1\text{ g/kg}\)) e Água super-resfriada (SLW) em verde (\(0{,}2\text{ g/kg}\)).</li>
+                    <li><strong>Evolução Temporal Inicial:</strong> avanço da célula convectiva no domínio interno (d03, 2 km) cruzando a Ilha de Santa Catarina.</li>
+                    <li><strong>Despindo a Tempestade (Peeling de Fora para Dentro):</strong> o modelo é congelado no pico sobre a Ilha (12:45 UTC) enquanto a câmera gira continuamente; a nuvem externa é desfeita para revelar a precipitação, a chuva líquida é removida para expor o núcleo congelado, e em seguida destacam-se isoladamente a água super-resfriada (verde), a coluna de graupel (laranja) e o núcleo denso de granizo (vermelho).</li>
+                    <li><strong>Vestindo a Tempestade (Layering de Dentro para Fora):</strong> recomposição tridimensional passo a passo a partir do granizo, envolvendo-o sucessivamente com graupel, água super-resfriada, chuva e reconstituindo o envelope completo da nuvem com bigorna até a órbita final de \(360^\circ\).</li>
+                </ul>
             </div>
             <div class="figure-wrapper">
                 <video src="figuras/granizo_3d_evolucao.mp4" poster="figuras/3d_todos.png" controls loop muted playsinline preload="auto" style="width:100%; border-radius:8px; background:#0b1324;"></video>
-                <div class="figure-caption">Evolução temporal 3D dos hidrometeoros (12:45 a 17:45 UTC, WRF d03 2 km): nuvem (cinza), chuva (azul), graupel (laranja), granizo (vermelho) e água super-resfriada (verde). Também disponível em <a href="figuras/granizo_3d_evolucao.gif" target="_blank" style="color:#c2410c; font-weight:700;">formato GIF animado</a>.</div>
-            </div>
-            <div class="figure-wrapper" style="margin-top:16px;">
-                <video src="figuras/animacao_3d_hidrometeoros.mp4" poster="figuras/animacao_3d_poster.png" controls loop muted playsinline preload="none" style="width:100%; border-radius:8px; background:#0b1324;"></video>
-                <div class="figure-caption">Animação em carrossel orbital (estilo Leigh Orf): rotação 3D ao redor do núcleo convectivo às 12:45 UTC com decomposição sequencial de cada hidrometeoro.</div>
+                <div class="figure-caption">Animação 3D com Rotação 360° e Decomposição Anatômica (Despindo e Vestindo as Camadas de Hidrometeoros) sobre o Relevo de Santa Catarina. Também disponível em <a href="figuras/granizo_3d_evolucao.gif" target="_blank" style="color:#c2410c; font-weight:700;">formato GIF animado de alta resolução</a>.</div>
             </div>
             <script>
                 function mostraWrf3d(tag, legenda, botao) {
