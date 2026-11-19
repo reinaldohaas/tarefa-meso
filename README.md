@@ -50,9 +50,18 @@ tarefa-meso/
 ├── generate_figures.py          # Script que plota todas as figuras científicas
 ├── generate_pptx.py             # Script gerador da apresentação de 10 slides (PPTX)
 ├── apresentacao_meso.pptx       # Apresentação oficial para a Defesa Civil de SC
-├── ROTEIRO_ESTUDANTES.md        # Roteiro passo a passo com critérios de avaliação
-├── Seminario_plot_sounding_revisado.ipynb # Notebook oficial para execução no Google Colab
-└── metpack/                     # Módulo de processamento meteorológico
+├── ROTEIRO_ESTUDANTES.md        # Roteiro passo a passo com critérios de avaliação (Parte 1)
+├── TAREFA_WRF_HIDROMETEOROS.md  # Enunciado completo do Seminário Final (Parte 2: WRF e hidrometeoros 3D)
+├── RELATORIO_RODADA.md          # Relatório técnico da rodada WRF (r1_milbrandt_yau_2km)
+├── WRF_VLab_tarefa.ipynb        # Notebook para rodar a Parte 2 (WRF) no VLab
+├── Seminario_plot_sounding_revisado.ipynb # Notebook oficial da Parte 1 para execução no Google Colab
+├── wps/namelist.wps             # Configuração dos 3 domínios aninhados (18 / 6 / 2 km) no WPS
+├── rodadas/r1_milbrandt_yau_2km/namelist.input # Configuração física e dinâmica do WRF-ARW (Milbrandt-Yau)
+├── figuras/                     # Figuras 2D e 3D (ParaView) dos hidrometeoros, corte vertical e refletividade
+├── scripts/                     # Scripts de diagnóstico de SLW/hidrometeoros e renderização 3D no ParaView
+├── sessoes/                     # Estado da cena 3D do ParaView (.pvsm)
+├── wrfpack/                     # Módulo Python para leitura do wrfout, SLW, corte vertical e tabelas
+└── metpack/                     # Módulo de processamento meteorológico das sondagens (Parte 1)
     ├── metricas.json            # Fonte única de verdade de todas as métricas calculadas
     ├── calc_metricas.py         # Script que calcula métricas e grava o metricas.json
     ├── metricas_notebook.json   # Valores gravados pelo notebook (fonte dos números do site e dos slides)

@@ -23,3 +23,20 @@ metpack/*.asv
 metpack/wyoming_emanuel
 metpack/wyoming_usado.f
 metpack/sat/
+# Saídas brutas do WRF e WPS (Parte 2)
+wrfout_*
+wrfrst_*
+wrfinput_*
+wrfbdy_*
+met_em*
+geo_em*
+*.grib
+*.grib1
+*.grib2
+*.nc
+*.vts
+*.vti
+*.vtp
+paraview_data/
+run_wps/
+run_wrf/

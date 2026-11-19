@@ -133,6 +133,26 @@ def generate_html():
         """)
     dcape_tbody = "\n".join(dcape_rows)
 
+    # 5. Dados da Parte 2 (Simulação WRF dos Hidrometeoros)
+    wrf_meta_path = os.path.join('wrfpack', 'metricas_wrf.json')
+    wrf_rows = []
+    if os.path.exists(wrf_meta_path):
+        with open(wrf_meta_path, 'r', encoding='utf-8') as f:
+            wm = json.load(f)
+        for r in wm.get('tabela_maximos', []):
+            cor_dot = f'<span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:{r["cor"]};margin-right:6px;vertical-align:middle;border:1px solid #475569;"></span>'
+            wrf_rows.append(f"""
+                <tr>
+                    <td style="text-align:left;">{cor_dot}<strong><code>{r['variavel']}</code></strong>, {r['nome']}</td>
+                    <td style="font-weight:700; color:#0f172a;">{r['max_g_kg']:.3f} g/kg</td>
+                    <td>{r['altura_km']:.2f} km</td>
+                    <td style="color:{'#dc2626' if r['temperatura_C'] > 0 else '#0284c7'}; font-weight:600;">{r['temperatura_C']:+.1f} °C</td>
+                    <td>{r['pressao_hPa']:.1f} hPa</td>
+                    <td>{r['limiar_g_kg']:g} g/kg</td>
+                </tr>
+            """)
+    wrf_tbody = "\n".join(wrf_rows)
+
     # HTML Base sem f-string para evitar conflitos de interpolação com CSS e LaTeX
     html_template = r"""<!DOCTYPE html>
 <html lang="pt-BR">
@@ -425,7 +445,203 @@ def generate_html():
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
         }
 
+        /* Deck de Apresentação Interativa de 10 Slides (WRF) */
+        .deck-container {
+            background: #0b132b;
+            color: #f8fafc;
+            border: 1px solid #1e293b;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 18px 0 28px 0;
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.25);
+        }
+        .deck-topbar {
+            background: #131e3a;
+            border-bottom: 1px solid #2e4066;
+            padding: 12px 18px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        .deck-meta {
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            color: #38bdf8;
+            text-transform: uppercase;
+        }
+        .deck-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .deck-btn {
+            background: #1e293b;
+            color: #f8fafc;
+            border: 1px solid #475569;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .deck-btn:hover {
+            background: #334155;
+            border-color: #38bdf8;
+        }
+        .deck-btn-accent {
+            background: #c2410c;
+            border-color: #ea580c;
+            color: #ffffff;
+        }
+        .deck-btn-accent:hover {
+            background: #ea580c;
+        }
+        .deck-dots {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+        .deck-dot {
+            width: 26px;
+            height: 26px;
+            border-radius: 5px;
+            border: 1px solid #334155;
+            background: #0f172a;
+            color: #94a3b8;
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .deck-dot.active {
+            background: #fbbf24;
+            color: #0f172a;
+            border-color: #fbbf24;
+        }
+        .wrf-slide {
+            display: none;
+            padding: 24px 26px;
+            min-height: 510px;
+        }
+        .wrf-slide.active {
+            display: block;
+        }
+        .slide-header-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid #1e293b;
+            padding-bottom: 12px;
+        }
+        .slide-title {
+            font-size: 1.32rem;
+            font-weight: 700;
+            color: #f8fafc;
+            margin: 0 0 4px 0;
+        }
+        .slide-subtitle {
+            font-size: 0.92rem;
+            color: #94a3b8;
+            margin: 0;
+        }
+        .slide-time-badge {
+            background: #1e293b;
+            border: 1px solid #fbbf24;
+            color: #fbbf24;
+            font-size: 0.82rem;
+            font-weight: 700;
+            padding: 5px 12px;
+            border-radius: 6px;
+            white-space: nowrap;
+        }
+        .slide-grid-2 {
+            display: grid;
+            grid-template-columns: 1.05fr 1.15fr;
+            gap: 18px;
+            align-items: start;
+        }
+        .slide-card {
+            background: #131e3a;
+            border: 1px solid #2e4066;
+            border-radius: 8px;
+            padding: 16px;
+        }
+        .slide-card h4 {
+            margin: 0 0 10px 0;
+            font-size: 0.98rem;
+            color: #38bdf8;
+            border-bottom: 1px solid #2e4066;
+            padding-bottom: 6px;
+        }
+        .slide-card ul {
+            margin: 0;
+            padding-left: 18px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #e2e8f0;
+        }
+        .slide-card li {
+            margin-bottom: 8px;
+        }
+        .slide-fig {
+            background: #0f172a;
+            border: 1px solid #2e4066;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+        }
+        .slide-fig img {
+            max-width: 100%;
+            max-height: 360px;
+            height: auto;
+            border-radius: 4px;
+            cursor: zoom-in;
+        }
+        .slide-fig-cap {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            margin-top: 6px;
+        }
+        .slide-notes {
+            margin-top: 14px;
+            background: rgba(15, 23, 42, 0.75);
+            border-left: 3px solid #fbbf24;
+            padding: 10px 14px;
+            font-size: 0.85rem;
+            color: #cbd5e1;
+            border-radius: 0 6px 6px 0;
+        }
+        .deck-container:fullscreen {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            border-radius: 0;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        .deck-container:fullscreen .wrf-slide {
+            flex: 1;
+            padding: 32px 48px;
+        }
+        .deck-container:fullscreen .slide-fig img {
+            max-height: 55vh;
+        }
+
         /* Responsividade */
+        @media (max-width: 768px) {
+            .slide-grid-2 { grid-template-columns: 1fr; }
+        }
         @media (max-width: 640px) {
             h1 { font-size: 1.35rem; }
             h2 { font-size: 1.15rem; word-break: break-word; }
@@ -459,6 +675,9 @@ def generate_html():
                 </a>
                 <a class="colab-button" href="https://github.com/reinaldohaas/tarefa-meso/blob/master/TAREFA_WRF_HIDROMETEOROS.md" target="_blank" style="margin-left:8px;">
                     Seminário Final (Parte 2): tarefa do WRF, até 5/12/2026
+                </a>
+                <a class="colab-button" href="#deck-wrf-slides" style="margin-left:8px; background-color:#ea580c; color:#ffffff;">
+                    ▶ Apresentação WRF (10 Slides, 20 min)
                 </a>
             </div>
         </div>
@@ -534,21 +753,21 @@ def generate_html():
 
             <!-- SONDAGEM 1: ESTÁVEL -->
             <div class="figure-wrapper" style="max-width: 1040px; margin: 24px auto;">
-                <h3 style="color: #0284c7; margin-bottom: 8px;">2.1 Sondagem 1: 26/08/2026 12Z (SBFL) — Atmosfera Estável</h3>
+                <h3 style="color: #0284c7; margin-bottom: 8px;">2.1 Sondagem 1: 26/08/2026 12Z (SBFL): Atmosfera Estável</h3>
                 <img src="metpack/fig_sounding_1_estavel.png" alt="Sondagem 1 Estável 26/08/2026 12Z" onclick="openModal(this.src)">
                 <div class="figure-caption">Figura 1: Diagrama Skew-T / Log-P com Hodógrafo Polar (lado superior direito) e Painel de Diagnósticos Físicos Completos Ampliado (lado inferior direito). SBCAPE = 16 J/kg, SBCIN = 0 J/kg, Shear 0-6 km = 13.7 m/s (26.6 kt). Clique para ampliar.</div>
             </div>
 
             <!-- SONDAGEM 2: NEUTRA -->
             <div class="figure-wrapper" style="max-width: 1040px; margin: 24px auto;">
-                <h3 style="color: #0d9488; margin-bottom: 8px;">2.2 Sondagem 2: 31/08/2026 12Z (SBFL) — Atmosfera Neutra</h3>
+                <h3 style="color: #0d9488; margin-bottom: 8px;">2.2 Sondagem 2: 31/08/2026 12Z (SBFL): Atmosfera Neutra</h3>
                 <img src="metpack/fig_sounding_2_neutra.png" alt="Sondagem 2 Neutra 31/08/2026 12Z" onclick="openModal(this.src)">
                 <div class="figure-caption">Figura 2: Diagrama Skew-T / Log-P com Hodógrafo Polar (lado superior direito) e Painel de Diagnósticos Físicos Completos Ampliado (lado inferior direito). MUCAPE = 836 J/kg, SBCAPE = 836 J/kg, SBCIN = -222 J/kg, PW = 43.9 mm, Shear 0-6 km = 2.8 m/s (5.5 kt). Clique para ampliar.</div>
             </div>
 
             <!-- SONDAGEM 3: INSTÁVEL -->
             <div class="figure-wrapper" style="max-width: 1040px; margin: 24px auto;">
-                <h3 style="color: #dc2626; margin-bottom: 8px;">2.3 Sondagem 3: 28/08/2026 12Z (SBFL) — Atmosfera Instável</h3>
+                <h3 style="color: #dc2626; margin-bottom: 8px;">2.3 Sondagem 3: 28/08/2026 12Z (SBFL): Atmosfera Instável</h3>
                 <img src="metpack/fig_sounding_3_instavel.png" alt="Sondagem 3 Instável 28/08/2026 12Z" onclick="openModal(this.src)">
                 <div class="figure-caption">Figura 3: Diagrama Skew-T / Log-P com Hodógrafo Polar (lado superior direito) e Painel de Diagnósticos Físicos Completos Ampliado (lado inferior direito). MUCAPE = 7810 J/kg, SBCAPE = 1862 J/kg, Shear 0-6 km = 12.6 m/s (24.5 kt), SRH 0-3 km = -123.3 m²/s² (Left-Mover). Clique para ampliar.</div>
             </div>
@@ -657,12 +876,12 @@ def generate_html():
 
             <div class="figure-wrapper">
                 <img src="metpack/fig_perfis_theta_triplice.png" alt="Perfis de Theta Triplice" onclick="openModal(this.src)">
-                <div class="figure-caption">Perfis de \(\theta\) (seca), \(\theta_e\) (equivalente) e \(\theta_{es}\) (saturação) para as Três Sondagens (Mesmos Eixos até 200 hPa) — Clique para ampliar</div>
+                <div class="figure-caption">Perfis de \(\theta\) (seca), \(\theta_e\) (equivalente) e \(\theta_{es}\) (saturação) para as Três Sondagens (Mesmos Eixos até 200 hPa), Clique para ampliar</div>
             </div>
 
             <div class="figure-wrapper">
                 <img src="metpack/fig_3_soundings_profiles_comparison.png" alt="Comparação Tríplice de Perfis" onclick="openModal(this.src)">
-                <div class="figure-caption">Comparação Tríplice: \(\theta_e\), \(N^2\), \(S = -(T/\theta)\partial\theta/\partial p\) e razão de mistura \(r\) até 200 hPa — Clique para ampliar</div>
+                <div class="figure-caption">Comparação Tríplice: \(\theta_e\), \(N^2\), \(S = -(T/\theta)\partial\theta/\partial p\) e razão de mistura \(r\) até 200 hPa, Clique para ampliar</div>
             </div>
 
             <div class="how-to-read">
@@ -698,7 +917,7 @@ def generate_html():
 
             <div class="figure-wrapper">
                 <img src="metpack/fig_kinematics_hodograph.png" alt="Hodógrafo SBFL 28/08/2026" onclick="openModal(this.src)">
-                <div class="figure-caption">Hodógrafo do Vento Horizontal e Vetor Bunkers no Hemisfério Sul (SBFL 28/08/2026 12Z) — Clique para ampliar</div>
+                <div class="figure-caption">Hodógrafo do Vento Horizontal e Vetor Bunkers no Hemisfério Sul (SBFL 28/08/2026 12Z), Clique para ampliar</div>
             </div>
 
             <div class="how-to-read">
@@ -735,7 +954,7 @@ def generate_html():
 
             <div class="figure-wrapper">
                 <img src="metpack/fig_3_soundings_emanuel_matrices.png" alt="Matrizes de Emanuel" onclick="openModal(this.src)">
-                <div class="figure-caption">Matrizes 2D de Kerry Emanuel (1994) nas Três Sondagens — mesma escala simétrica de cores para as seis matrizes (definida pelos dados), isolinha de 0 K destacada, sem o corte artificial em −4 K — Clique para ampliar</div>
+                <div class="figure-caption">Matrizes 2D de Kerry Emanuel (1994) nas Três Sondagens, mesma escala simétrica de cores para as seis matrizes (definida pelos dados), isolinha de 0 K destacada, sem o corte artificial em −4 K, Clique para ampliar</div>
             </div>
 
             <h3 style="margin-top: 28px;">6.1 Matrizes de flutuabilidade por sondagem</h3>
@@ -743,13 +962,13 @@ def generate_html():
                 As mesmas matrizes, uma figura por sondagem (geradas pelo notebook a partir do <code>wyoming.f</code>). Escolha o caso:
             </div>
             <div style="display:flex; gap:8px; flex-wrap:wrap; margin: 10px 0 14px;">
-                <button type="button" class="emanuel-tab" onclick="mostraEmanuel('20260826', this)" style="padding:6px 14px; border-radius:6px; border:1px solid #94a3b8; background:#e2e8f0; cursor:pointer;">Estável — 26/08/2026</button>
-                <button type="button" class="emanuel-tab" onclick="mostraEmanuel('20260831', this)" style="padding:6px 14px; border-radius:6px; border:1px solid #94a3b8; background:#ffffff; cursor:pointer;">Neutra — 31/08/2026</button>
-                <button type="button" class="emanuel-tab" onclick="mostraEmanuel('20260828', this)" style="padding:6px 14px; border-radius:6px; border:1px solid #94a3b8; background:#ffffff; cursor:pointer;">Instável — 28/08/2026</button>
+                <button type="button" class="emanuel-tab" onclick="mostraEmanuel('20260826', this)" style="padding:6px 14px; border-radius:6px; border:1px solid #94a3b8; background:#e2e8f0; cursor:pointer;">Estável, 26/08/2026</button>
+                <button type="button" class="emanuel-tab" onclick="mostraEmanuel('20260831', this)" style="padding:6px 14px; border-radius:6px; border:1px solid #94a3b8; background:#ffffff; cursor:pointer;">Neutra, 31/08/2026</button>
+                <button type="button" class="emanuel-tab" onclick="mostraEmanuel('20260828', this)" style="padding:6px 14px; border-radius:6px; border:1px solid #94a3b8; background:#ffffff; cursor:pointer;">Instável, 28/08/2026</button>
             </div>
             <div class="figure-wrapper">
                 <img id="img-emanuel-caso" src="metpack/emanuel_20260826.png" alt="Matrizes de Emanuel por sondagem" onclick="openModal(this.src)">
-                <div class="figure-caption" id="cap-emanuel-caso">Ascensão reversível (esquerda) e pseudoadiabática (direita) — Clique para ampliar</div>
+                <div class="figure-caption" id="cap-emanuel-caso">Ascensão reversível (esquerda) e pseudoadiabática (direita), Clique para ampliar</div>
             </div>
             <script>
                 function mostraEmanuel(data, botao) {
@@ -853,10 +1072,545 @@ def generate_html():
             </div>
         </section>
 
-        <!-- SEÇÃO 8: REFERÊNCIAS BIBLIOGRÁFICAS -->
+        <!-- SEÇÃO 8: SEMINÁRIO FINAL (PARTE 2) - SIMULAÇÃO WRF DE EVENTO SEVERO E HIDROMETEOROS 3D -->
+        <section class="tutorial-section" id="sec-wrf-parte2">
+            <div class="section-header">
+                <h2>8. Seminário Final (Parte 2): Simulação WRF e Apresentação de 20 Minutos (granizo no Norte da Ilha, 29/08/2026)</h2>
+            </div>
+            <div class="explanation-text">
+                Dando continuidade ao diagnóstico termodinâmico da Parte 1 (onde a sondagem pré-convectiva de Florianópolis SBFL 83899 em 28/08/2026 12Z revelou
+                \(\text{MUCAPE} = 1303{,}5\text{ J/kg}\) e forte redução de flutuabilidade pela carga de condensados na matriz reversível de Emanuel),
+                esta seção traz um <strong>exemplo resolvido</strong> da Parte 2: a <strong>apresentação de 10 slides (20 minutos)</strong> e o diagnóstico de uma <strong>simulação com convecção explícita no WRF-ARW V4.2.2</strong> para o evento severo de granizo no Norte da Ilha de Santa Catarina em <strong>29/08/2026</strong>,
+                seguindo todos os requisitos da Seção 10 de <a href="https://github.com/reinaldohaas/tarefa-meso/blob/master/TAREFA_WRF_HIDROMETEOROS.md" target="_blank" style="color:#c2410c; font-weight:700;">TAREFA_WRF_HIDROMETEOROS.md</a>.
+            </div>
+
+            <!-- APRESENTAÇÃO INTERATIVA DE 10 SLIDES (20 MINUTOS) -->
+            <div class="deck-container" id="deck-wrf-slides">
+                <div class="deck-topbar">
+                    <div class="deck-meta">UFSC • FSC7116 Meteorologia de Mesoescala • Apresentação WRF (20 min)</div>
+                    <div class="deck-controls">
+                        <button type="button" class="deck-btn" onclick="mudarSlideWrf(-1)">◀ Anterior</button>
+                        <div class="deck-dots" id="wrf-deck-dots">
+                            <button type="button" class="deck-dot active" onclick="irSlideWrf(0)">1</button>
+                            <button type="button" class="deck-dot" onclick="irSlideWrf(1)">2</button>
+                            <button type="button" class="deck-dot" onclick="irSlideWrf(2)">3</button>
+                            <button type="button" class="deck-dot" onclick="irSlideWrf(3)">4</button>
+                            <button type="button" class="deck-dot" onclick="irSlideWrf(4)">5</button>
+                            <button type="button" class="deck-dot" onclick="irSlideWrf(5)">6</button>
+                            <button type="button" class="deck-dot" onclick="irSlideWrf(6)">7</button>
+                            <button type="button" class="deck-dot" onclick="irSlideWrf(7)">8</button>
+                            <button type="button" class="deck-dot" onclick="irSlideWrf(8)">9</button>
+                            <button type="button" class="deck-dot" onclick="irSlideWrf(9)">10</button>
+                        </div>
+                        <button type="button" class="deck-btn" onclick="mudarSlideWrf(1)">Próximo ▶</button>
+                        <button type="button" class="deck-btn deck-btn-accent" onclick="telaCheiaWrf()">⛶ Tela Cheia</button>
+                        <a class="deck-btn" href="apresentacao/apresentacao_wrf_granizo.pptx" download style="text-decoration:none; background:#0284c7; border-color:#38bdf8; color:#fff;">⬇ Baixar PPTX</a>
+                    </div>
+                </div>
+
+                <!-- SLIDE 1 (00-03 min) -->
+                <div class="wrf-slide active">
+                    <div class="slide-header-row">
+                        <div>
+                            <h3 class="slide-title">Slide 1/10: O Caso Severo: Granizo no Norte da Ilha de SC (29/08/2026)</h3>
+                            <p class="slide-subtitle">Retomada do evento da Parte 1, relatos de superfície, satélite GOES-19 e radar do Morro da Igreja</p>
+                        </div>
+                        <div class="slide-time-badge">⏱️ 00 a 03 min | Slide 1/10</div>
+                    </div>
+                    <div class="slide-grid-2">
+                        <div class="slide-card">
+                            <h4>Cronologia e Evidências Observacionais</h4>
+                            <ul>
+                                <li><strong>Data e Janela Severa:</strong> 29/08/2026 entre <strong>22:00 e 23:00 UTC</strong> (19:00–20:00 BRT) na Grande Florianópolis.</li>
+                                <li><strong>Relatos de Granizo (até 60 mm):</strong>
+                                    <br>1. <em>Biguaçu</em> (\(-27{,}49^\circ\text{S}, -48{,}66^\circ\text{W}\)): 22:00–22:30 UTC;
+                                    <br>2. <em>Jurerê e Canasvieiras</em> (\(-27{,}43^\circ\text{S}, -48{,}48^\circ\text{W}\)): 22:00–22:30 UTC;
+                                    <br>3. <em>Cachoeira do Bom Jesus</em> (\(-27{,}43^\circ\text{S}, -48{,}44^\circ\text{W}\)): 22:50 UTC;
+                                    <br>4. <em>Ingleses e Vargem Grande</em> (\(-27{,}43^\circ\text{S}, -48{,}40^\circ\text{W}\)): 22:40–23:00 UTC.</li>
+                                <li><strong>Satélite GOES-19 (canal 13, 10,3 µm, e GLM):</strong> topo mais frio de <strong>\(-62{,}9\text{ }^\circ\text{C}\) às 22:20 UTC</strong> sobre o Norte da Ilha, igual ao das outras células da noite e sem topo penetrante; até 320 flashes por 10 min, sem salto de raios.</li>
+                                <li><strong>Radar Morro da Igreja (Banda S):</strong> Núcleo convectivo severo cruzando o estreito norte e a Ilha entre 22:16 UTC (\(-27{,}50^\circ\text{S}, -48{,}61^\circ\text{W}\)) e 22:36 UTC (\(-27{,}41^\circ\text{S}, -48{,}32^\circ\text{W}\)).</li>
+                            </ul>
+                        </div>
+                        <div class="slide-fig">
+                            <img src="figuras/comparacao_obs.png" alt="Observações de Granizo e Radar vs WRF" onclick="openModal(this.src)">
+                            <div class="slide-fig-cap">Síntese dos relatos de granizo (1 a 4), caixa do Norte da Ilha (GOES-19) e trajetória do Radar Morro da Igreja</div>
+                        </div>
+                    </div>
+                    <div class="slide-notes">
+                        <strong>Roteiro de Fala (00–01:30 min):</strong> Apresentar o evento severo de 29/08/2026 no Norte da Ilha de SC. Destacar a coerência entre os quatro relatos de granizo em superfície (22–23 UTC), o topo frio no GOES-19 (\(-62{,}9\text{ }^\circ\text{C}\), sem nada que o distinguisse das outras células da noite) e a trajetória oeste-leste observada pelo radar do Morro da Igreja.
+                    </div>
+                </div>
+
+                <!-- SLIDE 2 (00-03 min) -->
+                <div class="wrf-slide">
+                    <div class="slide-header-row">
+                        <div>
+                            <h3 class="slide-title">Slide 2/10: Conexão com a Parte 1: Sondagem Pré-Convectiva e Pergunta Científica</h3>
+                            <p class="slide-subtitle">Ambiente termodinâmico de Florianópolis (SBFL 83899) e o papel da carga de hidrometeoros na flutuabilidade</p>
+                        </div>
+                        <div class="slide-time-badge">⏱️ 00 a 03 min | Slide 2/10</div>
+                    </div>
+                    <div class="slide-grid-2">
+                        <div class="slide-card">
+                            <h4>Da Termodinâmica 1D (Emanuel) à Nuvem 3D (WRF)</h4>
+                            <ul>
+                                <li><strong>Ambiente Precursor (SBFL 83899, 28/08/2026 12Z):</strong> Forte gradiente vertical de \(\theta_e\), \(\text{MUCAPE} = 1303{,}5\text{ J/kg}\), \(\text{SBCAPE} = 442{,}8\text{ J/kg}\), água precipitável \(\text{PW} = 40{,}9\text{ mm}\) e cisalhamento profundo 0–6 km favorável a tempestades organizadas.</li>
+                                <li><strong>O Efeito da Água Condensada (Emanuel, 1994):</strong> Na Parte 1, vimos que o processo <em>reversível</em> (que retém toda a água condensada \(r_l\) na parcela) reduz significativamente a flutuabilidade \(\Delta T_v\) em relação ao processo <em>pseudoadiabático</em>:
+                                    \[B = g \left( \frac{T_v - \overline{T}_v}{\overline{T}_v} - (r_l + r_i) \right)\]</li>
+                                <li><strong>Pergunta Central da Parte 2:</strong> Onde essa água líquida super-resfriada (<code>SLW</code>) e esse gelo denso (<code>QGRAUP</code> e <code>QHAIL</code>) se acumulam dentro da tempestade simulada em 3D, e como eles modulam a ascendente e as descendentes?</li>
+                            </ul>
+                        </div>
+                        <div class="slide-fig">
+                            <img src="metpack/emanuel_20260828.png" alt="Matriz de Emanuel 28/08/2026" onclick="openModal(this.src)">
+                            <div class="slide-fig-cap">Matriz de flutuabilidade de Emanuel (28/08/2026 12Z): modo reversível com carga de água (esquerda) vs. pseudoadiabático (direita)</div>
+                        </div>
+                    </div>
+                    <div class="slide-notes">
+                        <strong>Roteiro de Fala (01:30–03:00 min):</strong> Conectar a Parte 1 à Parte 2. Lembrar à banca que na matriz de Emanuel a retenção da água condensada reduz a flutuabilidade positiva; agora, no WRF com convecção explícita, vamos localizar exatamente onde essa massa de água super-resfriada, graupel e granizo fica suspensa na coluna.
+                    </div>
+                </div>
+
+                <!-- SLIDE 3 (03-06 min) -->
+                <div class="wrf-slide">
+                    <div class="slide-header-row">
+                        <div>
+                            <h3 class="slide-title">Slide 3/10: Configuração da Grade: Três Domínios Aninhados (18 / 6 / 2 km)</h3>
+                            <p class="slide-subtitle">Geometria do WPS (<code>namelist.wps</code>), resolução de convecção explícita e condições de contorno ERA5</p>
+                        </div>
+                        <div class="slide-time-badge">⏱️ 03 a 06 min | Slide 3/10</div>
+                    </div>
+                    <div class="slide-grid-2">
+                        <div class="slide-card">
+                            <h4>Arquitetura dos Domínios</h4>
+                            <ul>
+                                <li><strong>Projeção e Centro:</strong> Lambert Conformal centrada no Norte da Ilha (\(-27{,}50^\circ\text{S}, -48{,}55^\circ\text{W}\)), <code>max_dom = 3</code> com razão 1:3 e realimentação bidirecional (<code>feedback = 1</code>).</li>
+                                <li><strong>Domínio Externo <code>d01</code> (\(\Delta x = 18\text{ km}\)):</strong> \(38 \times 38\) pontos (\(666 \times 666\text{ km}\)), capturando a forçante sinótica sobre SC, PR, RS e Atlântico adjacente dentro do recorte regional do ERA5.</li>
+                                <li><strong>Domínio Intermediário <code>d02</code> (\(\Delta x = 6\text{ km}\)):</strong> \(46 \times 46\) pontos (\(270 \times 270\text{ km}\)), transição entre a escala sinótica e o litoral catarinense.</li>
+                                <li><strong>Domínio Interno <code>d03</code> (\(\Delta x = 2\text{ km} \le 3\text{ km}\)):</strong> \(61 \times 61\) pontos (\(120 \times 120\text{ km}\)), garantindo <strong>\(60\text{ km}\) de folga</strong> entre o evento e cada borda lateral.</li>
+                                <li><strong>Grade Vertical e Tempo:</strong> 45 níveis \(\eta\) até \(50\text{ hPa}\) (\(\sim 20\text{ km}\)); janela de 12 h (<code>29/08 12Z</code> a <code>30/08 00Z</code>) com <strong>10 h de aquecimento (<em>spin-up</em>)</strong> antes do evento severo e saída a cada <strong>15 min</strong> em <code>d03</code>.</li>
+                            </ul>
+                        </div>
+                        <div class="slide-fig">
+                            <img src="figuras/dominios.png" alt="Domínios do WRF 18/6/2 km" onclick="openModal(this.src)">
+                            <div class="slide-fig-cap">Domínios aninhados <code>d01</code> (18 km), <code>d02</code> (6 km) e <code>d03</code> (2 km) sobre a topografia <code>HGT_M</code> do WPS</div>
+                        </div>
+                    </div>
+                    <div class="slide-notes">
+                        <strong>Roteiro de Fala (03:00–04:30 min):</strong> Explicar o desenho dos 3 domínios com razão 1:3 e por que o domínio interno de 2 km cumpre os dois requisitos fundamentais: resolução \(\le 3\text{ km}\) para convecção explícita e margem superior a 50 km até as bordas laterais para permitir o desenvolvimento da estrutura tridimensional da tempestade.
+                    </div>
+                </div>
+
+                <!-- SLIDE 4 (03-06 min) -->
+                <div class="wrf-slide">
+                    <div class="slide-header-row">
+                        <div>
+                            <h3 class="slide-title">Slide 4/10: Parametrizações Físicas e Estabilidade Numérica (<code>namelist.input</code>)</h3>
+                            <p class="slide-subtitle">Justificativa da escolha do esquema Milbrandt-Yau de 2 momentos, desligamento do cumulus e controle de CFL</p>
+                        </div>
+                        <div class="slide-time-badge">⏱️ 03 a 06 min | Slide 4/10</div>
+                    </div>
+                    <div class="slide-grid-2">
+                        <div class="slide-card">
+                            <h4>Por que Milbrandt-Yau (<code>mp_physics = 9</code>)?</h4>
+                            <ul>
+                                <li><strong>Separação Explícita entre Graupel e Granizo:</strong> Diferente de WSM6 (6), Thompson (8) e Morrison (10), que possuem apenas uma categoria de gelo rimado (<code>QGRAUP</code>) , , o esquema <strong>Milbrandt-Yau de 2 momentos (<code>mp_physics = 9</code>)</strong> prevê separadamente a massa e a concentração numérica de <strong>graupel (<code>QGRAUP</code>, <code>QNGRAUPEL</code>, \(\rho_g = 400\text{ kg/m}^3\))</strong> e <strong>granizo (<code>QHAIL</code>, <code>QNHAIL</code>, \(\rho_h = 900\text{ kg/m}^3\))</strong>.</li>
+                                <li><strong>Convecção Explícita em <code>d03</code>:</strong> <code>cu_physics = 1, 1, 0</code> (Kain-Fritsch em 18 e 6 km; <strong>desligado em 2 km</strong> para que o núcleo não-hidrostático resolva explicitamente as correntes ascendentes \(W\)).</li>
+                                <li><strong>Diagnósticos de Radar e Granizo:</strong> <code>do_radar_ref = 1</code> (calcula <code>REFL_10CM</code> compatível com a microfísica) e <code>hailcast_opt = 0, 0, 1</code> (modelo 1D de crescimento de granizo acoplado em <code>d03</code>).</li>
+                            </ul>
+                        </div>
+                        <div class="slide-card">
+                            <h4>Camada Limite, Radiação e Critério CFL</h4>
+                            <ul>
+                                <li><strong>CLP e Superfície:</strong> YSU PBL (<code>bl_pbl_physics = 1</code>, mistura não-local com entranhamento no topo da camada limite) + Monin-Obukhov (<code>sf_sfclay_physics = 1</code>) + Noah LSM de 4 camadas (<code>sf_surface_physics = 2</code>).</li>
+                                <li><strong>Radiação Ondas Longas e Curtas:</strong> RRTMG (<code>ra_lw_physics = 4</code>, <code>ra_sw_physics = 4</code>, <code>radt = 15</code> min) com efeito radiativo das nuvens (<code>icloud = 1</code>).</li>
+                                <li><strong>Dinâmica e Passo de Tempo Adaptativo:</strong> <code>use_adaptive_time_step = .true.</code> com <code>target_cfl = 1.2, 1.2, 1.2</code>, <code>w_damping = 1</code> e <code>epssm = 0.2, 0.2, 0.5</code> (amortecimento acústico sobre a Serra do Mar), mantendo \(\Delta t \approx 16\text{ s}\) em <code>d03</code> sem violação de CFL.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="slide-notes">
+                        <strong>Roteiro de Fala (04:30–06:00 min):</strong> Justificar cada linha da física. Enfatizar que a escolha do Milbrandt-Yau de 2 momentos permite responder diretamente à questão central do trabalho ao separar o graupel menos denso do granizo de alta densidade, sem misturá-los numa única variável.
+                    </div>
+                </div>
+
+                <!-- SLIDE 5 (06-10 min) -->
+                <div class="wrf-slide">
+                    <div class="slide-header-row">
+                        <div>
+                            <h3 class="slide-title">Slide 5/10: Microfísica em 3D: Hidrometeoros e Água Super-resfriada no ParaView</h3>
+                            <p class="slide-subtitle">Reconstrução em altura geométrica real \(z = (\text{PH} + \text{PHB})/9{,}81\) com exagero vertical de \(4\times\) e cores fixas</p>
+                        </div>
+                        <div class="slide-time-badge">⏱️ 06 a 10 min | Slide 5/10</div>
+                    </div>
+                    <div class="slide-grid-2">
+                        <div class="slide-card">
+                            <h4>Partição 3D dos Hidrometeoros (17:00 UTC)</h4>
+                            <ul>
+                                <li><strong>Cálculo da Coordenada Vertical e da SLW:</strong> Todos os níveis \(\eta\) foram convertidos para altura geométrica real \(z = (\text{PH}+\text{PHB})/g\) e temperatura física \(T = (\theta_p + 300)(p/p_0)^{0,2854}\). A água super-resfriada é diagnosticada onde \(T < 273{,}15\text{ K}\):
+                                    \[\text{SLW} = (\text{QCLOUD} + \text{QRAIN}) \times 1000 \quad [\text{g/kg}]\]</li>
+                                <li><strong>Combustível do Granizo (<code>SLW</code>, verde):</strong> Atinge <strong>\(2{,}87\text{ g/kg}\) a \(5{,}69\text{ km}\) (\(-6{,}6\text{ }^\circ\text{C}\))</strong>, alimentando o crescimento por acreção (<em>riming</em>):
+                                    \[\frac{dM}{dt} = \pi R^2 \, E \, V_t \, \rho_{\text{SLW}}\]</li>
+                                <li><strong>Separação Vertical Graupel vs. Granizo:</strong> Na vista 3D do ParaView, a pluma laranja de <strong>graupel (<code>QGRAUP</code> \(\ge 0{,}5\text{ g/kg}\))</strong> domina a porção média-alta da coluna (\(5\text{ a }10\text{ km}\)), coroada pela bigorna de <strong>gelo (<code>QICE</code>, ciano)</strong> e <strong>neve (<code>QSNOW</code>, lilás)</strong> acima de \(9{,}5\text{ km}\), enquanto o núcleo vermelho de <strong>granizo (<code>QHAIL</code> \(\ge 0{,}1\text{ g/kg}\))</strong> emerge na metade inferior da zona de acreção (\(3\text{ a }6\text{ km}\)), acima do eixo azul de <strong>chuva (<code>QRAIN</code>)</strong>.</li>
+                            </ul>
+                        </div>
+                        <div class="slide-fig">
+                            <img src="figuras/3d_todos.png" alt="Estrutura 3D Combinada no ParaView" onclick="openModal(this.src)">
+                            <div class="slide-fig-cap">Vista 3D combinada no ParaView (17:00 UTC): 7 classes hidrometeóricas sobre o relevo e linha de costa (exagero \(4\times\))</div>
+                        </div>
+                    </div>
+                    <div class="slide-notes">
+                        <strong>Roteiro de Fala (06:00–08:00 min):</strong> Mostrar a arquitetura tridimensional da nuvem no ParaView. Destacar que usar a altura real do geopotencial \((\text{PH}+\text{PHB})/g\) evita deformações sobre o relevo e revela claramente as quatro camadas microfísicas: chuva quente na base, granizo na transição próxima a \(0\text{ }^\circ\text{C}\), graupel imerso em água super-resfriada no meio e cristais de gelo/neve na bigorna.
+                    </div>
+                </div>
+
+                <!-- SLIDE 6 (06-10 min) -->
+                <div class="wrf-slide">
+                    <div class="slide-header-row">
+                        <div>
+                            <h3 class="slide-title">Slide 6/10: Corte Vertical pela Célula Mais Vigorosa e Tabela de Máximos</h3>
+                            <p class="slide-subtitle">Posição do graupel, granizo e SLW em relação à corrente ascendente \(W\) e às isotermas de \(0\text{ }^\circ\text{C}\), \(-20\text{ }^\circ\text{C}\) e \(-40\text{ }^\circ\text{C}\)</p>
+                        </div>
+                        <div class="slide-time-badge">⏱️ 06 a 10 min | Slide 6/10</div>
+                    </div>
+                    <div class="slide-grid-2">
+                        <div class="slide-card">
+                            <h4>Análise Termodinâmica do Corte Vertical</h4>
+                            <ul>
+                                <li><strong>Isotermas de Referência:</strong> A isoterma de \(0\text{ }^\circ\text{C}\) fica em <strong>\(z \approx 4{,}4\text{ km}\)</strong>, a de \(-20\text{ }^\circ\text{C}\) em \(7{,}5\text{ km}\) e a de \(-40\text{ }^\circ\text{C}\) (limite de glaciação homogênea) em \(10{,}3\text{ km}\).</li>
+                                <li><strong>Acoplamento Ascendente–SLW–Gelo:</strong> Os contornos verdes de <code>SLW</code> (\(0{,}2\text{ a }2{,}87\text{ g/kg}\)) coincidem com o núcleo da corrente ascendente \(W\) (contornos pretos contínuos até \(7{,}4\text{ m/s}\)) entre \(4{,}4\text{ e }9{,}5\text{ km}\).</li>
+                                <li><strong>Máximos Quantitativos (17:00 UTC):</strong>
+                                    <br>• <code>QGRAUP</code> (Graupel): <strong>\(6{,}120\text{ g/kg}\)</strong> em \(8{,}26\text{ km}\) (\(-23{,}5\text{ }^\circ\text{C}\));
+                                    <br>• <code>SLW</code> (Água Super-resfriada): <strong>\(2{,}869\text{ g/kg}\)</strong> em \(5{,}69\text{ km}\) (\(-6{,}6\text{ }^\circ\text{C}\));
+                                    <br>• <code>QHAIL</code> (Granizo): <strong>\(0{,}553\text{ g/kg}\)</strong> em \(4{,}65\text{ km}\) (\(-0{,}7\text{ }^\circ\text{C}\));
+                                    <br>• <code>QICE</code> / <code>QSNOW</code>: \(0{,}557\text{ e }0{,}461\text{ g/kg}\) em \(9{,}88\text{ km}\) (\(-36{,}6\text{ }^\circ\text{C}\));
+                                    <br>• <code>QRAIN</code> (Chuva): \(0{,}429\text{ g/kg}\) em \(2{,}46\text{ km}\) (\(+13{,}4\text{ }^\circ\text{C}\)).</li>
+                                <li><strong>Fusão Abaixo de \(0\text{ }^\circ\text{C}\):</strong> O contorno vermelho de <code>QHAIL</code> atravessa a isoterma de \(0\text{ }^\circ\text{C}\) até \(z \approx 2{,}7\text{ km}\), onde derrete quase totalmente na camada quente de \(4{,}4\text{ km}\) de espessura, alimentando a chuva e a descendente (tracejado preto).</li>
+                            </ul>
+                        </div>
+                        <div class="slide-fig">
+                            <img src="figuras/corte_vertical.png" alt="Corte Vertical Oeste-Leste" onclick="openModal(this.src)">
+                            <div class="slide-fig-cap">Corte vertical Oeste–Leste pela célula mais vigorosa (\(-27{,}54^\circ\text{S}, -48{,}02^\circ\text{W}\), 17:00 UTC)</div>
+                        </div>
+                    </div>
+                    <div class="slide-notes">
+                        <strong>Roteiro de Fala (08:00–10:00 min):</strong> Explicar detalhadamente o corte vertical. Apontar como o graupel cresce na zona de \(-15\text{ a }-25\text{ }^\circ\text{C}\) (\(8{,}26\text{ km}\)), enquanto o granizo mais denso cai até a base da camada super-resfriada (\(4{,}65\text{ km}\), \(-0{,}7\text{ }^\circ\text{C}\)) e derrete ao atravessar os \(4{,}4\text{ km}\) abaixo da isoterma de \(0\text{ }^\circ\text{C}\).
+                    </div>
+                </div>
+
+                <!-- SLIDE 7 (10-14 min) -->
+                <div class="wrf-slide">
+                    <div class="slide-header-row">
+                        <div>
+                            <h3 class="slide-title">Slide 7/10: Evolução Temporal e Refletividade Composta (<code>REFL_10CM</code>)</h3>
+                            <p class="slide-subtitle">Comportamento temporal da convecção no domínio interno <code>d03</code> entre 12:00 UTC de 29/08 e 00:00 UTC de 30/08</p>
+                        </div>
+                        <div class="slide-time-badge">⏱️ 10 a 14 min | Slide 7/10</div>
+                    </div>
+                    <div class="slide-grid-2">
+                        <div class="slide-card">
+                            <h4>Dois Pulsos Convectivos Simulados em <code>d03</code></h4>
+                            <ul>
+                                <li><strong>1º Pulso (Disparo Inicial / Spin-up, 12:45–13:30 UTC):</strong> Logo após a inicialização às 12:00 UTC, a instabilidade presente na análise do ERA5 dispara células sobre a faixa costeira e o Norte da Ilha (\(43{,}1\text{ dBZ}\) no Norte da Ilha às 12:45 UTC e \(60{,}3\text{ dBZ}\) no domínio às 13:15 UTC).</li>
+                                <li><strong>2º Pulso (Célula Madura Pós-Spin-up, 15:45–17:30 UTC):</strong> Após a reorganização da camada limite, desenvolve-se a célula principal a leste da Ilha de SC (\(-27{,}54^\circ\text{S}, -48{,}02^\circ\text{W}\)), atingindo <strong>\(52{,}3\text{ dBZ}\) às 17:00 UTC</strong> (contorno preto \(\ge 50\text{ dBZ}\)), com \(6{,}12\text{ g/kg}\) de graupel e \(0{,}55\text{ g/kg}\) de granizo em altitude.</li>
+                                <li><strong>Estabilização Noturna (19:00–23:00 UTC):</strong> Após a passagem dos dois pulsos diurnos, a atmosfera simulada sobre a Ilha perde energia convectiva, mantendo ecos fracos a moderados (\(18\text{ a }33\text{ dBZ}\)) durante a noite.</li>
+                            </ul>
+                        </div>
+                        <div class="slide-fig">
+                            <img src="figuras/refletividade.png" alt="Refletividade Composta e Série Temporal" onclick="openModal(this.src)">
+                            <div class="slide-fig-cap">Mapa de <code>REFL_10CM</code> às 17:00 UTC (esquerda) e evolução temporal no domínio vs. caixa do Norte da Ilha (direita)</div>
+                        </div>
+                    </div>
+                    <div class="slide-notes">
+                        <strong>Roteiro de Fala (10:00–12:00 min):</strong> Analisar a série temporal de refletividade máxima. Mostrar que o modelo foi capaz de gerar tempestades com refletividade superior a 50 dBZ compatíveis com granizo em altitude, porém adiantou a liberação da instabilidade para o período da tarde (13:15 e 17:00 UTC).
+                    </div>
+                </div>
+
+                <!-- SLIDE 8 (10-14 min) -->
+                <div class="wrf-slide">
+                    <div class="slide-header-row">
+                        <div>
+                            <h3 class="slide-title">Slide 8/10: Comparação Direta com a Observação: Erros de Posição e de Fase</h3>
+                            <p class="slide-subtitle">Quantificação objetiva do deslocamento espacial (km) e da defasagem temporal (h) em relação aos relatos e ao radar</p>
+                        </div>
+                        <div class="slide-time-badge">⏱️ 10 a 14 min | Slide 8/10</div>
+                    </div>
+                    <div class="slide-grid-2">
+                        <div class="slide-card">
+                            <h4>Métricas de Verificação (Modelo vs. Observação)</h4>
+                            <ul>
+                                <li><strong>No Horário Real dos Relatos (22:30 UTC):</strong>
+                                    <br>• <em>Observado:</em> Tempestade severa sobre Biguaçu, Jurerê, Canasvieiras e Ingleses (\(\text{Tb} = -62{,}9\text{ }^\circ\text{C}\), granizo de \(60\text{ mm}\)).
+                                    <br>• <em>Simulado pelo WRF (22:30 UTC):</em> Refletividade máxima sobre o Norte da Ilha de apenas \(7{,}4\text{ dBZ}\); o núcleo mais ativo do domínio (\(22{,}8\text{ dBZ}\)) encontra-se no continente (\(-27{,}18^\circ\text{S}, -49{,}09^\circ\text{W}\)), com <strong>erro de posição de \(67{,}2\text{ km}\) a noroeste de Jurerê</strong>.</li>
+                                <li><strong>No Horário de Maior Intensidade Simulada (17:00 UTC):</strong>
+                                    <br>• <em>Erro de Fase (Antecipação):</em> O pico convectivo maduro do modelo ocorreu às <strong>17:00 UTC (\(-5{,}5\text{ h}\) antes do pico observado às 22:20–22:30 UTC)</strong>.
+                                    <br>• <em>Erro de Posição no Pico:</em> O núcleo de \(52{,}3\text{ dBZ}\) (\(-27{,}54^\circ\text{S}, -48{,}02^\circ\text{W}\)) formou-se sobre o oceano a <strong>\(\sim 46\text{ km}\) a leste-sudeste do Norte da Ilha</strong>.</li>
+                            </ul>
+                        </div>
+                        <div class="slide-fig">
+                            <img src="figuras/comparacao_obs.png" alt="Painel Comparativo 22:30 UTC" onclick="openModal(this.src)">
+                            <div class="slide-fig-cap">Confronto direto às 22:30 UTC: localização dos relatos e trajetória do radar MI (esquerda) vs. campo <code>REFL_10CM</code> em <code>d03</code> (direita)</div>
+                        </div>
+                    </div>
+                    <div class="slide-notes">
+                        <strong>Roteiro de Fala (12:00–14:00 min):</strong> Apresentar com transparência científica os números da verificação: adiantamento de 5,5 horas no pico convectivo (17:00 UTC vs. 22:30 UTC) e deslocamento espacial de 46 km para leste no momento de pico (e 67,2 km para noroeste às 22:30 UTC).
+                    </div>
+                </div>
+
+                <!-- SLIDE 9 (14-17 min) -->
+                <div class="wrf-slide">
+                    <div class="slide-header-row">
+                        <div>
+                            <h3 class="slide-title">Slide 9/10: Discussão das Deficiências do Modelo: Mecanismos Físicos e Numéricos</h3>
+                            <p class="slide-subtitle">Por que a convecção adiantou e por que o granizo de altitude derreteu antes de atingir a superfície?</p>
+                        </div>
+                        <div class="slide-time-badge">⏱️ 14 a 17 min | Slide 9/10</div>
+                    </div>
+                    <div class="slide-grid-2">
+                        <div class="slide-card">
+                            <h4>1. Causas do Erro de Fase (\(-5{,}5\text{ h}\)) e Posição (\(46\text{–}67\text{ km}\))</h4>
+                            <ul>
+                                <li><strong>Consumo Prematuro de CAPE pelo Cumulus Externo:</strong> Nos domínios <code>d01</code> (18 km) e <code>d02</code> (6 km), o esquema Kain-Fritsch (<code>cu_physics = 1</code>) dispara assim que o critério de gatilho é atingido no início da tarde, consumindo a instabilidade pré-frontal cedo demais e exportando subsindência e piscina fria para as fronteiras de <code>d03</code>.</li>
+                                <li><strong>Suavização da Inversão de Bloqueio (<em>Capping Inversion</em>) no ERA5:</strong> A grade de \(0{,}25^\circ\) (\(\sim 28\text{ km}\)) da condição inicial suaviza a camada de inibição (\(\text{CIN}\)) e a frente de brisa/convergência costeira que, na atmosfera real, impediram a convecção rasa à tarde e acumularam energia até o disparo às 21:30–22:30 UTC.</li>
+                            </ul>
+                        </div>
+                        <div class="slide-card">
+                            <h4>2. Por que o Granizo Derreteu Antes do Solo?</h4>
+                            <ul>
+                                <li><strong>Diluição da Ascendente em \(\Delta x = 2\text{ km}\):</strong> Embora resolva convecção explícita, a malha de 2 km ainda amortece o núcleo da corrente ascendente (\(W_{\text{máx}} = 7{,}4\text{ m/s}\) às 17:00 UTC e \(15{,}0\text{ m/s}\) no pulso inicial), limitando o tempo de residência do embrião de granizo na camada de <code>SLW</code> (\(2{,}87\text{ g/kg}\)).</li>
+                                <li><strong>Espessa Camada Quente de Fusão (\(z_{0^\circ\text{C}} \approx 4{,}4\text{ km}\)):</strong> Com isoterma de \(0\text{ }^\circ\text{C}\) a \(4{,}4\text{ km}\) de altura e \(T_{\text{sup}} > 20\text{ }^\circ\text{C}\), pedras pequenas e médias de <code>QHAIL</code> (\(0{,}55\text{ g/kg}\) em \(4{,}65\text{ km}\)) sofrem fusão completa na queda abaixo de \(2{,}7\text{ km}\), convertendo-se em <code>QRAIN</code> e resultando em <code>HAILCAST_DIAM_MAX = 0 mm</code> na superfície.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="slide-notes">
+                        <strong>Roteiro de Fala (14:00–17:00 min):</strong> Este é o slide de maior peso conceitual (25% da nota). Explicar como a combinação de Kain-Fritsch nos domínios externos + suavização do CIN no ERA5 explica o adiantamento temporal, e como a velocidade vertical moderada em 2 km combinada com uma camada quente de 4,4 km explica a fusão do granizo antes de tocar o solo.
+                    </div>
+                </div>
+
+                <!-- SLIDE 10 (17-20 min) -->
+                <div class="wrf-slide">
+                    <div class="slide-header-row">
+                        <div>
+                            <h3 class="slide-title">Slide 10/10: Conclusões, Lições de Modelagem e Repositório para Arguição</h3>
+                            <p class="slide-subtitle">Síntese da modulação termodinâmica pelos hidrometeoros e acesso público aos códigos, namelists e cenas 3D</p>
+                        </div>
+                        <div class="slide-time-badge">⏱️ 17 a 20 min | Slide 10/10</div>
+                    </div>
+                    <div class="slide-grid-2">
+                        <div class="slide-card">
+                            <h4>Síntese Científica (Partes 1 e 2 Integradas)</h4>
+                            <ul>
+                                <li><strong>Coerência Física Interna da Microfísica:</strong> O esquema Milbrandt-Yau de 2 momentos (<code>mp_physics = 9</code>) reproduziu com fidelidade a cadeia microfísica clássica da convecção severa: geração de <strong>água super-resfriada (<code>SLW</code> = \(2{,}87\text{ g/kg}\))</strong> na ascendente, crescimento intenso de <strong>graupel por acreção (<code>QGRAUP</code> = \(6{,}12\text{ g/kg}\) a \(-23{,}5\text{ }^\circ\text{C}\))</strong>, conversão para <strong>granizo de alta densidade (<code>QHAIL</code> = \(0{,}55\text{ g/kg}\) a \(-0{,}7\text{ }^\circ\text{C}\))</strong> e glaciação na bigorna (<code>QICE</code> + <code>QSNOW</code> a \(-36{,}6\text{ }^\circ\text{C}\)).</li>
+                                <li><strong>Validação 3D da Teoria de Emanuel:</strong> A carga total de hidrometeoros condensados suspensos entre \(4{,}5\text{ e }9\text{ km}\) (\(> 8\text{ g/kg}\)) confirma em 3D o efeito de arrasto hidrometeórico sobre a flutuabilidade diagnosticado na Parte 1.</li>
+                                <li><strong>Caminhos de Melhoria para Previsão Operacional:</strong> Reduzir \(\Delta x\) do domínio interno para \(\le 1\text{ km}\), desligar o cumulus já a partir de \(\Delta x \le 6\text{ km}\) (<em>convection-permitting</em> desde o domínio intermediário) e assimilar dados de radar/GOES-19 para corrigir o disparo pré-frontal.</li>
+                            </ul>
+                        </div>
+                        <div class="slide-card">
+                            <h4>Repositório Público e Material para a Banca</h4>
+                            <ul>
+                                <li><strong>Página Web Interativa (GitHub Pages):</strong>
+                                    <br><a href="https://reinaldohaas.github.io/tarefa-meso/" target="_blank" style="color:#38bdf8; font-weight:700;">https://reinaldohaas.github.io/tarefa-meso/</a></li>
+                                <li><strong>Repositório GitHub (Código, Namelists e Figuras 3D):</strong>
+                                    <br><a href="https://github.com/reinaldohaas/tarefa-meso" target="_blank" style="color:#38bdf8; font-weight:700;">https://github.com/reinaldohaas/tarefa-meso</a></li>
+                                <li><strong>Artefatos Versionados para Arguição:</strong>
+                                    <br>• <a href="RELATORIO_RODADA.md" target="_blank" style="color:#fbbf24;"><code>RELATORIO_RODADA.md</code></a> (relatório completo da rodada)
+                                    <br>• <a href="wps/namelist.wps" target="_blank" style="color:#fbbf24;"><code>wps/namelist.wps</code></a> e <a href="rodadas/r1_milbrandt_yau_2km/namelist.input" target="_blank" style="color:#fbbf24;"><code>namelist.input</code></a>
+                                    <br>• <a href="sessoes/granizo_hidrometeoros_3d.pvsm" target="_blank" style="color:#fbbf24;"><code>sessoes/granizo_hidrometeoros_3d.pvsm</code></a> (cena 3D ParaView)
+                                    <br>• <a href="apresentacao/apresentacao_wrf_granizo.pptx" download style="color:#fbbf24;"><code>apresentacao/apresentacao_wrf_granizo.pptx</code></a> (slides PPTX)</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="slide-notes">
+                        <strong>Roteiro de Fala (17:00–20:00 min):</strong> Fechar a apresentação sintetizando o aprendizado das Partes 1 e 2 e deixar aberta a galeria interativa 3D logo abaixo nesta mesma página para responder às perguntas da banca durante a arguição.
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                var slideWrfAtual = 0;
+                function irSlideWrf(idx) {
+                    var slides = document.querySelectorAll('#deck-wrf-slides .wrf-slide');
+                    var dots = document.querySelectorAll('#wrf-deck-dots .deck-dot');
+                    if (!slides.length) return;
+                    slideWrfAtual = (idx + slides.length) % slides.length;
+                    slides.forEach(function (s, i) {
+                        s.classList.toggle('active', i === slideWrfAtual);
+                    });
+                    dots.forEach(function (d, i) {
+                        d.classList.toggle('active', i === slideWrfAtual);
+                    });
+                }
+                function mudarSlideWrf(delta) {
+                    irSlideWrf(slideWrfAtual + delta);
+                }
+                function telaCheiaWrf() {
+                    var deck = document.getElementById('deck-wrf-slides');
+                    if (!document.fullscreenElement) {
+                        if (deck.requestFullscreen) deck.requestFullscreen();
+                    } else {
+                        if (document.exitFullscreen) document.exitFullscreen();
+                    }
+                }
+                document.addEventListener('keydown', function (e) {
+                    var modal = document.getElementById('image-modal');
+                    if (modal && modal.style.display === 'flex') return;
+                    if (e.key === 'ArrowRight') mudarSlideWrf(1);
+                    else if (e.key === 'ArrowLeft') mudarSlideWrf(-1);
+                });
+            </script>
+
+            <div class="block-title">8.1. O Caso Observado e a Configuração dos Domínios e da Física</div>
+            <div class="explanation-text">
+                Entre <strong>22:00 e 23:00 UTC de 29/08/2026</strong> (19:00–20:00 BRT), uma tempestade severa atingiu Biguaçu e os bairros do Norte da Ilha de Santa Catarina
+                (Jurerê, Canasvieiras, Cachoeira do Bom Jesus e Ingleses), produzindo queda de granizo de até \(60\text{ mm}\), topo frio de \(-62{,}9\text{ }^\circ\text{C}\)
+                no canal infravermelho (10,3 µm) do GOES-19 às 22:20 UTC e núcleo de alta refletividade rastreado pelo radar do Morro da Igreja entre 22:16 e 22:36 UTC.
+            </div>
+
+            <div class="gallery-grid">
+                <div class="figure-wrapper">
+                    <img src="figuras/dominios.png" alt="Domínios Aninhados do WRF (18/6/2 km)" onclick="openModal(this.src)">
+                    <div class="figure-caption">Aninhamento triplo bidirecional (18 / 6 / 2 km) centrado em \(-27{,}50^\circ\text{S}, -48{,}55^\circ\text{W}\) sobre o relevo HGT_M, Clique para ampliar</div>
+                </div>
+                <div class="figure-wrapper">
+                    <img src="figuras/refletividade.png" alt="Refletividade Composta REFL_10CM e Evolução Temporal" onclick="openModal(this.src)">
+                    <div class="figure-caption">Refletividade máxima na coluna (<code>REFL_10CM</code>) no pico simulado (17:00 UTC, \(52{,}3\text{ dBZ}\)) e série temporal em <code>d03</code>, Clique para ampliar</div>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th style="text-align:left;">Componente</th>
+                            <th style="text-align:left;">Configuração Escolhida (<code>namelist.wps</code> / <code>namelist.input</code>)</th>
+                            <th style="text-align:left;">Justificativa Física e Numérica</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="text-align:left;"><strong>Domínios Aninhados</strong></td>
+                            <td style="text-align:left;"><code>max_dom = 3</code>, razão 1:3 (<code>18 km / 6 km / 2 km</code>), grades \(38\times 38\), \(46\times 46\) e \(61\times 61\), 45 níveis \(\eta\) até \(50\text{ hPa}\)</td>
+                            <td style="text-align:left;">Garante resolução de <strong>2 km (\(\le 3\text{ km}\)) no domínio interno <code>d03</code></strong> (\(120\times 120\text{ km}\)), com folga de \(60\text{ km}\) até as bordas e 100% contido no recorte regional do ERA5.</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left;"><strong>Dados e Janela</strong></td>
+                            <td style="text-align:left;">ERA5 (37 níveis de pressão + superfície, 1 h), de <code>2026-08-29_12:00</code> a <code>2026-08-30_00:00 UTC</code></td>
+                            <td style="text-align:left;">Fornece 10 h de aquecimento (<em>spin-up</em> \(\ge 6\text{ h}\)) antes do horário observado da tempestade severa (22:00–23:00 UTC), com saída a cada 15 min em <code>d03</code>.</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left;"><strong>Microfísica</strong></td>
+                            <td style="text-align:left;"><strong>Milbrandt-Yau 2 momentos (<code>mp_physics = 9</code>)</strong>, com <code>do_radar_ref = 1</code> e <code>hailcast_opt = 0, 0, 1</code></td>
+                            <td style="text-align:left;">Prevê razão de mistura e concentração numérica de 6 classes hidrometeóricas, <strong>separando explicitamente o graupel (<code>QGRAUP</code>) e o granizo de alta densidade (<code>QHAIL</code>)</strong>.</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left;"><strong>Cumulus</strong></td>
+                            <td style="text-align:left;"><code>cu_physics = 1, 1, 0</code> (Kain-Fritsch em <code>d01/d02</code>, <strong>desligado em <code>d03</code></strong>)</td>
+                            <td style="text-align:left;">Em \(\Delta x = 2\text{ km}\), as correntes ascendentes convectivas são resolvidas explicitamente pelas equações não-hidrostáticas sem parametrização sub-grade.</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left;"><strong>CLP, Superfície e Radiação</strong></td>
+                            <td style="text-align:left;">YSU PBL (<code>bl_pbl_physics = 1</code>), Monin-Obukhov + Noah LSM (<code>sf_surface_physics = 2</code>), RRTMG LW/SW (<code>ra = 4</code>)</td>
+                            <td style="text-align:left;">Representa a mistura vertical não-local na camada limite marítima/costeira e a interação radiativa com a bigorna de gelo (<code>icloud = 1</code>).</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left;"><strong>Passo de Tempo (CFL)</strong></td>
+                            <td style="text-align:left;"><code>use_adaptive_time_step = .true.</code>, <code>target_cfl = 1.2</code>, <code>step_to_output_time = .true.</code></td>
+                            <td style="text-align:left;">Ajusta dinamicamente \(\Delta t\) (\(\sim 16\text{ s}\) em <code>d03</code>) para manter estabilidade numérica nas ascendentes intensas e gravar saídas exatas a cada 15 min.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="block-title">8.2. Visualização 3D dos Hidrometeoros no ParaView (Altura Real \(z = (\text{PH}+\text{PHB})/g\), Exagero \(4\times\))</div>
+            <div class="explanation-text">
+                As figuras 3D abaixo foram geradas com o ParaView 6.2 (<code>pvpython</code>) a partir do arquivo <code>wrfout_d03</code> interpolado dos níveis \(\eta\)
+                para a altura geométrica real \(z = (\text{PH} + \text{PHB})/9{,}81\) (em km acima do nível do mar), mantendo exatamente o <strong>mesmo ponto de vista de câmera</strong>,
+                exagero vertical de \(4\times\) e paleta de cores fixa por hidrometeoro. Use os botões abaixo para inspecionar a estrutura 3D combinada ou cada hidrometeoro isoladamente:
+            </div>
+
+            <div style="display:flex; flex-wrap:wrap; gap:8px; margin:14px 0;">
+                <button type="button" class="wrf3d-tab" onclick="mostraWrf3d('todos', 'Estrutura 3D Combinada: Todos os Hidrometeoros + Água Super-resfriada (SLW)', this)" style="padding:8px 14px; border:1px solid #c2410c; border-radius:6px; background:#ffedd5; font-weight:700; cursor:pointer; color:#9a3412;">Todos Juntos (Combinada)</button>
+                <button type="button" class="wrf3d-tab" onclick="mostraWrf3d('SLW', 'Água Super-resfriada (SLW = QCLOUD + QRAIN para T < 0 °C), Verde, limiar 0,2 g/kg', this)" style="padding:8px 14px; border:1px solid #cbd5e1; border-radius:6px; background:#ffffff; font-weight:600; cursor:pointer;">SLW (Água Super-resfriada)</button>
+                <button type="button" class="wrf3d-tab" onclick="mostraWrf3d('QGRAUP', 'Graupel (QGRAUP), Laranja, limiar 0,5 g/kg (máx 6,12 g/kg a 8,26 km)', this)" style="padding:8px 14px; border:1px solid #cbd5e1; border-radius:6px; background:#ffffff; font-weight:600; cursor:pointer;">Graupel (QGRAUP)</button>
+                <button type="button" class="wrf3d-tab" onclick="mostraWrf3d('QHAIL', 'Granizo (QHAIL), Vermelho, limiar 0,1 g/kg (máx 0,55 g/kg a 4,65 km)', this)" style="padding:8px 14px; border:1px solid #cbd5e1; border-radius:6px; background:#ffffff; font-weight:600; cursor:pointer;">Granizo (QHAIL)</button>
+                <button type="button" class="wrf3d-tab" onclick="mostraWrf3d('QCLOUD', 'Água de Nuvem (QCLOUD), Cinza claro, limiar 0,1 g/kg', this)" style="padding:8px 14px; border:1px solid #cbd5e1; border-radius:6px; background:#ffffff; font-weight:600; cursor:pointer;">Nuvem (QCLOUD)</button>
+                <button type="button" class="wrf3d-tab" onclick="mostraWrf3d('QRAIN', 'Chuva (QRAIN), Azul, limiar 0,15 g/kg', this)" style="padding:8px 14px; border:1px solid #cbd5e1; border-radius:6px; background:#ffffff; font-weight:600; cursor:pointer;">Chuva (QRAIN)</button>
+                <button type="button" class="wrf3d-tab" onclick="mostraWrf3d('QICE', 'Cristais de Gelo (QICE), Ciano, limiar 0,05 g/kg (bigorna superior)', this)" style="padding:8px 14px; border:1px solid #cbd5e1; border-radius:6px; background:#ffffff; font-weight:600; cursor:pointer;">Gelo (QICE)</button>
+                <button type="button" class="wrf3d-tab" onclick="mostraWrf3d('QSNOW', 'Neve e Agregados (QSNOW), Lilás, limiar 0,1 g/kg', this)" style="padding:8px 14px; border:1px solid #cbd5e1; border-radius:6px; background:#ffffff; font-weight:600; cursor:pointer;">Neve (QSNOW)</button>
+            </div>
+
+            <div class="figure-wrapper">
+                <img id="img-wrf-3d" src="figuras/3d_todos.png" alt="Visualização 3D dos Hidrometeoros no ParaView" onclick="openModal(this.src)">
+                <div class="figure-caption" id="cap-wrf-3d">Estrutura 3D Combinada: Todos os Hidrometeoros + Água Super-resfriada (SLW), Clique na imagem para ampliar</div>
+            </div>
+            <script>
+                function mostraWrf3d(tag, legenda, botao) {
+                    document.getElementById('img-wrf-3d').src = 'figuras/3d_' + tag + '.png';
+                    document.getElementById('cap-wrf-3d').textContent = legenda + ', Clique na imagem para ampliar';
+                    document.querySelectorAll('.wrf3d-tab').forEach(function (b) {
+                        b.style.background = '#ffffff';
+                        b.style.borderColor = '#cbd5e1';
+                        b.style.color = '#0f172a';
+                    });
+                    botao.style.background = '#ffedd5';
+                    botao.style.borderColor = '#c2410c';
+                    botao.style.color = '#9a3412';
+                }
+            </script>
+
+            <div class="block-title">8.3. Corte Vertical pela Célula Mais Vigorosa e Tabela de Máximos</div>
+            <div class="figure-wrapper">
+                <img src="figuras/corte_vertical.png" alt="Corte Vertical pela Célula Mais Vigorosa" onclick="openModal(this.src)">
+                <div class="figure-caption">Corte vertical Oeste–Leste pela célula mais vigorosa (17:00 UTC, \(-27{,}54^\circ\text{S}, -48{,}02^\circ\text{W}\)): <code>QGRAUP</code> sombreado (laranja), contornos de <code>QHAIL</code> (vermelho), <code>SLW</code> (verde), velocidade vertical \(W\) (preto) e isotermas de \(0\text{ }^\circ\text{C}\), \(-20\text{ }^\circ\text{C}\) e \(-40\text{ }^\circ\text{C}\)</div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th style="text-align:left;">Hidrometeoro (Variável WRF)</th>
+                            <th>Máximo (g/kg)</th>
+                            <th>Altura Real \(z\) (km MSL)</th>
+                            <th>Temperatura (\(^\circ\text{C}\))</th>
+                            <th>Pressão (hPa)</th>
+                            <th>Limiar 3D (g/kg)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        __WRF_TBODY__
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="block-title">8.4. Comparação com as Observações e Discussão das Deficiências do Modelo</div>
+            <div class="figure-wrapper">
+                <img src="figuras/comparacao_obs.png" alt="Comparação Lado a Lado: Observação vs WRF" onclick="openModal(this.src)">
+                <div class="figure-caption">Painel lado a lado na janela do evento observado (22:30 UTC): Relatos de granizo, caixa do GOES-19 e trajetória do Radar Morro da Igreja (esquerda) contra a refletividade simulada no domínio interno <code>d03</code> (direita)</div>
+            </div>
+
+            <div class="how-to-read" style="border-left-color:#c2410c; background:#fff7ed;">
+                <strong style="color:#9a3412;">Diagnóstico Físico da Microfísica e Análise Crítica dos Erros de Fase e Posição:</strong>
+                <ul style="color:#431407;">
+                    <li><strong>Estratificação Vertical dos Hidrometeoros e Crescimento por Acreção:</strong> No corte vertical e na tabela de máximos, a isoterma de \(0\text{ }^\circ\text{C}\) situa-se em \(z \approx 4{,}4\text{ km}\). A corrente ascendente alimenta uma espessa camada de <strong>água super-resfriada (<code>SLW</code> = \(2{,}87\text{ g/kg}\) em \(5{,}69\text{ km}\), \(-6{,}6\text{ }^\circ\text{C}\))</strong> entre \(4{,}4\) e \(8{,}5\text{ km}\). O <strong>graupel (<code>QGRAUP</code> = \(6{,}12\text{ g/kg}\))</strong> atinge seu máximo mais acima, em \(8{,}26\text{ km}\) (\(-23{,}5\text{ }^\circ\text{C}\)), na zona de intenso <em>riming</em>, enquanto o <strong>granizo de alta densidade (<code>QHAIL</code> = \(0{,}55\text{ g/kg}\))</strong> concentra-se mais abaixo (\(4{,}65\text{ km}\), \(-0{,}7\text{ }^\circ\text{C}\)), exatamente na transição onde coleta gotículas super-resfriadas ao cair contra a ascendente e inicia a fusão abaixo da isoterma de \(0\text{ }^\circ\text{C}\), originando o núcleo de chuva (<code>QRAIN</code> = \(0{,}43\text{ g/kg}\) em \(2{,}46\text{ km}\), \(+13{,}4\text{ }^\circ\text{C}\)). No topo da nuvem (\(9{,}88\text{ km}\), \(-36{,}6\text{ }^\circ\text{C}\), próximo ao limite de nucleação homogênea de \(-38\text{ }^\circ\text{C}\)), dominam os cristais de gelo (<code>QICE</code>) e agregados de neve (<code>QSNOW</code>) que formam a bigorna.</li>
+                    <li><strong>Conexão com a Flutuabilidade Reversível de Emanuel (Parte 1):</strong> A retenção simultânea de mais de \(6\text{ g/kg}\) de graupel, \(2{,}87\text{ g/kg}\) de água super-resfriada e \(0{,}55\text{ g/kg}\) de granizo suspensos na coluna entre \(4{,}5\) e \(9\text{ km}\) representa uma carga de condensados (\(r_l + r_i \approx 8\text{ a }9\text{ g/kg}\)) que reduz diretamente a temperatura virtual da parcela ascendente, materializando em 3D o freio termodinâmico previsto pela matriz reversível de Kerry Emanuel na Parte 1 e alimentando a piscina fria por fusão e evaporação na descendente.</li>
+                    <li><strong>Por que o modelo adiantou a convecção e deslocou a célula principal?</strong> A simulação desenvolveu duas ondas convectivas intensas no domínio interno (às 13:30 UTC e às 17:00 UTC, com \(52{,}3\text{ dBZ}\) a \(\sim 45\text{ km}\) a leste da Ilha sobre o oceano), enquanto às 22:30 UTC (horário real do granizo em Jurerê/Biguaçu) restavam apenas células residuais a \(67{,}2\text{ km}\) a noroeste no continente. Três causas possíveis, a testar com outras rodadas: (1) a parametrização de cumulus Kain-Fritsch ligada nos domínios externos (<code>d01</code> de 18 km e <code>d02</code> de 6 km) liberou a instabilidade convectiva cedo demais à tarde, consumindo a CAPE pré-frontal antes do horário noturno e injetando <em>outflow</em> estabilizador nas bordas de <code>d03</code>; (2) a resolução horizontal de \(2\text{ km}\) no domínio interno, embora explícita, ainda dilui o núcleo das correntes ascendentes em comparação com grades de \(\le 1\text{ km}\), reduzindo a velocidade vertical máxima e o tempo de residência do granizo na camada de SLW; e (3) a condição inicial sinótica do ERA5 (\(0{,}25^\circ\)) suaviza a convergência costeira de mesoescala e a inversão de bloqueio (<em>capping inversion</em>) que, na atmosfera real, segurou o disparo da tempestade até as 21:30–22:30 UTC. A rotação não foi observada (o radar não tem Doppler), por isso não se fala em supercélula.</li>
+                </ul>
+            </div>
+
+            <div class="block-title">8.5. Reprodutibilidade: Namelists, Scripts, Sessão 3D e Relatório no Repositório</div>
+            <div class="explanation-text">
+                Todos os arquivos de configuração e diagnóstico desta simulação estão versionados neste repositório:
+                <ul>
+                    <li><a href="RELATORIO_RODADA.md" target="_blank" style="color:#0284c7; font-weight:700;"><code>RELATORIO_RODADA.md</code></a>, Relatório técnico padronizado da rodada <code>r1_milbrandt_yau_2km</code>.</li>
+                    <li><a href="wps/namelist.wps" target="_blank" style="color:#0284c7; font-weight:700;"><code>wps/namelist.wps</code></a> e <a href="rodadas/r1_milbrandt_yau_2km/namelist.input" target="_blank" style="color:#0284c7; font-weight:700;"><code>rodadas/r1_milbrandt_yau_2km/namelist.input</code></a>, Configurações completas do WPS e do WRF-ARW.</li>
+                    <li><a href="scripts/diagnostico_granizo.py" target="_blank" style="color:#0284c7; font-weight:700;"><code>scripts/diagnostico_granizo.py</code></a> e <a href="scripts/render_3d_paraview.py" target="_blank" style="color:#0284c7; font-weight:700;"><code>scripts/render_3d_paraview.py</code></a>, Scripts de cálculo de SLW, corte vertical e renderização 3D no ParaView.</li>
+                    <li><a href="sessoes/granizo_hidrometeoros_3d.pvsm" target="_blank" style="color:#0284c7; font-weight:700;"><code>sessoes/granizo_hidrometeoros_3d.pvsm</code></a> e <a href="wrfpack/tabela_maximos.csv" target="_blank" style="color:#0284c7; font-weight:700;"><code>wrfpack/tabela_maximos.csv</code></a>, Sessão do ParaView e tabela de máximos exportada.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 9: REFERÊNCIAS BIBLIOGRÁFICAS -->
         <section class="tutorial-section" id="sec-referencias">
             <div class="section-header">
-                <h2>8. Referências Bibliográficas Clássicas</h2>
+                <h2>9. Referências Bibliográficas Clássicas</h2>
             </div>
             <ul style="color:#334155; font-size:0.92rem; line-height:1.75;">
                 <li><strong>Bunkers, M. J., Klimowski, B. A., Zeitler, J. W., Thompson, R. L., & Weisman, M. L. (2000).</strong> Predicting supercell motion using a new hodograph technique. <em>Weather and Forecasting</em>, 15(1), 61–79.</li>
@@ -903,6 +1657,7 @@ def generate_html():
     html = html.replace('__MASTER_DIAG_TBODY__', master_diag_tbody)
     html = html.replace('__WYOMING_COMP_SECTION__', wyoming_comp_section)
     html = html.replace('__DCAPE_TBODY__', dcape_tbody)
+    html = html.replace('__WRF_TBODY__', wrf_tbody)
 
     with open('index.html', 'w', encoding='utf-8') as f:
         f.write(html)

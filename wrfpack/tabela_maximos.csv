@@ -1,0 +1,8 @@
+variavel,nome,max_g_kg,altura_km,temperatura_C,pressao_hPa,lat,lon,limiar_g_kg
+QCLOUD,Nuvem (QCLOUD),2.865,5.69,-6.6,508.7,-27.356,-48.347,0.1
+QRAIN,Chuva (QRAIN),0.429,2.46,13.4,757.4,-27.535,-48.043,0.5
+QICE,Gelo (QICE),0.557,9.88,-36.6,287.6,-27.535,-48.023,0.05
+QSNOW,Neve (QSNOW),0.461,9.87,-36.2,287.7,-27.499,-48.002,0.1
+QGRAUP,Graupel (QGRAUP),6.12,8.26,-23.5,361.1,-27.535,-48.023,0.5
+QHAIL,Granizo (QHAIL),0.553,4.65,-0.7,579.9,-27.535,-48.043,0.1
+SLW,Água Super-resfriada (SLW),2.869,5.69,-6.6,508.7,-27.356,-48.347,0.2
