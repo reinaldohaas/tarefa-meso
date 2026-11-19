@@ -62,21 +62,22 @@ body.com-notas .notas { display:block; }
 </nav>
 <main>
 <section class="slide" id="s1" aria-label="Slide 1 de 10: O caso severo">
-  <header><div><p class="num">1/10</p><h2>O caso severo</h2><p class="sub">Granizo no norte da Ilha de Santa Catarina, 29/08/2026</p></div><p class="tempo">00 a 03 min</p></header>
+  <header><div><p class="num">1/10</p><h2>O caso severo</h2><p class="sub">Tempestade Noturna: Granizo no norte da Ilha de Santa Catarina, 29/08/2026</p></div><p class="tempo">00 a 03 min</p></header>
   <div class="corpo">
 <div class="duas">
   <div>
     <ul>
-      <li><b>Quando e onde:</b> entre 22:00 e 23:00 UTC (19 e 20 h locais), em Biguaçu e no norte da Ilha (Jurerê, Canasvieiras, Cachoeira do Bom Jesus, Ingleses).</li>
-      <li><b>Relatos:</b> pedras de até ~6 cm, "bolas de tênis" em Biguaçu.</li>
-      <li><b>Radar Morro da Igreja:</b> núcleo forte cruzando o norte da Ilha entre 22:16 e 22:36 UTC.</li>
-      <li><b>GOES-19:</b> topo mais frio de −62,9 °C às 22:20 UTC, igual ao das outras células da noite, sem topo penetrante; até 320 flashes por 10 min no GLM, sem salto de raios.</li>
+      <li><b>Evento Noturno Real:</b> convecção severa entre <b>22:00 e 23:00 UTC</b> (19:00 e 20:00 h locais) sobre Biguaçu e Norte da Ilha (Jurerê, Canasvieiras, Cachoeira do Bom Jesus, Ingleses).</li>
+      <li><b>Trajetória 185 (GOES-19 GLM):</b> célula iniciou na borda da Serra Geral às 20:10 UTC (-50,1°W / -27,5°S), avançou a leste a ~16 m/s, alcançou Biguaçu às 22:10 UTC e o Norte da Ilha às 22:30 UTC.</li>
+      <li><b>Granizo Gigante:</b> relatos com pedras de até <b>~6 cm</b> ("tamanho de bolas de tênis") e destelhamentos em Biguaçu e Norte da Ilha.</li>
+      <li><b>Radar Morro da Igreja (DECEA):</b> núcleo com refletividade extrema (>60 dBZ, magenta) cruzando Biguaçu às 22:16 UTC e Ilha às 22:36 UTC.</li>
+      <li><b>GOES-19 (Canal 13 - 10,3 µm):</b> temperatura mínima de brilho no topo de <b>−62,9 °C</b> às 22:20 UTC; atividade de até 365 flashes/10 min no GLM sem salto anômalo prévio.</li>
     </ul>
-    <p class="destaque">Nada nos dados de satélite e raios distinguia esta célula das outras. O granizo gigante veio de uma tempestade que parecia comum.</p>
+    <p class="destaque">A tempestade severa foi comprovadamente <b>noturna</b> (relatos, radar MI e GOES-19). Como demonstrado em <code>granizo-gigante</code>, a assinatura de satélite parecia convencional, mas o interior da nuvem concentrava enorme carga de hidrometeoros.</p>
   </div>
-  <figure><img src="figuras/comparacao_obs.png" alt="Relatos de granizo, caixa do GOES-19 e trajetória do radar sobre o norte da Ilha, ao lado da refletividade simulada"><figcaption>Relatos e trajetória do núcleo no radar (esquerda). A direita volta no slide 8.</figcaption></figure>
+  <figure><img src="figuras/comparacao_obs.png" alt="Relatos de granizo, caixa do GOES-19 e trajetória do radar sobre o norte da Ilha, ao lado da refletividade simulada"><figcaption>Relatos de granizo noturno e trajetória do núcleo no radar Morro da Igreja (esquerda). Comparação com WRF no slide 8.</figcaption></figure>
 </div></div>
-  <aside class="notas"><b>Roteiro de fala:</b> Apresentar o evento e as fontes. Insistir que satélite e raios não mostravam nada de excepcional: isso motiva olhar para dentro da nuvem com o modelo.</aside>
+  <aside class="notas"><b>Roteiro de fala:</b> Apresentar o evento noturno real (22:00–23:00 UTC / 19–20h local) e os dados de radar/satélite rastreados em granizo-gigante.</aside>
 </section>
 <section class="slide" id="s2" aria-label="Slide 2 de 10: Da Parte 1 para a Parte 2" hidden>
   <header><div><p class="num">2/10</p><h2>Da Parte 1 para a Parte 2</h2><p class="sub">A sondagem de Florianópolis na véspera</p></div><p class="tempo">00 a 03 min</p></header>
@@ -131,19 +132,19 @@ body.com-notas .notas { display:block; }
   <aside class="notas"><b>Roteiro de fala:</b> Não ler a tabela inteira: destacar microfísica e cumulus, que são as escolhas que mais pesam no resultado.</aside>
 </section>
 <section class="slide" id="s5" aria-label="Slide 5 de 10: Microfísica em 3D" hidden>
-  <header><div><p class="num">5/10</p><h2>Microfísica em 3D</h2><p class="sub">Cada hidrometeoro separado, na altura real</p></div><p class="tempo">06 a 10 min</p></header>
+  <header><div><p class="num">5/10</p><h2>Microfísica em 3D</h2><p class="sub">Animação Temporal e Isosuperfícies em Altura Real</p></div><p class="tempo">06 a 10 min</p></header>
   <div class="corpo">
 <div class="duas">
   <div>
-    <video src="figuras/animacao_3d_hidrometeoros.mp4" poster="figuras/animacao_3d_poster.png" controls loop muted playsinline preload="none"></video>
-    <p class="leg">Estilo <a href="https://www.youtube.com/watch?v=2Lr9ajlyrPQ" target="_blank" rel="noopener">Supercell on a Carousel</a>: a câmera gira em volta da célula que cruzou a Ilha. Primeiro a evolução de 12:15 a 13:45 UTC; depois, às 12:45 UTC, cada hidrometeoro sozinho. A linha branca marca a coluna da célula, sobre a Ilha. Entre saídas de 15 min, interpolação linear.</p>
+    <video src="figuras/granizo_3d_evolucao.mp4" poster="figuras/3d_todos.png" controls loop muted playsinline preload="auto" style="width:100%; border-radius:8px;"></video>
+    <p class="leg"><b>Animação Temporal 3D (12:45 a 17:45 UTC, 21 saídas):</b> evolução da tempestade no domínio interno (d03, 2 km). Isosuperfícies em altitude geométrica real \(z = (PH+PHB)/g\) (exagero vertical 4×): nuvem (cinza, 0,1 g/kg), chuva (azul, 0,5 g/kg), graupel (laranja, 0,5 g/kg), granizo (vermelho, 0,1 g/kg) e SLW (verde, 0,2 g/kg). Também disponível em <a href="figuras/granizo_3d_evolucao.gif" target="_blank">GIF animado</a>.</p>
   </div>
   <div>
     <div class="abas" role="group" aria-label="Hidrometeoro"><button type="button" data-h="todos" aria-pressed="true">todos</button><button type="button" data-h="SLW">água super-resfriada</button><button type="button" data-h="QGRAUP">graupel</button><button type="button" data-h="QHAIL">granizo</button><button type="button" data-h="QCLOUD">nuvem</button><button type="button" data-h="QRAIN">chuva</button><button type="button" data-h="QICE">gelo</button><button type="button" data-h="QSNOW">neve</button></div>
     <figure><img id="img3d" src="figuras/3d_todos.png" alt="Hidrometeoros em 3D às 12:45 UTC sobre a Ilha"><figcaption>12:45 UTC, célula sobre a Ilha, ParaView, z = (PH + PHB)/9,81, exagero vertical 4×, limiares na legenda.</figcaption></figure>
   </div>
 </div></div>
-  <aside class="notas"><b>Roteiro de fala:</b> Rodar a animação e depois mostrar cada hidrometeoro: graupel no meio da coluna, gelo e neve no topo, água super-resfriada em volta da ascendente, granizo logo acima do 0 °C.</aside>
+  <aside class="notas"><b>Roteiro de fala:</b> Executar o vídeo da evolução temporal 3D dos hidrometeoros (12:45 a 17:45 UTC). Depois alternar entre as abas para mostrar a distribuição tridimensional de graupel, água super-resfriada e granizo.</aside>
 </section>
 <section class="slide" id="s6" aria-label="Slide 6 de 10: Corte vertical e máximos" hidden>
   <header><div><p class="num">6/10</p><h2>Corte vertical e máximos</h2><p class="sub">A célula sobre a Ilha, 12:45 UTC</p></div><p class="tempo">06 a 10 min</p></header>
@@ -179,35 +180,35 @@ body.com-notas .notas { display:block; }
   <aside class="notas"><b>Roteiro de fala:</b> A convecção do modelo aconteceu, mas 5 a 9 horas antes e fora do lugar. Às 22:30 o domínio está calmo.</aside>
 </section>
 <section class="slide" id="s8" aria-label="Slide 8 de 10: Comparação com a observação" hidden>
-  <header><div><p class="num">8/10</p><h2>Comparação com a observação</h2><p class="sub">Erro de lugar e de hora</p></div><p class="tempo">10 a 14 min</p></header>
+  <header><div><p class="num">8/10</p><h2>Comparação com a observação</h2><p class="sub">Discrepância Temporal: Tarde Simulada vs. Noite Real</p></div><p class="tempo">10 a 14 min</p></header>
   <div class="corpo">
-<figure class="cheia"><img src="figuras/comparacao_obs.png" alt="Observação ao lado da refletividade simulada às 22:30 UTC"><figcaption>22:30 UTC: relatos e radar (esquerda) contra a refletividade simulada no d03 (direita).</figcaption></figure>
-<p class="destaque">Às 22:30 o eco simulado mais forte tem 21,9 dBZ, a 69,7 km do norte da Ilha. O granizo simulado sobre a Ilha veio às 12:45 UTC, cerca de 9,5 h antes do observado; a segunda onda voltou a passar perto da Ilha às 16:15 e 16:30, ainda 6 h antes.</p></div>
-  <aside class="notas"><b>Roteiro de fala:</b> Mostrar o painel lado a lado e quantificar: lugar e hora. O modelo não precisa acertar; precisa ser explicado.</aside>
+<figure class="cheia"><img src="figuras/comparacao_obs.png" alt="Observação ao lado da refletividade simulada às 22:30 UTC"><figcaption>22:30 UTC: relatos noturnos e radar Morro da Igreja (esquerda) contra a calmaria na refletividade simulada no d03 (direita).</figcaption></figure>
+<p class="destaque">Às 22:30 UTC (horário real da tempestade severa), o eco simulado mais forte no d03 tem apenas 21,9 dBZ, a 69,7 km do norte da Ilha. No modelo controle, a convecção vigorosa ocorreu durante a tarde (ondas às 12:45 UTC e 15:30–17:15 UTC), esgotando a CAPE e deixando a noite estável.</p></div>
+  <aside class="notas"><b>Roteiro de fala:</b> Enfatizar a diferença temporal: o evento severo real foi noturno (22–23h UTC), enquanto a rodada de controle simulou convecção antecipada na tarde.</aside>
 </section>
-<section class="slide" id="s9" aria-label="Slide 9 de 10: Deficiências do modelo" hidden>
-  <header><div><p class="num">9/10</p><h2>Deficiências do modelo</h2><p class="sub">Possíveis causas, a testar com outras rodadas</p></div><p class="tempo">14 a 17 min</p></header>
+<section class="slide" id="s9" aria-label="Slide 9 de 10: Deficiências do modelo e Ensembles" hidden>
+  <header><div><p class="num">9/10</p><h2>Deficiências do modelo e Ensembles</h2><p class="sub">Sensibilidade Convectiva: Kain-Fritsch vs. Grell-Freitas</p></div><p class="tempo">14 a 17 min</p></header>
   <div class="corpo">
 <div class="duas">
   <div>
-    <h3>Hora e lugar</h3>
+    <h3>Por que a rodada controle errou a hora?</h3>
     <ul>
-      <li><b>Cumulus nos domínios externos:</b> o Kain-Fritsch em 18 e 6 km pode liberar a instabilidade cedo, antes de chegar ao d03.</li>
-      <li><b>Condição inicial e bordas:</b> o ERA5 (0,25°) suaviza a inibição e a convergência costeira que seguraram a convecção até a noite.</li>
-      <li><b>Domínio pequeno:</b> com o d01 de 666 km, as bordas ficam perto e controlam o que entra no d03.</li>
+      <li><b>Disparo prematuro por Kain-Fritsch:</b> nos domínios externos (d01/d02), o esquema KF consumiu a CAPE diurna (13–17h UTC), impedindo que a energia potencial sustentasse a convecção noturna.</li>
+      <li><b>Evidência do ensemble <code>granizo-gigante</code>:</b> o teste com 9 membros (E0–E3, F1–F4) mostrou que apenas as rodadas com <b>Grell-Freitas (GF)</b> no d01 conseguiram retardar a convecção e gerar a célula noturna às 21:16–22:16 UTC perto da Ilha, gerando granizo de até 39 mm.</li>
+      <li><b>Condição inicial ERA5:</b> suaviza a inibição por camada de inversão costeira que manteve o evento real contido até a noite.</li>
     </ul>
   </div>
   <div>
-    <h3>Granizo</h3>
+    <h3>Por que o granizo não atingiu 6 cm?</h3>
     <ul>
-      <li><b>Ascendente fraca:</b> às 12:45, 7,9 m/s no domínio; no dia todo, no máximo 16,0 m/s; pedras de 5 a 6 cm pedem ascendentes de 30 a 40 m/s para ficarem suspensas crescendo.</li>
-      <li><b>Pouco tempo na SLW:</b> o granizo simulado fica perto do 0 °C e derrete; perto da Ilha o HAILCAST ficou em 0,0 mm.</li>
-      <li><b>Resolução de 2 km:</b> ainda dilui o núcleo das ascendentes; 1 km ajudaria.</li>
+      <li><b>Ascendente subestimada:</b> às 12:45 UTC, W máx foi de 7,9 m/s (máx do dia: 16,0 m/s). Pedras de 5 a 6 cm exigem correntes ascendentes de 30 a 45 m/s.</li>
+      <li><b>Tempo de residência e fusão:</b> o granizo simulado atinge pico logo acima do 0 °C e derrete antes do solo; perto da Ilha o HAILCAST do controle foi de 0,0 mm.</li>
+      <li><b>Resolução de 2 km:</b> dilui o gradiente de pressão e os núcleos supercelulares; uma grade de 1 km com microfísica de 2 momentos e parametrização GF nos externos reproduz melhor a célula noturna.</li>
     </ul>
   </div>
 </div>
-<p class="destaque">Teste que separa as hipóteses: repetir sem cumulus nos domínios externos e com o d03 em 1 km.</p></div>
-  <aside class="notas"><b>Roteiro de fala:</b> Apresentar como hipóteses, não como certezas, e propor o teste que separa cada uma.</aside>
+<p class="destaque">Solução identificada na literatura e em <code>granizo-gigante</code>: cumulus Grell-Freitas nos domínios externos (ou convecção explícita em 1–3 km direto do oeste) preserva a instabilidade para a supercélula noturna.</p></div>
+  <aside class="notas"><b>Roteiro de fala:</b> Apresentar o diagnóstico físico da falha temporal e conectar com o resultado do ensemble com Grell-Freitas de granizo-gigante.</aside>
 </section>
 <section class="slide" id="s10" aria-label="Slide 10 de 10: Conclusões" hidden>
   <header><div><p class="num">10/10</p><h2>Conclusões</h2><p class="sub">O que a modelagem ensinou</p></div><p class="tempo">17 a 20 min</p></header>

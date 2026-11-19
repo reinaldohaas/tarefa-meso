@@ -1655,11 +1655,15 @@
             </div>
 
             <div class="explanation-text" style="margin-top:18px;">
-                <strong>Animação.</strong> No estilo de <a href="https://www.youtube.com/watch?v=2Lr9ajlyrPQ" target="_blank" style="color:#c2410c;">Supercell on a Carousel (Leigh Orf)</a>, a câmera gira sem parar em volta da célula que cruzou a Ilha. Primeiro, a evolução de 12:15 a 13:45 UTC com todos os hidrometeoros; depois, às 12:45 UTC, cada hidrometeoro aparece sozinho (nuvem, chuva, gelo, neve, graupel, granizo, água super-resfriada) e, no fim, todos juntos. A linha branca marca a coluna da célula, sobre a Ilha. Entre as saídas de 15 min do WRF, o <code>TemporalInterpolator</code> do ParaView interpola linearmente; os detalhes entre duas saídas são interpolação, não modelo. O volume foi recortado a 32 km da célula, e a nuvem e a água super-resfriada usam 0,3 e 0,5 g/kg, porque com limiares menores formam uma camada extensa que esconde o núcleo. Script: <code>scripts/animacao_3d_paraview.py</code>.
+                <strong>Animação Temporal 3D da Tempestade.</strong> Evolução temporal tridimensional completa dos hidrometeoros simulados no domínio interno (d03, 2 km) ao longo de 21 saídas do modelo (12:45 a 17:45 UTC, intervalos de 15 min), interpolados em altura geométrica real \(z = (\text{PH}+\text{PHB})/9{,}81\) com exagero vertical de \(4\times\) no ParaView e codificados via FFmpeg:
             </div>
             <div class="figure-wrapper">
+                <video src="figuras/granizo_3d_evolucao.mp4" poster="figuras/3d_todos.png" controls loop muted playsinline preload="auto" style="width:100%; border-radius:8px; background:#0b1324;"></video>
+                <div class="figure-caption">Evolução temporal 3D dos hidrometeoros (12:45 a 17:45 UTC, WRF d03 2 km): nuvem (cinza), chuva (azul), graupel (laranja), granizo (vermelho) e água super-resfriada (verde). Também disponível em <a href="figuras/granizo_3d_evolucao.gif" target="_blank" style="color:#c2410c; font-weight:700;">formato GIF animado</a>.</div>
+            </div>
+            <div class="figure-wrapper" style="margin-top:16px;">
                 <video src="figuras/animacao_3d_hidrometeoros.mp4" poster="figuras/animacao_3d_poster.png" controls loop muted playsinline preload="none" style="width:100%; border-radius:8px; background:#0b1324;"></video>
-                <div class="figure-caption">Hidrometeoros em 3D sobre a Ilha, 12:15 a 13:45 UTC de 29/08/2026, WRF-ARW d03 (2 km), Milbrandt-Yau 2 momentos, exagero vertical \(4\times\)</div>
+                <div class="figure-caption">Animação em carrossel orbital (estilo Leigh Orf): rotação 3D ao redor do núcleo convectivo às 12:45 UTC com decomposição sequencial de cada hidrometeoro.</div>
             </div>
             <script>
                 function mostraWrf3d(tag, legenda, botao) {
@@ -1776,11 +1780,24 @@
             </div>
 
             <div class="how-to-read" style="border-left-color:#c2410c; background:#fff7ed;">
-                <strong style="color:#9a3412;">Diagnóstico Físico da Microfísica e Análise Crítica dos Erros de Fase e Posição:</strong>
+                <strong style="color:#9a3412;">Diagnóstico Físico da Microfísica e Análise Crítica do Evento Noturno Real vs. Simulação WRF:</strong>
                 <ul style="color:#431407;">
-                    <li><strong>Estratificação vertical na célula sobre a Ilha (12:45 UTC):</strong> a isoterma de 0 °C está a \(4{,}67\text{ km}\). A água super-resfriada chega a \(3{,}77\text{ g/kg}\) a \(5{,}68\text{ km}\) (\(-5{,}7\text{ }^\circ\text{C}\)); o graupel tem o máximo de \(4{,}92\text{ g/kg}\) a \(7{,}55\text{ km}\) (\(-18{,}9\text{ }^\circ\text{C}\)), na zona de acreção; o granizo, só \(0{,}50\text{ g/kg}\), fica a \(4{,}73\text{ km}\), logo acima do 0 °C, e derrete ao cair. No topo, perto de \(-37\text{ }^\circ\text{C}\), dominam os cristais de gelo.</li>
-                    <li><strong>Ligação com a flutuabilidade reversível de Emanuel (Parte 1):</strong> graupel, água super-resfriada e granizo suspensos entre 4 e 9 km formam uma carga de condensado de vários g/kg, que reduz a temperatura virtual da parcela: é em 3D o freio previsto pela matriz reversível, e alimenta a piscina fria por fusão e evaporação na descendente.</li>
-                    <li><strong>Por que o modelo errou a hora?</strong> Com o d01 e o d02 deslocados para sudoeste, a convecção chega à Ilha: a primeira onda cruzou o norte da Ilha às 12:45 UTC, com graupel e granizo, e a segunda voltou a passar perto às 16:15 e 16:30. Mas as duas vieram 6 a 9,5 h antes do granizo observado; às 22:30 UTC o eco simulado mais forte ficava a \(69{,}7\text{ km}\) de Jurerê. Três causas possíveis, a testar com outras rodadas: (1) o Kain-Fritsch nos domínios externos (18 e 6 km) pode liberar a instabilidade cedo demais; (2) os 2 km ainda diluem as ascendentes, que não passaram de 16 m/s no dia, pouco para manter pedras grandes crescendo; (3) o ERA5 (0,25°) suaviza a inibição e a convergência costeira que seguraram a convecção até a noite. Perto da Ilha o HAILCAST ficou em 0 mm; sobre o mar, às 15:45 e 16:00, ele deu até 249 mm, valor impossível, tratado como falha do diagnóstico. A rotação não foi observada (o radar não tem Doppler), por isso não se fala em supercélula.</li>
+                    <li><strong>O Evento Real foi Noturno (Pesquisa <code>granizo-gigante</code>):</strong>
+                        Os dados observacionais compilados pelo projeto <code>granizo-gigante</code> comprovam que a tempestade que causou estragos e pedras de até <strong>~6 cm</strong> no Norte da Ilha e Biguaçu ocorreu à <strong>noite</strong>:
+                        <ul>
+                            <li><strong>Trajetória 185 (GOES-19 GLM):</strong> o núcleo convectivo nasceu na borda da Serra Geral às 20:10 UTC (-50,1°W / -27,5°S), deslocou-se para leste a ~16 m/s, passou sobre Biguaçu às <strong>22:10 UTC</strong> e pelo Norte da Ilha às <strong>22:30 UTC</strong> (19:30 h locais).</li>
+                            <li><strong>Radar Morro da Igreja (DECEA):</strong> registrou eco MaxCAPPI extremo (>60 dBZ, categoria magenta) sobre Biguaçu e Norte da Ilha exatamente entre <strong>22:16 e 22:36 UTC</strong>.</li>
+                            <li><strong>GOES-19 (Canal 13 IR):</strong> temperatura de brilho no topo da nuvem atingiu o mínimo de <strong>\(-62{,}9\text{ }^\circ\text{C}\)</strong> às 22:20 UTC.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Estratificação vertical na célula simulada (12:45 UTC):</strong> a isoterma de 0 °C está a \(4{,}67\text{ km}\). A água super-resfriada chega a \(3{,}77\text{ g/kg}\) a \(5{,}68\text{ km}\) (\(-5{,}7\text{ }^\circ\text{C}\)); o graupel tem o máximo de \(4{,}92\text{ g/kg}\) a \(7{,}55\text{ km}\) (\(-18{,}9\text{ }^\circ\text{C}\)), na zona de acreção; o granizo, só \(0{,}50\text{ g/kg}\), fica a \(4{,}73\text{ km}\), logo acima do 0 °C, e derrete ao cair. No topo, perto de \(-37\text{ }^\circ\text{C}\), dominam os cristais de gelo.</li>
+                    <li><strong>Ligação com a flutuabilidade reversível de Emanuel (Parte 1):</strong> graupel, água super-resfriada e granizo suspensos entre 4 e 9 km formam uma carga de condensado de vários g/kg, que reduz a temperatura virtual da parcela: é em 3D o freio previsto pela matriz reversível, alimentando a piscina fria por fusão e evaporação na descendente.</li>
+                    <li><strong>Por que a rodada controle errou o horário (Tarde vs. Noite)?</strong>
+                        No modelo com configuração padrão (Kain-Fritsch nos domínios externos d01 e d02), a convecção vigorosa foi disparada prematuramente durante a tarde (duas ondas entre 12:45 e 17:30 UTC), consumindo a CAPE disponível antes da chegada da noite. Às 22:30 UTC, o domínio <code>d03</code> já se encontrava estável e calmo.
+                    </li>
+                    <li><strong>A Solução Comprovada pelos Ensembles de <code>granizo-gigante</code>:</strong>
+                        O experimento com 9 membros no projeto <code>granizo-gigante</code> (testando cumulus, camadas limites e perturbações estocásticas) revelou que apenas as rodadas utilizando a parametrização de <strong>Grell-Freitas (GF)</strong> no domínio externo (d01) foram capazes de preservar a instabilidade térmica ao longo da tarde, permitindo que a supercélula noturna se desenvolvesse na Serra Geral e atingisse a Grande Florianópolis no horário correto (21:16–22:16 UTC), gerando até 39 mm de granizo (HAILCAST).
+                    </li>
                 </ul>
             </div>
 
