@@ -1159,10 +1159,12 @@ def generate_html():
                 </table>
             </div>
 
-            <div class="block-title">8.2. Visão Geral da Precipitação e Granizo em Superfície nas Três Grades (18 km, 6 km e 2 km)</div>
+            <div class="block-title">8.2. Visão Geral da Chuva Horária no Pico e Granizo em Superfície com Divisão Política (18, 6 e 2 km)</div>
             <div class="explanation-text">
                 Assim como demonstrado nas análises de supercélulas do projeto, a caracterização rigorosa de tempestades severas exige a <strong>inspeção multiescala contínua</strong> das condições de superfície desde a escala sinótica/regional até a escala local:
                 <ul style="margin: 8px 0 12px 20px;">
+                    <li><strong>Chuva Horária no Pico (mm/h, 22:00 às 23:00 UTC):</strong> em substituição ao acumulado total, a taxa horária destaca com precisão cirúrgica a posição da linha convectiva ativa e a intensidade da precipitação instantânea durante o ápice da tempestade noturna.</li>
+                    <li><strong>Divisão Política e Geografia:</strong> os mapas dos domínios 18 km e 6 km contam com os traçados oficiais das divisas estaduais (Santa Catarina, Rio Grande do Sul e Paraná), linha de costa de alta resolução e localização das cidades-chave.</li>
                     <li><strong>Grade 18 km (d01 - Sul do Brasil):</strong> capta a forçante sinótica, o fluxo de umidade do Jato em Baixos Níveis (JBN) e o alinhamento da instabilidade que atravessou Santa Catarina.</li>
                     <li><strong>Grade 6 km (d02 - Santa Catarina e Serra Geral):</strong> resolve a orografia da escarpa da Serra Geral, evidenciando o disparo dos primeiros núcleos convectivos no interior e a sua rápida propagação em direção ao litoral.</li>
                     <li><strong>Grade 2 km (d03 - Grande Florianópolis):</strong> microfísica de dois momentos explícita (Milbrandt-Yau), delimitando a trilha local de granizo (<code>HAILNC</code> e <code>HAILCAST</code>) concentrada no corredor de Biguaçu e Norte da Ilha, perfeitamente coincidente com os relatos observados.</li>
@@ -1170,15 +1172,15 @@ def generate_html():
             </div>
 
             <div style="display:flex; flex-wrap:wrap; gap:8px; margin:14px 0;">
-                <button type="button" class="wrf-sup-tab" onclick="mostraWrfSup('multigrid', 'Painel Comparativo Multigrid: Chuva Acumulada e Trilhas de Granizo nos Domínios 18, 6 e 2 km', this)" style="padding:8px 14px; border:1px solid #c2410c; border-radius:6px; background:#ffedd5; font-weight:700; cursor:pointer; color:#9a3412;">Painel Multigrid (18 / 6 / 2 km)</button>
-                <button type="button" class="wrf-sup-tab" onclick="mostraWrfSup('d01', 'Domínio 1 (18 km): Visão Geral do Sul do Brasil e SC (Chuva e Granizo)', this)" style="padding:8px 14px; border:1px solid #cbd5e1; border-radius:6px; background:#ffffff; font-weight:600; cursor:pointer;">Grade 18 km (d01)</button>
-                <button type="button" class="wrf-sup-tab" onclick="mostraWrfSup('d02', 'Domínio 2 (6 km): Avanço da Instabilidade da Serra Geral ao Litoral de SC', this)" style="padding:8px 14px; border:1px solid #cbd5e1; border-radius:6px; background:#ffffff; font-weight:600; cursor:pointer;">Grade 6 km (d02)</button>
-                <button type="button" class="wrf-sup-tab" onclick="mostraWrfSup('d03', 'Domínio 3 (2 km): Trilha Local de Granizo em Biguaçu e Florianópolis', this)" style="padding:8px 14px; border:1px solid #cbd5e1; border-radius:6px; background:#ffffff; font-weight:600; cursor:pointer;">Grade 2 km (d03)</button>
+                <button type="button" class="wrf-sup-tab" onclick="mostraWrfSup('multigrid', 'Painel Comparativo Multigrid: Chuva Horária no Pico (22-23 UTC) e Divisão Política nos Domínios 18, 6 e 2 km', this)" style="padding:8px 14px; border:1px solid #c2410c; border-radius:6px; background:#ffedd5; font-weight:700; cursor:pointer; color:#9a3412;">Painel Multigrid (18 / 6 / 2 km)</button>
+                <button type="button" class="wrf-sup-tab" onclick="mostraWrfSup('d01', 'Domínio 1 (18 km): Chuva Horária no Pico (22-23 UTC) e Divisão Política no Sul do Brasil', this)" style="padding:8px 14px; border:1px solid #cbd5e1; border-radius:6px; background:#ffffff; font-weight:600; cursor:pointer;">Grade 18 km (d01)</button>
+                <button type="button" class="wrf-sup-tab" onclick="mostraWrfSup('d02', 'Domínio 2 (6 km): Chuva Horária no Pico e Divisão Política de SC (Serra ao Litoral)', this)" style="padding:8px 14px; border:1px solid #cbd5e1; border-radius:6px; background:#ffffff; font-weight:600; cursor:pointer;">Grade 6 km (d02)</button>
+                <button type="button" class="wrf-sup-tab" onclick="mostraWrfSup('d03', 'Domínio 3 (2 km): Chuva Horária no Pico e Granizo Local em Biguaçu e Florianópolis', this)" style="padding:8px 14px; border:1px solid #cbd5e1; border-radius:6px; background:#ffffff; font-weight:600; cursor:pointer;">Grade 2 km (d03)</button>
             </div>
 
             <div class="figure-wrapper">
-                <img id="img-wrf-sup" src="figuras/multigrid_chuva_granizo.png" alt="Chuva Acumulada e Granizo em Superfície nas Grades do WRF" onclick="openModal(this.src)">
-                <div class="figure-caption" id="cap-wrf-sup">Painel Comparativo Multigrid: Chuva Acumulada e Trilhas de Granizo nos Domínios 18, 6 e 2 km, Clique na imagem para ampliar</div>
+                <img id="img-wrf-sup" src="figuras/multigrid_chuva_granizo.png" alt="Chuva Horária no Pico e Granizo em Superfície nas Grades do WRF" onclick="openModal(this.src)">
+                <div class="figure-caption" id="cap-wrf-sup">Painel Comparativo Multigrid: Chuva Horária no Pico (22-23 UTC) e Divisão Política nos Domínios 18, 6 e 2 km, Clique na imagem para ampliar</div>
             </div>
 
             <script>
@@ -1243,18 +1245,20 @@ def generate_html():
             </div>
 
             <div class="explanation-text" style="margin-top:24px;">
-                <strong>2. Animação Mestre Cinemática Multiescala com 4 Fases (18 km &rarr; 6 km &rarr; 2 km Estável &rarr; Órbita 360° e Decomposição Anatômica).</strong>
-                Vídeo mestre completo que segue a metodologia científica rigorosa: inicia com uma visão ampla das supercélulas nas grades maiores e culmina no detalhamento tridimensional com órbita e dissecação apenas no pico noturno:
+                <strong>2. Animação Mestre Cinemática Multiescala com 5 Fases (18 km &rarr; 6 km &rarr; 2 km Estável &rarr; Órbita 360° Despir/Vestir &rarr; Continuação Pós-Pico a 10 fps).</strong>
+                Vídeo mestre completo que segue a metodologia científica solicitada: inicia com a visão ampla das supercélulas nas grades maiores com divisões políticas e chuva horária, detalha a grade interna em 3D com câmera estável, realiza o giro 360° anatômico no pico e continua a integração pós-pico até o mar:
                 <ul style="margin: 8px 0 12px 20px;">
-                    <li><strong>Fase 1 (Visão Geral - Grade 18 km - d01):</strong> campo sinótico de precipitação e núcleos de tempestade sobre o Sul do Brasil e SC com demarcação dos domínios aninhados.</li>
-                    <li><strong>Fase 2 (Visão Regional - Grade 6 km - d02):</strong> aproximação para Santa Catarina e Serra Geral, mostrando o disparo dos núcleos convectivos e a propagação da instabilidade para o litoral.</li>
-                    <li><strong>Fase 3 (Visão Local 3D - Grade 2 km - d03):</strong> câmera fixa estável sobre a Grande Florianópolis, acompanhando as 12 horas contínuas de evolução dos hidrometeoros em 3D sobre o relevo do Google Earth com a trilha de chuva e granizo no solo.</li>
+                    <li><strong>Fase 1 (Visão Geral - Grade 18 km - d01):</strong> campo de <strong>chuva horária (mm/h)</strong> e núcleos severos sobre o Sul do Brasil e SC com <strong>divisão política oficial</strong> (limites estaduais, costa e capitais) e caixas dos domínios aninhados.</li>
+                    <li><strong>Fase 2 (Visão Regional - Grade 6 km - d02):</strong> campo de <strong>chuva horária móvel (mm/h)</strong> e divisão política de Santa Catarina, evidenciando o disparo convectivo na Serra Geral e a propagação acelerada para o Litoral.</li>
+                    <li><strong>Fase 3 (Visão Local 3D - Grade 2 km - d03):</strong> câmera fixa estável sobre a Grande Florianópolis, acompanhando a evolução dos hidrometeoros em 3D das 12:00 às 22:45 UTC sobre o relevo do Google Earth com a trilha de chuva e granizo no solo.</li>
                     <li><strong>Fase 4 (Pico Noturno 22:45 UTC - Giro 360° e Despir/Vestir as Camadas):</strong> no momento de refletividade máxima (\(77{,}4\text{ dBZ}\)), a câmera executa a órbita de \(360^\circ\). Primeiro <em>despe as camadas</em> (removendo nuvem e chuva para expor a água super-resfriada verde de \(7{,}2\text{ g/kg}\), o graupel laranja de \(8{,}3\text{ g/kg}\) e o granizo severo vermelho de \(5{,}2\text{ g/kg}\)) e em seguida <em>veste as camadas de volta</em> até a recomposição completa.</li>
+                    <li><strong>Fase 5 (Continuação da Integração Pós-Pico - 22:45 às 00:00 UTC):</strong> após recompor as camadas, a integração temporal <strong>continua</strong> pelas saídas finais (22:45 a 00:00 UTC), mostrando a célula cruzar Florianópolis em direção ao Oceano Atlântico, precipitar sua carga final no mar e se dissipar.</li>
+                    <li><strong>Ritmo Lento e Didático (10 fps):</strong> taxa de exibição reduzida para \(10\text{ fps}\) (\(28{,}7\text{ s}\)), permitindo que o público examine cada detalhe dinâmico com tranquilidade e clareza.</li>
                 </ul>
             </div>
             <div class="figure-wrapper">
                 <video src="figuras/granizo_3d_evolucao.mp4" poster="figuras/3d_todos.png" controls loop muted playsinline preload="auto" style="width:100%; border-radius:8px; background:#0b1324;"></video>
-                <div class="figure-caption">Animação 3D Mestre Cinemática Multiescala (Grades 18 km, 6 km, 2 km Temporal com Câmera Estável e Órbita 360° com Despir/Vestir no Pico Noturno de 22:45 UTC). Também disponível em <a href="figuras/granizo_3d_evolucao.gif" target="_blank" style="color:#c2410c; font-weight:700;">formato GIF animado</a>.</div>
+                <div class="figure-caption">Animação 3D Mestre Cinemática Multiescala a 10 fps (Grades 18 km e 6 km com Chuva Horária e Divisão Política, 2 km Temporal com Câmera Estável, Órbita 360° com Despir/Vestir no Pico Noturno e Continuação Pós-Pico até Dissipação no Mar). Também disponível em <a href="figuras/granizo_3d_evolucao.gif" target="_blank" style="color:#c2410c; font-weight:700;">formato GIF animado</a>.</div>
             </div>
             <script>
                 function mostraWrf3d(tag, legenda, botao) {

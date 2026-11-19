@@ -169,7 +169,7 @@ def main():
              "Radiação e Passo de Tempo: RRTMG LW/SW (ra = 4, icloud = 1) e passo adaptativo (target_cfl = 1.2, dt ~ 16 s no d03).",
          ],
          os.path.join(fig_dir, 'multigrid_chuva_granizo.png'),
-         "Chuva acumulada e trilha de granizo em superfície nos domínios 18, 6 e 2 km"),
+         "Chuva horária no pico (22-23 UTC) e divisão política nos domínios 18, 6 e 2 km"),
 
         ("Slide 5: Microfísica em 3D no ParaView: Supercélula Noturna",
          "Altura geométrica real z = (PH + PHB)/9,81, relação vertical natural (VE = 1,8x), cores e limiares fixos",
@@ -179,7 +179,7 @@ def main():
              "Proporção vertical natural (VE = 1,8x): elimina a distorção vertical excessiva e confere aspecto volumétrico equilibrado.",
              "Relevo Google Earth + Trilha de Chuva/Granizo no solo: combina vegetação e costa de SC com a marcação em superfície da precipitação.",
              "Transparência aumentada: nuvem translúcida (22%) e chuva (38%) permitindo enxergar o núcleo denso de granizo (5,2 g/kg, vermelho), graupel (8,3 g/kg, laranja) e SLW (7,2 g/kg, verde).",
-             "Animações 3D: (1) Evolução Temporal 4D contínua com CÂMERA FIXA (12h, 49 saídas WRF d03); (2) Vídeo Mestre com 4 Fases (18 km -> 6 km -> 2 km estável -> órbita 360° e despir/vestir no pico).",
+             "Animações 3D a 10 fps: (1) Evolução Temporal 4D com CÂMERA FIXA (12h, 49 saídas); (2) Vídeo Mestre com 5 Fases (18 km -> 6 km -> 2 km estável -> órbita 360° e despir/vestir no pico -> continuação pós-pico até o mar).",
          ],
          os.path.join(fig_dir, '3d_todos.png'),
          "Hidrometeoros em 3D às 22:45 UTC (VE = 1,8x) sobre relevo Google Earth com trilha de granizo"),
