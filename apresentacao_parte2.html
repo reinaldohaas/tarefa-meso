@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parte 2: WRF e granizo</title>
+<style>
+:root { --fundo:#f6f7f9; --papel:#ffffff; --texto:#17202b; --suave:#5b6876; --linha:#dbe1e8; --acento:#c2410c; --acento-f:#fff1e8; --cinza:#e9edf2; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --fundo:#0e1318; --papel:#151c23; --texto:#e7ecf1; --suave:#9aa7b4; --linha:#2a343e; --acento:#fb8a4c; --acento-f:#2a1c14; --cinza:#1e2730; } }
+:root[data-theme="dark"] { --fundo:#0e1318; --papel:#151c23; --texto:#e7ecf1; --suave:#9aa7b4; --linha:#2a343e; --acento:#fb8a4c; --acento-f:#2a1c14; --cinza:#1e2730; }
+* { box-sizing:border-box; }
+html, body { margin:0; background:var(--fundo); color:var(--texto); font:17px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+.barra { position:sticky; top:0; z-index:5; display:flex; align-items:center; gap:10px; padding:8px 16px; background:var(--papel); border-bottom:1px solid var(--linha); }
+.barra .titulo { font-weight:700; margin-right:auto; font-size:15px; }
+.barra button, .barra a { font:inherit; font-size:14px; color:var(--texto); background:var(--cinza); border:1px solid var(--linha); border-radius:6px; padding:5px 10px; cursor:pointer; text-decoration:none; }
+.barra button:focus-visible, .barra a:focus-visible, .abas button:focus-visible { outline:2px solid var(--acento); outline-offset:2px; }
+.pontos { display:flex; gap:4px; }
+.pontos button { width:26px; padding:4px 0; text-align:center; }
+.pontos button[aria-current="true"] { background:var(--acento); color:#fff; border-color:var(--acento); }
+main { max-width:1280px; margin:0 auto; padding:16px; }
+.slide { background:var(--papel); border:1px solid var(--linha); border-radius:12px; padding:22px 28px; min-height:calc(100vh - 90px); display:flex; flex-direction:column; gap:14px; }
+.slide[hidden] { display:none; }
+.slide header { display:flex; justify-content:space-between; gap:12px; border-bottom:2px solid var(--acento); padding-bottom:10px; }
+.num { margin:0; color:var(--acento); font-weight:700; font-size:14px; }
+h2 { margin:2px 0 0; font-size:30px; line-height:1.15; }
+.sub { margin:4px 0 0; color:var(--suave); }
+.tempo { margin:0; white-space:nowrap; color:var(--suave); font-size:14px; }
+h3 { margin:0 0 6px; font-size:19px; }
+.corpo { flex:1; }
+.duas { display:grid; grid-template-columns:1fr 1fr; gap:22px; align-items:start; }
+ul { margin:0; padding-left:20px; } li { margin:6px 0; }
+figure { margin:0; } figure img, video { width:100%; border:1px solid var(--linha); border-radius:8px; background:#0b1324; display:block; }
+figure.cheia img { max-height:62vh; object-fit:contain; background:#fff; }
+figcaption, .leg { color:var(--suave); font-size:14px; margin-top:6px; }
+.destaque { background:var(--acento-f); border-left:4px solid var(--acento); padding:10px 14px; border-radius:6px; margin:12px 0 0; }
+.tab { border-collapse:collapse; width:100%; font-size:15px; } .tab th, .tab td { border:1px solid var(--linha); padding:6px 9px; text-align:left; vertical-align:top; }
+.tab th { background:var(--cinza); }
+code { font-size:0.9em; background:var(--cinza); padding:1px 4px; border-radius:4px; }
+.abas { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px; }
+.abas button { font:inherit; font-size:13px; padding:4px 9px; border-radius:6px; border:1px solid var(--linha); background:var(--papel); color:var(--texto); cursor:pointer; }
+.abas button[aria-pressed="true"] { background:var(--acento); border-color:var(--acento); color:#fff; }
+.links { display:grid; gap:8px; } .links a { color:var(--acento); font-weight:600; }
+a { color:var(--acento); }
+.notas { display:none; border-top:1px dashed var(--linha); padding-top:10px; color:var(--suave); font-size:15px; }
+body.com-notas .notas { display:block; }
+.grafico svg { width:100%; height:auto; display:block; }
+.grafico text { fill:var(--suave); font-size:11px; }
+.tab td, .tab th { overflow-wrap:anywhere; }
+@media (max-width: 860px) { .tab { font-size:13px; } .tab th, .tab td { padding:5px 6px; } .duas { grid-template-columns:1fr; } h2 { font-size:24px; } .slide { padding:16px; min-height:auto; } .barra .titulo { display:none; } .pontos { display:none; } }
+@media print { .barra { display:none; } .slide { display:flex !important; break-after:page; min-height:auto; } .slide[hidden] { display:flex !important; } }
+</style>
+</head>
+<body>
+<nav class="barra" aria-label="Navegação dos slides">
+  <span class="titulo">Seminário Final, Parte 2: WRF e granizo (FSC7116, UFSC)</span>
+  <button type="button" id="ant" aria-label="Slide anterior">◀</button>
+  <div class="pontos" id="pontos"></div>
+  <button type="button" id="prox" aria-label="Próximo slide">▶</button>
+  <button type="button" id="notas" aria-pressed="false">Roteiro (N)</button>
+  <button type="button" id="cheia">Tela cheia (F)</button>
+  <a href="index.html#sec-wrf-parte2">Voltar ao site</a>
+</nav>
+<main>
+<section class="slide" id="s1" aria-label="Slide 1 de 10: O caso severo">
+  <header><div><p class="num">1/10</p><h2>O caso severo</h2><p class="sub">Granizo no norte da Ilha de Santa Catarina, 29/08/2026</p></div><p class="tempo">00 a 03 min</p></header>
+  <div class="corpo">
+<div class="duas">
+  <div>
+    <ul>
+      <li><b>Quando e onde:</b> entre 22:00 e 23:00 UTC (19 e 20 h locais), em Biguaçu e no norte da Ilha (Jurerê, Canasvieiras, Cachoeira do Bom Jesus, Ingleses).</li>
+      <li><b>Relatos:</b> pedras de até ~6 cm, "bolas de tênis" em Biguaçu.</li>
+      <li><b>Radar Morro da Igreja:</b> núcleo forte cruzando o norte da Ilha entre 22:16 e 22:36 UTC.</li>
+      <li><b>GOES-19:</b> topo mais frio de −62,9 °C às 22:20 UTC, igual ao das outras células da noite, sem topo penetrante; até 320 flashes por 10 min no GLM, sem salto de raios.</li>
+    </ul>
+    <p class="destaque">Nada nos dados de satélite e raios distinguia esta célula das outras. O granizo gigante veio de uma tempestade que parecia comum.</p>
+  </div>
+  <figure><img src="figuras/comparacao_obs.png" alt="Relatos de granizo, caixa do GOES-19 e trajetória do radar sobre o norte da Ilha, ao lado da refletividade simulada"><figcaption>Relatos e trajetória do núcleo no radar (esquerda). A direita volta no slide 8.</figcaption></figure>
+</div></div>
+  <aside class="notas"><b>Roteiro de fala:</b> Apresentar o evento e as fontes. Insistir que satélite e raios não mostravam nada de excepcional: isso motiva olhar para dentro da nuvem com o modelo.</aside>
+</section>
+<section class="slide" id="s2" aria-label="Slide 2 de 10: Da Parte 1 para a Parte 2" hidden>
+  <header><div><p class="num">2/10</p><h2>Da Parte 1 para a Parte 2</h2><p class="sub">A sondagem de Florianópolis na véspera</p></div><p class="tempo">00 a 03 min</p></header>
+  <div class="corpo">
+<div class="duas">
+  <div>
+    <ul>
+      <li><b>SBFL 83899, 28/08/2026 12Z:</b> MUCAPE de 1303,5 J/kg, SBCAPE de 442,8 J/kg e água precipitável de 40,9 mm.</li>
+      <li><b>Matriz de Emanuel:</b> no modo reversível, que retém a água condensada na parcela, a flutuabilidade cai muito em relação ao pseudoadiabático.</li>
+      <li><b>Pergunta da Parte 2:</b> onde o modelo guarda essa água e esse gelo dentro da nuvem, e isso basta para fazer granizo grande?</li>
+    </ul>
+  </div>
+  <figure><img src="metpack/emanuel_20260828.png" alt="Matriz de flutuabilidade de Emanuel para a sondagem de Florianópolis de 28/08/2026 12Z"><figcaption>Flutuabilidade de Emanuel, SBFL 28/08/2026 12Z (Parte 1).</figcaption></figure>
+</div></div>
+  <aside class="notas"><b>Roteiro de fala:</b> Ligar com a Parte 1 em um minuto: a carga de condensado reduz o empuxo. A Parte 2 mostra essa carga em 3D.</aside>
+</section>
+<section class="slide" id="s3" aria-label="Slide 3 de 10: Desenho da grade" hidden>
+  <header><div><p class="num">3/10</p><h2>Desenho da grade</h2><p class="sub">Três domínios aninhados: 18, 6 e 2 km</p></div><p class="tempo">03 a 06 min</p></header>
+  <div class="corpo">
+<div class="duas">
+  <figure><img src="figuras/dominios.png" alt="Três domínios aninhados do WRF sobre o relevo, centrados no norte da Ilha"><figcaption>Cada domínio com o relevo na sua resolução: no centro, o de 2 km (HGT_M do WPS).</figcaption></figure>
+  <div>
+    <table class="tab">
+      <tr><th>Domínio</th><th>dx</th><th>Pontos</th><th>Área</th></tr>
+      <tr><td>d01</td><td>18 km</td><td>38 × 38</td><td>666 × 666 km</td></tr>
+      <tr><td>d02</td><td>6 km</td><td>49 × 49</td><td>288 × 288 km</td></tr>
+      <tr><td>d03</td><td>2 km</td><td>61 × 61</td><td>120 × 120 km</td></tr>
+    </table>
+    <ul>
+      <li><b>Regra dos 2/3:</b> no d01 e no d02 a Ilha fica a 2/3 da largura para leste e para norte, deixando dentro da grade a área a oeste e a sul, de onde a convecção vem. O d03 fica centrado na Ilha.</li>
+      <li>Razão 3, <code>feedback = 1</code>, 45 níveis até 50 hPa.</li>
+      <li>ERA5 a cada 1 h, de 12:00 de 29/08 a 00:00 de 30/08 UTC: 10 h antes do granizo observado.</li>
+      <li>O d01 ficou pequeno porque o recorte do ERA5 disponível não cobria mais que isso (o <code>metgrid</code> acusava valores ausentes).</li>
+    </ul>
+  </div>
+</div></div>
+  <aside class="notas"><b>Roteiro de fala:</b> Mostrar que o requisito de 3 km ou menos foi cumprido e explicar por que o d01 é pequeno: limitação de dado, não escolha física.</aside>
+</section>
+<section class="slide" id="s4" aria-label="Slide 4 de 10: A combinação da namelist.input" hidden>
+  <header><div><p class="num">4/10</p><h2>A combinação da namelist.input</h2><p class="sub">Cada escolha com a sua justificativa</p></div><p class="tempo">03 a 06 min</p></header>
+  <div class="corpo">
+<table class="tab larga">
+  <tr><th>Opção</th><th>Escolha</th><th>Por quê</th></tr>
+  <tr><td>Microfísica</td><td>Milbrandt-Yau 2 momentos (<code>mp_physics = 9</code>)</td><td>Separa graupel (<code>QGRAUP</code>) e granizo (<code>QHAIL</code>) e prevê o número de partículas.</td></tr>
+  <tr><td>Cumulus</td><td>Kain-Fritsch em d01 e d02, desligado em d03 (<code>1, 1, 0</code>)</td><td>Em 2 km as ascendentes são resolvidas; nos externos, a convecção precisa ser parametrizada.</td></tr>
+  <tr><td>Camada limite</td><td>YSU (<code>bl_pbl_physics = 1</code>)</td><td>Mistura não local, adequada à camada limite diurna antes da convecção.</td></tr>
+  <tr><td>Superfície</td><td>MM5 e Noah (<code>1</code> e <code>2</code>)</td><td>Fluxos de superfície com solo de 4 camadas.</td></tr>
+  <tr><td>Radiação</td><td>RRTMG onda longa e curta (<code>4, 4</code>), <code>radt = 15</code></td><td>Interação com nuvem e gelo (<code>icloud = 1</code>).</td></tr>
+  <tr><td>Passo de tempo</td><td>Adaptativo, <code>target_cfl = 1.2</code></td><td>Mantém o CFL nas ascendentes e grava a cada 15 min no d03.</td></tr>
+  <tr><td>Diagnósticos</td><td><code>do_radar_ref = 1</code>, <code>hailcast_opt = 0, 0, 1</code></td><td>Refletividade para comparar com o radar; tamanho do granizo no d03.</td></tr>
+</table></div>
+  <aside class="notas"><b>Roteiro de fala:</b> Não ler a tabela inteira: destacar microfísica e cumulus, que são as escolhas que mais pesam no resultado.</aside>
+</section>
+<section class="slide" id="s5" aria-label="Slide 5 de 10: Microfísica em 3D" hidden>
+  <header><div><p class="num">5/10</p><h2>Microfísica em 3D</h2><p class="sub">Cada hidrometeoro separado, na altura real</p></div><p class="tempo">06 a 10 min</p></header>
+  <div class="corpo">
+<div class="duas">
+  <div>
+    <video src="figuras/animacao_3d_hidrometeoros.mp4" poster="figuras/animacao_3d_poster.png" controls loop muted playsinline preload="none"></video>
+    <p class="leg">Estilo <a href="https://www.youtube.com/watch?v=2Lr9ajlyrPQ" target="_blank" rel="noopener">Supercell on a Carousel</a>: a câmera gira em volta da célula que cruzou a Ilha. Primeiro a evolução de 12:15 a 13:45 UTC; depois, às 12:45 UTC, cada hidrometeoro sozinho. A linha branca marca a coluna da célula, sobre a Ilha. Entre saídas de 15 min, interpolação linear.</p>
+  </div>
+  <div>
+    <div class="abas" role="group" aria-label="Hidrometeoro"><button type="button" data-h="todos" aria-pressed="true">todos</button><button type="button" data-h="SLW">água super-resfriada</button><button type="button" data-h="QGRAUP">graupel</button><button type="button" data-h="QHAIL">granizo</button><button type="button" data-h="QCLOUD">nuvem</button><button type="button" data-h="QRAIN">chuva</button><button type="button" data-h="QICE">gelo</button><button type="button" data-h="QSNOW">neve</button></div>
+    <figure><img id="img3d" src="figuras/3d_todos.png" alt="Hidrometeoros em 3D às 12:45 UTC sobre a Ilha"><figcaption>12:45 UTC, célula sobre a Ilha, ParaView, z = (PH + PHB)/9,81, exagero vertical 4×, limiares na legenda.</figcaption></figure>
+  </div>
+</div></div>
+  <aside class="notas"><b>Roteiro de fala:</b> Rodar a animação e depois mostrar cada hidrometeoro: graupel no meio da coluna, gelo e neve no topo, água super-resfriada em volta da ascendente, granizo logo acima do 0 °C.</aside>
+</section>
+<section class="slide" id="s6" aria-label="Slide 6 de 10: Corte vertical e máximos" hidden>
+  <header><div><p class="num">6/10</p><h2>Corte vertical e máximos</h2><p class="sub">A célula sobre a Ilha, 12:45 UTC</p></div><p class="tempo">06 a 10 min</p></header>
+  <div class="corpo">
+<div class="duas">
+  <figure><img src="figuras/corte_vertical.png" alt="Corte vertical oeste-leste com graupel, granizo, água super-resfriada, velocidade vertical e isotermas"><figcaption>Graupel sombreado, granizo em vermelho, SLW em verde, W em preto, isotermas de 0, −20 e −40 °C.</figcaption></figure>
+  <div>
+    <table class="tab"><tr><th>Hidrometeoro</th><th>Máx (g/kg)</th><th>Altura (km)</th><th>T (°C)</th></tr><tr><td>Nuvem (QCLOUD)</td><td>3,76</td><td>5,7</td><td>-5,7</td></tr><tr><td>Chuva (QRAIN)</td><td>0,42</td><td>3,4</td><td>6,0</td></tr><tr><td>Gelo (QICE)</td><td>0,56</td><td>9,9</td><td>-36,6</td></tr><tr><td>Neve (QSNOW)</td><td>0,32</td><td>9,9</td><td>-36,5</td></tr><tr><td>Graupel (QGRAUP)</td><td>4,92</td><td>7,5</td><td>-18,9</td></tr><tr><td>Granizo (QHAIL)</td><td>0,50</td><td>4,7</td><td>-1,2</td></tr><tr><td>Água Super-resfriada (SLW)</td><td>3,77</td><td>5,7</td><td>-5,7</td></tr></table>
+    <p class="destaque">Isoterma de 0 °C a 4,67 km. A SLW chega a 3,77 g/kg a 5,7 km; o graupel tem o máximo de 4,92 g/kg a 7,5 km e o granizo, só 0,50 g/kg, a 4,7 km, já no 0 °C, derretendo.</p>
+  </div>
+</div></div>
+  <aside class="notas"><b>Roteiro de fala:</b> A água super-resfriada existe, mas o granizo é pouco e fica baixo, perto do 0 °C. Pergunta para a banca: falta água ou falta ascendente?</aside>
+</section>
+<section class="slide" id="s7" aria-label="Slide 7 de 10: Evolução no tempo" hidden>
+  <header><div><p class="num">7/10</p><h2>Evolução no tempo</h2><p class="sub">Duas ondas de convecção, cedo demais</p></div><p class="tempo">10 a 14 min</p></header>
+  <div class="corpo">
+<div class="duas">
+  <div>
+    <div class="grafico" id="serie" role="img" aria-label="Série temporal de refletividade máxima, velocidade vertical máxima e graupel e granizo máximos no domínio interno"></div>
+    <p class="leg">Máximos no d03 a cada 15 min. Faixa cinza: janela do granizo observado (22:00 a 23:00 UTC).</p>
+  </div>
+  <div>
+    <ul>
+      <li><b>Primeira onda:</b> 59,5 dBZ às 13:00 UTC.</li>
+      <li><b>A onda que cruzou a Ilha:</b> às 12:45 UTC, 52,6 dBZ, com graupel e granizo sobre a Ilha.</li>
+      <li><b>Segunda onda:</b> de 15:30 a 17:15 UTC; às 16:15 e 16:30 volta a passar perto da Ilha, com até 45 dBZ a 25 km de Jurerê.</li>
+      <li><b>Ascendente mais forte:</b> 16,0 m/s às 15:30 UTC.</li>
+      <li><b>Na hora do granizo (22:30):</b> 21,9 dBZ, sem graupel nem granizo.</li>
+      <li><b>HAILCAST:</b> 0,0 mm perto da Ilha. Às 15:45 e 16:00, sobre o mar, deu até 249 mm, valor impossível (falha do diagnóstico), que não usamos.</li>
+    </ul>
+  </div>
+</div></div>
+  <aside class="notas"><b>Roteiro de fala:</b> A convecção do modelo aconteceu, mas 5 a 9 horas antes e fora do lugar. Às 22:30 o domínio está calmo.</aside>
+</section>
+<section class="slide" id="s8" aria-label="Slide 8 de 10: Comparação com a observação" hidden>
+  <header><div><p class="num">8/10</p><h2>Comparação com a observação</h2><p class="sub">Erro de lugar e de hora</p></div><p class="tempo">10 a 14 min</p></header>
+  <div class="corpo">
+<figure class="cheia"><img src="figuras/comparacao_obs.png" alt="Observação ao lado da refletividade simulada às 22:30 UTC"><figcaption>22:30 UTC: relatos e radar (esquerda) contra a refletividade simulada no d03 (direita).</figcaption></figure>
+<p class="destaque">Às 22:30 o eco simulado mais forte tem 21,9 dBZ, a 69,7 km do norte da Ilha. O granizo simulado sobre a Ilha veio às 12:45 UTC, cerca de 9,5 h antes do observado; a segunda onda voltou a passar perto da Ilha às 16:15 e 16:30, ainda 6 h antes.</p></div>
+  <aside class="notas"><b>Roteiro de fala:</b> Mostrar o painel lado a lado e quantificar: lugar e hora. O modelo não precisa acertar; precisa ser explicado.</aside>
+</section>
+<section class="slide" id="s9" aria-label="Slide 9 de 10: Deficiências do modelo" hidden>
+  <header><div><p class="num">9/10</p><h2>Deficiências do modelo</h2><p class="sub">Possíveis causas, a testar com outras rodadas</p></div><p class="tempo">14 a 17 min</p></header>
+  <div class="corpo">
+<div class="duas">
+  <div>
+    <h3>Hora e lugar</h3>
+    <ul>
+      <li><b>Cumulus nos domínios externos:</b> o Kain-Fritsch em 18 e 6 km pode liberar a instabilidade cedo, antes de chegar ao d03.</li>
+      <li><b>Condição inicial e bordas:</b> o ERA5 (0,25°) suaviza a inibição e a convergência costeira que seguraram a convecção até a noite.</li>
+      <li><b>Domínio pequeno:</b> com o d01 de 666 km, as bordas ficam perto e controlam o que entra no d03.</li>
+    </ul>
+  </div>
+  <div>
+    <h3>Granizo</h3>
+    <ul>
+      <li><b>Ascendente fraca:</b> às 12:45, 7,9 m/s no domínio; no dia todo, no máximo 16,0 m/s; pedras de 5 a 6 cm pedem ascendentes de 30 a 40 m/s para ficarem suspensas crescendo.</li>
+      <li><b>Pouco tempo na SLW:</b> o granizo simulado fica perto do 0 °C e derrete; perto da Ilha o HAILCAST ficou em 0,0 mm.</li>
+      <li><b>Resolução de 2 km:</b> ainda dilui o núcleo das ascendentes; 1 km ajudaria.</li>
+    </ul>
+  </div>
+</div>
+<p class="destaque">Teste que separa as hipóteses: repetir sem cumulus nos domínios externos e com o d03 em 1 km.</p></div>
+  <aside class="notas"><b>Roteiro de fala:</b> Apresentar como hipóteses, não como certezas, e propor o teste que separa cada uma.</aside>
+</section>
+<section class="slide" id="s10" aria-label="Slide 10 de 10: Conclusões" hidden>
+  <header><div><p class="num">10/10</p><h2>Conclusões</h2><p class="sub">O que a modelagem ensinou</p></div><p class="tempo">17 a 20 min</p></header>
+  <div class="corpo">
+<div class="duas">
+  <ul>
+    <li>Com convecção explícita em 2 km e microfísica de 2 momentos, o WRF separa graupel, granizo e água super-resfriada e mostra onde cada um fica.</li>
+    <li>A nuvem simulada tinha água super-resfriada, mas a ascendente foi fraca demais para fazer granizo grande.</li>
+    <li>A convecção veio horas antes e fora do lugar; as causas possíveis estão na configuração dos domínios externos e na condição inicial.</li>
+    <li>O erro do modelo é o resultado mais útil: mostra o que ele não reproduz num dia de granizo gigante.</li>
+  </ul>
+  <div class="links">
+    <h3>Para a arguição</h3>
+    <a href="index.html#sec-wrf-parte2">Página da Parte 2 no site</a>
+    <a href="https://github.com/reinaldohaas/tarefa-meso/blob/master/RELATORIO_RODADA.md" target="_blank" rel="noopener">RELATORIO_RODADA.md</a>
+    <a href="https://github.com/reinaldohaas/tarefa-meso/blob/master/rodadas/r1_milbrandt_yau_2km/namelist.input" target="_blank" rel="noopener">namelist.input</a>
+    <a href="https://github.com/reinaldohaas/tarefa-meso/blob/master/wps/namelist.wps" target="_blank" rel="noopener">namelist.wps</a>
+    <a href="apresentacao/apresentacao_wrf_granizo.pptx">Slides em PowerPoint</a>
+    <a href="https://github.com/reinaldohaas/tarefa-meso/blob/master/TAREFA_WRF_HIDROMETEOROS.md" target="_blank" rel="noopener">Enunciado da tarefa</a>
+  </div>
+</div></div>
+  <aside class="notas"><b>Roteiro de fala:</b> Fechar em três frases e abrir para perguntas, com a página do GitHub aberta.</aside>
+</section>
+</main>
+<script>
+const SERIE = [{"h": "12:00", "z": 0.0, "w": 0.42, "g": 0.0, "q": 0.0}, {"h": "12:15", "z": 22.52, "w": 1.86, "g": 0.0, "q": 0.0}, {"h": "12:30", "z": 25.16, "w": 9.01, "g": 0.04, "q": 0.0}, {"h": "12:45", "z": 52.59, "w": 7.94, "g": 4.93, "q": 0.5}, {"h": "13:00", "z": 59.55, "w": 7.49, "g": 4.65, "q": 0.81}, {"h": "13:15", "z": 57.66, "w": 9.17, "g": 4.49, "q": 1.01}, {"h": "13:30", "z": 46.7, "w": 3.99, "g": 2.47, "q": 0.23}, {"h": "13:45", "z": 39.6, "w": 1.11, "g": 0.35, "q": 0.0}, {"h": "14:00", "z": 37.65, "w": 1.11, "g": 0.28, "q": 0.0}, {"h": "14:15", "z": 35.44, "w": 1.06, "g": 0.1, "q": 0.0}, {"h": "14:30", "z": 23.97, "w": 0.99, "g": 0.02, "q": 0.0}, {"h": "14:45", "z": 19.19, "w": 1.24, "g": 0.0, "q": 0.0}, {"h": "15:00", "z": 19.76, "w": 1.64, "g": 0.0, "q": 0.0}, {"h": "15:15", "z": 37.36, "w": 9.87, "g": 0.99, "q": 0.02}, {"h": "15:30", "z": 52.47, "w": 15.99, "g": 5.22, "q": 0.86}, {"h": "15:45", "z": 49.74, "w": 14.91, "g": 5.29, "q": 0.64}, {"h": "16:00", "z": 49.9, "w": 5.64, "g": 3.61, "q": 0.46}, {"h": "16:15", "z": 40.36, "w": 14.71, "g": 4.15, "q": 0.14}, {"h": "16:30", "z": 50.65, "w": 10.13, "g": 4.7, "q": 0.58}, {"h": "16:45", "z": 46.89, "w": 6.72, "g": 3.58, "q": 0.17}, {"h": "17:00", "z": 43.61, "w": 11.25, "g": 3.92, "q": 0.2}, {"h": "17:15", "z": 49.06, "w": 9.85, "g": 4.54, "q": 0.5}, {"h": "17:30", "z": 47.0, "w": 4.43, "g": 2.06, "q": 0.22}, {"h": "17:45", "z": 25.74, "w": 3.25, "g": 0.09, "q": 0.0}, {"h": "18:00", "z": 30.74, "w": 1.93, "g": 0.0, "q": 0.0}, {"h": "18:15", "z": 43.88, "w": 5.99, "g": 0.12, "q": 0.01}, {"h": "18:30", "z": 36.88, "w": 3.29, "g": 0.06, "q": 0.0}, {"h": "18:45", "z": 30.29, "w": 1.3, "g": 0.0, "q": 0.0}, {"h": "19:00", "z": 28.19, "w": 2.02, "g": 0.0, "q": 0.0}, {"h": "19:15", "z": 17.02, "w": 1.0, "g": 0.0, "q": 0.0}, {"h": "19:30", "z": 19.28, "w": 0.97, "g": 0.0, "q": 0.0}, {"h": "19:45", "z": 15.64, "w": 1.0, "g": 0.0, "q": 0.0}, {"h": "20:00", "z": 15.81, "w": 0.98, "g": 0.0, "q": 0.0}, {"h": "20:15", "z": 17.57, "w": 1.01, "g": 0.0, "q": 0.0}, {"h": "20:30", "z": 19.76, "w": 1.06, "g": 0.0, "q": 0.0}, {"h": "20:45", "z": 18.03, "w": 1.16, "g": 0.0, "q": 0.0}, {"h": "21:00", "z": 17.78, "w": 1.51, "g": 0.0, "q": 0.0}, {"h": "21:15", "z": 19.91, "w": 1.07, "g": 0.0, "q": 0.0}, {"h": "21:30", "z": 25.31, "w": 1.05, "g": 0.0, "q": 0.0}, {"h": "21:45", "z": 23.24, "w": 0.97, "g": 0.0, "q": 0.0}, {"h": "22:00", "z": 27.13, "w": 0.93, "g": 0.0, "q": 0.0}, {"h": "22:15", "z": 24.12, "w": 0.88, "g": 0.0, "q": 0.0}, {"h": "22:30", "z": 21.86, "w": 0.89, "g": 0.0, "q": 0.0}, {"h": "22:45", "z": 26.66, "w": 0.98, "g": 0.0, "q": 0.0}, {"h": "23:00", "z": 17.98, "w": 0.91, "g": 0.0, "q": 0.0}, {"h": "23:15", "z": 23.29, "w": 0.83, "g": 0.0, "q": 0.0}, {"h": "23:30", "z": 22.04, "w": 0.81, "g": 0.0, "q": 0.0}, {"h": "23:45", "z": 22.43, "w": 0.81, "g": 0.0, "q": 0.0}, {"h": "00:00", "z": 15.13, "w": 1.47, "g": 0.0, "q": 0.0}];
+const slides = [...document.querySelectorAll('.slide')];
+const pontos = document.getElementById('pontos');
+slides.forEach((s, i) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = i + 1; b.setAttribute('aria-label', 'Ir ao slide ' + (i + 1)); b.onclick = () => vai(i); pontos.appendChild(b); });
+let atual = 0;
+function vai(i) {
+  atual = Math.max(0, Math.min(slides.length - 1, i));
+  slides.forEach((s, k) => { s.hidden = k !== atual; if (k !== atual) s.querySelectorAll('video').forEach(v => v.pause()); });
+  [...pontos.children].forEach((b, k) => b.setAttribute('aria-current', k === atual ? 'true' : 'false'));
+  history.replaceState(null, '', '#' + (atual + 1));
+  window.scrollTo(0, 0);
+}
+document.getElementById('ant').onclick = () => vai(atual - 1);
+document.getElementById('prox').onclick = () => vai(atual + 1);
+const bn = document.getElementById('notas');
+bn.onclick = () => { const on = document.body.classList.toggle('com-notas'); bn.setAttribute('aria-pressed', on); };
+document.getElementById('cheia').onclick = () => document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
+document.addEventListener('keydown', e => {
+  if (e.target.closest('video, input, textarea')) return;
+  if (['ArrowRight', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); vai(atual + 1); }
+  else if (['ArrowLeft', 'PageUp'].includes(e.key)) { e.preventDefault(); vai(atual - 1); }
+  else if (e.key === 'Home') vai(0);
+  else if (e.key === 'End') vai(slides.length - 1);
+  else if (e.key === 'n' || e.key === 'N') bn.click();
+  else if (e.key === 'f' || e.key === 'F') document.getElementById('cheia').click();
+});
+document.querySelectorAll('.abas button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('.abas button').forEach(x => x.setAttribute('aria-pressed', 'false'));
+  b.setAttribute('aria-pressed', 'true');
+  document.getElementById('img3d').src = 'figuras/3d_' + b.dataset.h + '.png';
+});
+// Série temporal: refletividade (eixo esquerdo), W, graupel e granizo (eixo direito)
+(function () {
+  const W = 640, H = 330, m = { l: 44, r: 44, t: 16, b: 48 }, n = SERIE.length;
+  const x = i => m.l + i * (W - m.l - m.r) / (n - 1);
+  const yz = v => H - m.b - Math.max(0, v) / 70 * (H - m.t - m.b);
+  const yw = v => H - m.b - v / 14 * (H - m.t - m.b);
+  const linha = (f, cor, tr) => '<path fill="none" stroke="' + cor + '" stroke-width="2.2"' + (tr ? ' stroke-dasharray="5 3"' : '') + ' d="' + SERIE.map((s, i) => (i ? 'L' : 'M') + x(i).toFixed(1) + ' ' + f(s).toFixed(1)).join(' ') + '"/>';
+  const i0 = SERIE.findIndex(s => s.h === '22:00'), i1 = SERIE.findIndex(s => s.h === '23:00');
+  let svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg">';
+  svg += '<rect x="' + x(i0) + '" y="' + m.t + '" width="' + (x(i1) - x(i0)) + '" height="' + (H - m.t - m.b) + '" fill="currentColor" opacity="0.08"/>';
+  [0, 20, 40, 60].forEach(v => svg += '<line x1="' + m.l + '" x2="' + (W - m.r) + '" y1="' + yz(v) + '" y2="' + yz(v) + '" stroke="currentColor" opacity="0.12"/><text x="' + (m.l - 6) + '" y="' + (yz(v) + 4) + '" text-anchor="end">' + v + '</text>');
+  [0, 4, 8, 12].forEach(v => svg += '<text x="' + (W - m.r + 6) + '" y="' + (yw(v) + 4) + '">' + v + '</text>');
+  SERIE.forEach((s, i) => { if (s.h.endsWith(':00') && +s.h.slice(0, 2) % 2 === 0) svg += '<text x="' + x(i) + '" y="' + (H - m.b + 16) + '" text-anchor="middle">' + s.h + '</text>'; });
+  svg += linha(s => yz(s.z), '#c2410c') + linha(s => yw(s.w), '#2563eb') + linha(s => yw(s.g), '#d97706', true) + linha(s => yw(s.q * 4), '#b91c1c', true);
+  svg += '<text x="' + m.l + '" y="' + (H - 8) + '">dBZ (esq.): refletividade · eixo dir.: W (m/s), graupel (g/kg), granizo × 4 (g/kg)</text>';
+  const el = document.getElementById('serie'); el.style.color = getComputedStyle(document.body).color; el.innerHTML = svg + '</svg>';
+  const leg = [['refletividade', '#c2410c'], ['W', '#2563eb'], ['graupel', '#d97706'], ['granizo × 4', '#b91c1c']];
+  el.insertAdjacentHTML('beforeend', '<p class="leg">' + leg.map(l => '<span style="color:' + l[1] + '">■</span> ' + l[0]).join(' &nbsp; ') + '</p>');
+})();
+const h = parseInt(location.hash.slice(1), 10);
+vai(Number.isFinite(h) ? h - 1 : 0);
+</script>
+</body>
+</html>

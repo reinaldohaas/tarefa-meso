@@ -52,6 +52,7 @@ tarefa-meso/
 ├── apresentacao_meso.pptx       # Apresentação oficial para a Defesa Civil de SC
 ├── ROTEIRO_ESTUDANTES.md        # Roteiro passo a passo com critérios de avaliação (Parte 1)
 ├── TAREFA_WRF_HIDROMETEOROS.md  # Enunciado completo do Seminário Final (Parte 2: WRF e hidrometeoros 3D)
+├── apresentacao_parte2.html     # Apresentação da Parte 2 em tela cheia (10 slides, animação 3D), gerada por scripts/gerar_apresentacao_parte2.py
 ├── RELATORIO_RODADA.md          # Relatório técnico da rodada WRF (r1_milbrandt_yau_2km)
 ├── WRF_VLab_tarefa.ipynb        # Notebook para rodar a Parte 2 (WRF) no VLab
 ├── Seminario_plot_sounding_revisado.ipynb # Notebook oficial da Parte 1 para execução no Google Colab

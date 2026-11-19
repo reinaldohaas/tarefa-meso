@@ -40,10 +40,10 @@ def sincronizar():
 - **Caso:** Evento severo de granizo no Norte da Ilha de Santa Catarina (Florianópolis e Biguaçu, SC) em 29/08/2026, com relatos de superfície entre 22:00 e 23:00 UTC (19:00–20:00 BRT), topos frios no GOES-19 de $-62,9\\text{{ }}^\\circ\\text{{C}}$ às 22:20 UTC e núcleo severo no radar do Morro da Igreja entre 22:16 e 22:36 UTC.
 - **Ambiente:** Computador pessoal Windows (`C:\\gis4wrf\\projects\\granizo`); WRF-ARW V4.2.2 (`WRF-4.2-mpi`); processadores: 6 núcleos físicos via Microsoft MPI (`mpiexec -n 6`).
 - **Dados de entrada:** Reanálise ERA5 (Copernicus CDS, 37 níveis de pressão e superfície), a cada 1 h (`interval_seconds = 3600`), de `2026-08-29_12:00:00` a `2026-08-30_00:00:00` UTC (10 h de *spin-up* antes do evento severo).
-- **Domínios:** Aninhamento triplo bidirecional (`feedback = 1`), razão 1:3, centrado em $-27,50^\\circ\\text{{S}}, -48,55^\\circ\\text{{W}}$ (projeção Lambert Conformal):
+- **Domínios:** Aninhamento triplo bidirecional (`feedback = 1`), razão 1:3, projeção Lambert Conformal. O d01 é centrado em $-28,49^\\circ\\text{{S}}, -49,69^\\circ\\text{{W}}$ e o d02 também é deslocado para sudoeste, para que a Ilha fique a 2/3 da largura para leste e para norte (regra dos 2/3) e a área a montante, de onde vem a convecção, fique dentro da grade; o d03 é centrado na Ilha:
   - `d01`: $\\Delta x = 18\\text{{ km}}$, $38 \\times 38$ pontos ($666 \\times 666\\text{{ km}}$)
-  - `d02`: $\\Delta x = 6\\text{{ km}}$, $46 \\times 46$ pontos ($270 \\times 270\\text{{ km}}$)
-  - `d03`: $\\Delta x = 2\\text{{ km}}$, $61 \\times 61$ pontos ($120 \\times 120\\text{{ km}}$, folga de $60\\text{{ km}}$ entre o Norte da Ilha e cada borda)
+  - `d02`: $\\Delta x = 6\\text{{ km}}$, $49 \\times 49$ pontos ($288 \\times 288\\text{{ km}}$)
+  - `d03`: $\\Delta x = 2\\text{{ km}}$, $61 \\times 61$ pontos ($120 \\times 120\\text{{ km}}$, centrado na Ilha)
   - Níveis verticais: `e_vert = 45` níveis $\\eta$, topo em `p_top_requested = 5000` Pa ($50\\text{{ hPa}}$).
 - **Física e justificativa (uma linha cada):**
   - **Microfísica (`mp_physics = 9`, Milbrandt-Yau 2 momentos nos 3 domínios):** Esquema de dois momentos com 6 classes de hidrometeoros que resolve explicitamente e em categorias separadas o graupel (`QGRAUP`, `QNGRAUPEL`, menor densidade) e o granizo (`QHAIL`, `QNHAIL`, alta densidade), além de diagnóstico `hailcast_opt = 0, 0, 1` e refletividade Rayleigh/Mie `do_radar_ref = 1` (`REFL_10CM`).
@@ -56,7 +56,7 @@ def sincronizar():
 - **Problemas e como resolveu:**
   1. O recorte regional do arquivo GRIB do ERA5 disponível localmente ($21,75^\\circ\\text{{S}}$ a $33,00^\\circ\\text{{S}}$; $54,50^\\circ\\text{{W}}$ a $43,00^\\circ\\text{{W}}$) causou erro de valores ausentes (`Missing values encountered in interpolated fields`) no `metgrid.exe` quando `d01` ultrapassava $1200\\text{{ km}}$ de lado; resolvido dimensionando `d01` para $38 \\times 38$ pontos com $\\Delta x = 18\\text{{ km}}$ ($666\\text{{ km}}$ de lado), inteiramente contido na grade do ERA5.
   2. Com `e_vert = 40` e `dzstretch_s = 1.1`, o `real.exe` acusou `not enough eta levels to reach p_top`; resolvido elevando para `e_vert = 45` níveis verticais.
-- **Resultado em uma frase:** O modelo desenvolveu convecção profunda explícita no domínio de 2 km com coexistência de água super-resfriada (`SLW` máx de `{slw.get('max_g_kg', 0)} g/kg`), graupel (`QGRAUP` máx de `{qg.get('max_g_kg', 0)} g/kg` a `{qg.get('altura_km', 0)} km` / `{qg.get('temperatura_C', 0)} °C`) e granizo separado (`QHAIL` máx de `{qh.get('max_g_kg', 0)} g/kg` a `{qh.get('altura_km', 0)} km` / `{qh.get('temperatura_C', 0)} °C`), apresentando erro de posição de `{dist_err} km` em relação a Jurerê/Norte da Ilha na janela observada.
+- **Resultado em uma frase:** No horário analisado (`{t_pico} UTC`, o de mais graupel e granizo a até 25 km de Jurerê, com a célula sobre a Ilha), o modelo mostrou convecção profunda explícita no domínio de 2 km com coexistência de água super-resfriada (`SLW` máx de `{slw.get('max_g_kg', 0)} g/kg`), graupel (`QGRAUP` máx de `{qg.get('max_g_kg', 0)} g/kg` a `{qg.get('altura_km', 0)} km` / `{qg.get('temperatura_C', 0)} °C`) e granizo separado (`QHAIL` máx de `{qh.get('max_g_kg', 0)} g/kg` a `{qh.get('altura_km', 0)} km` / `{qh.get('temperatura_C', 0)} °C`), cerca de 9,5 h antes do granizo observado; na janela observada (22:30 UTC) o eco simulado mais forte ficou a `{dist_err} km` de Jurerê.
 - **Diferença para a rodada anterior e por quê:** Primeira rodada oficial do projeto `granizo` com o esquema Milbrandt-Yau de 2 momentos (`mp_physics = 9`), escolhida especificamente para separar as categorias de graupel (`QGRAUP`) e granizo (`QHAIL`) conforme recomendado na Seção 5.3 do enunciado.
 
 ---
@@ -95,9 +95,7 @@ def sincronizar():
     for arq in os.listdir(os.path.join(BASE, 'figuras')):
         if arq.endswith('.png'):
             shutil.copy2(os.path.join(BASE, 'figuras', arq), os.path.join(REPO, 'figuras', arq))
-    for arq in os.listdir(os.path.join(BASE, 'scripts')):
-        if arq.endswith('.py'):
-            shutil.copy2(os.path.join(BASE, 'scripts', arq), os.path.join(REPO, 'scripts', arq))
+    # Os scripts não são copiados: a versão do repositório (scripts/) é a fonte.
     if os.path.exists(os.path.join(BASE, 'sessoes', 'granizo_hidrometeoros_3d.pvsm')):
         shutil.copy2(os.path.join(BASE, 'sessoes', 'granizo_hidrometeoros_3d.pvsm'),
                      os.path.join(REPO, 'sessoes', 'granizo_hidrometeoros_3d.pvsm'))

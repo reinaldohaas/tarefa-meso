@@ -51,10 +51,12 @@ RELATOS = [
 
 NORTE_LON = (-48.60, -48.37)
 NORTE_LAT = (-27.52, -27.35)
+JURERE = (-48.480, -27.432)
+RAIO_ILHA_KM = 25.0   # o horário analisado é o de mais graupel e granizo até esta distância de Jurerê
 
 
 def plot_dominios():
-    """Gera figuras/dominios.png com os 3 domínios aninhados e o relevo."""
+    """Gera figuras/dominios.png: cada domínio com o relevo na sua própria resolução (18, 6 e 2 km), aninhados."""
     fig, ax = plt.subplots(figsize=(8.5, 7.2), dpi=150)
     cores = {1: '#111827', 2: '#c2410c', 3: '#0284c7'}
     dxs = {1: 18, 2: 6, 3: 2}
@@ -65,12 +67,14 @@ def plot_dominios():
             lo = np.array(g.variables['XLONG_M'][0])
             hgt = np.array(g.variables['HGT_M'][0])
             land = np.array(g.variables['LANDMASK'][0])
+            # O relevo de cada grade é desenhado por cima da anterior: no centro aparece o de 2 km
+            hgt_plot = np.where(land > 0.5, hgt, -50.0)
+            m = ax.pcolormesh(lo, la, hgt_plot, cmap='terrain', vmin=-100, vmax=1400, shading='auto', zorder=k)
             if k == 1:
-                hgt_plot = np.where(land > 0.5, hgt, -50.0)
-                m = ax.pcolormesh(lo, la, hgt_plot, cmap='terrain', vmin=-100, vmax=1400, shading='auto')
                 cb = plt.colorbar(m, ax=ax, fraction=0.04, pad=0.02)
                 cb.set_label('Altitude do terreno HGT_M (m)')
-            ax.contour(lo, la, land, levels=[0.5], colors='#334155', linewidths=0.7)
+            if k == 3:
+                ax.contour(lo, la, land, levels=[0.5], colors='#334155', linewidths=0.7, zorder=5)
             borda = np.concatenate([
                 np.c_[lo[0, :], la[0, :]],
                 np.c_[lo[:, -1], la[:, -1]],
@@ -78,18 +82,18 @@ def plot_dominios():
                 np.c_[lo[::-1, 0], la[::-1, 0]]
             ])
             ny, nx = la.shape
-            ax.plot(borda[:, 0], borda[:, 1], color=cores[k], lw=2.2,
+            ax.plot(borda[:, 0], borda[:, 1], color=cores[k], lw=2.2, zorder=6,
                     label=f'd0{k}: dx = {dxs[k]} km ({nx}×{ny} pts)')
             ax.annotate(f'd0{k} ({dxs[k]} km)', xy=(lo[0, 2], la[0, 2]),
-                        xytext=(4, 4), textcoords='offset points',
+                        xytext=(4, 4), textcoords='offset points', zorder=7,
                         fontsize=9, fontweight='bold', color=cores[k],
                         bbox=dict(boxstyle='round,pad=0.2', fc='#ffffffdd', ec=cores[k], lw=0.8))
 
-    ax.plot(-48.55, -27.50, 'r*', ms=13, mec='k', mew=0.8, label='Norte da Ilha de SC (-27,50°S, -48,55°W)')
+    ax.plot(-48.55, -27.50, 'r*', ms=13, mec='k', mew=0.8, zorder=8, label='Norte da Ilha de SC (-27,50°S, -48,55°W)')
     ax.set_xlabel('Longitude (°)')
     ax.set_ylabel('Latitude (°)')
-    ax.set_title('Domínios Aninhados do WRF-ARW (18 / 6 / 2 km) — Projeto Granizo SC', fontsize=12, fontweight='bold')
-    ax.legend(loc='lower right', framealpha=0.92, fontsize=9)
+    ax.set_title('Domínios aninhados do WRF-ARW: relevo de cada grade na sua resolução (18, 6 e 2 km)', fontsize=11.5, fontweight='bold')
+    ax.legend(loc='lower right', framealpha=0.92, fontsize=9).set_zorder(9)
     ax.grid(color='#00000022', linestyle=':', lw=0.5)
     fig.tight_layout()
     out = os.path.join(FIG_DIR, 'dominios.png')
@@ -180,6 +184,7 @@ def main():
         lon = np.array(ds.variables['XLONG'][0])
         norte_mask = ((lon >= NORTE_LON[0]) & (lon <= NORTE_LON[1]) &
                       (lat >= NORTE_LAT[0]) & (lat <= NORTE_LAT[1]))
+        ilha_mask = np.hypot((lon - JURERE[0]) * 111.32 * np.cos(np.radians(JURERE[1])), (lat - JURERE[1]) * 110.57) <= RAIO_ILHA_KM
 
         serie = []
         # Analisar evolução temporal
@@ -190,7 +195,7 @@ def main():
             qg3d = np.array(ds.variables['QGRAUP'][it], dtype=np.float32) * 1000.0
             qh3d = np.array(ds.variables['QHAIL'][it], dtype=np.float32) * 1000.0 if 'QHAIL' in ds.variables else np.zeros_like(qg3d)
             hail2d = np.array(ds.variables['HAILCAST_DIAM_MAX'][it], dtype=np.float32) if 'HAILCAST_DIAM_MAX' in ds.variables else np.zeros_like(refl_col)
-            hail2d_ok = np.where(hail2d > 150.0, 0.0, hail2d)
+            hail2d_ok = np.where(hail2d > 1000.0, 0.0, hail2d)   # só tira o valor de preenchimento; valores absurdos ficam visíveis
 
             j_max, i_max = np.unravel_index(np.nanargmax(refl_col), refl_col.shape)
             serie.append({
@@ -204,12 +209,15 @@ def main():
                 'qgraup_max_gkg': round(float(np.nanmax(qg3d)), 2),
                 'qhail_max_gkg': round(float(np.nanmax(qh3d)), 2),
                 'hailcast_max_mm': round(float(np.nanmax(hail2d_ok)), 2),
+                'gelo_ilha_gkg': round(float(np.nanmax((qg3d + qh3d).max(axis=0)[ilha_mask])), 2),
+                'qhail_ilha_gkg': round(float(np.nanmax(qh3d.max(axis=0)[ilha_mask])), 2),
+                'hailcast_ilha_mm': round(float(np.nanmax(hail2d_ok[ilha_mask])), 2),
             })
 
         # Selecionar o horário de maior atividade convectiva (após spin-up inicial de 2h, it >= 8)
-        candidatos = [s for s in serie if s['it'] >= 8] or serie
-        # Priorizar janela com maior refletividade/hidrometeoros de gelo
-        pico = max(candidatos, key=lambda s: (s['qgraup_max_gkg'] + 2.0 * s['qhail_max_gkg'], s['refl_max_dbz']))
+        # Horário com mais graupel e granizo perto da Ilha (a até RAIO_ILHA_KM de Jurerê), e não no domínio todo:
+        # a célula de maior gelo do domínio (17:00 UTC) estava a ~45 km, sobre o mar.
+        pico = max(serie, key=lambda s: (s['gelo_ilha_gkg'], s['qhail_ilha_gkg']))
         it_pico = pico['it']
         t_pico_str = pico['tempo']
         print(f'Horário de pico selecionado: it={it_pico} ({t_pico_str} UTC) | '
@@ -257,8 +265,9 @@ def main():
     print('Salvo:', csv_tab)
 
     # 2. Coluna da célula mais vigorosa (maior QGRAUP + QHAIL ou maior W)
-    gelo_tot = c.get('QGRAUP', 0.0) + c.get('QHAIL', 0.0)
-    _, j_cel, i_cel = np.unravel_index(np.argmax(gelo_tot), gelo_tot.shape)
+    gelo_tot = (c.get('QGRAUP', 0.0) + c.get('QHAIL', 0.0)).max(axis=0)
+    gelo_tot = np.where(ilha_mask, gelo_tot, -1.0)
+    j_cel, i_cel = np.unravel_index(np.argmax(gelo_tot), gelo_tot.shape)
     w_col_max = float(c['W'][:, j_cel, i_cel].max())
     # Nível da isoterma de 0 °C na célula
     t_col = c['T'][:, j_cel, i_cel]
@@ -319,8 +328,8 @@ def main():
     ax.set_xlim(x_km.min(), x_km.max())
     ax.set_xlabel('Distância Oeste–Leste a partir do núcleo da célula (km)')
     ax.set_ylabel('Altura Geométrica Real z = (PH + PHB)/g (km MSL)')
-    ax.set_title(f'Corte Vertical Oeste–Leste pela Célula Mais Vigorosa ({t_pico_str} UTC)\n'
-                 f'Lat {c["lat"][j_cel, i_cel]:.2f}°, Lon {c["lon"][j_cel, i_cel]:.2f}° — '
+    ax.set_title(f'Corte Vertical Oeste–Leste pela célula perto da Ilha ({t_pico_str} UTC)\n'
+                 f'Lat {c["lat"][j_cel, i_cel]:.2f}°, Lon {c["lon"][j_cel, i_cel]:.2f}°: '
                  f'QGRAUP (sombreado), QHAIL (vermelho), SLW (verde), W (preto) e Isotermas',
                  fontsize=10.5, fontweight='bold')
     ax.grid(color='#00000018', linestyle=':', lw=0.5)
@@ -349,7 +358,7 @@ def main():
     ax1.plot(c['lon'][j_cel, i_cel], c['lat'][j_cel, i_cel], 'k+', ms=12, mew=2, label='Núcleo do corte vertical')
     ax1.set_xlabel('Longitude (°)')
     ax1.set_ylabel('Latitude (°)')
-    ax1.set_title(f'Refletividade Composta REFL_10CM (d03, 2 km)\nPico Simulado: {t_pico_str} UTC', fontsize=10.5, fontweight='bold')
+    ax1.set_title(f'Refletividade Composta REFL_10CM (d03, 2 km)\nHorário analisado (granizo perto da Ilha): {t_pico_str} UTC', fontsize=10.5, fontweight='bold')
     ax1.grid(color='#00000020', linestyle=':', lw=0.5)
 
     # Série temporal no painel direito
@@ -422,7 +431,7 @@ def main():
     ax_wrf.set_ylim(c_obs['lat'].min(), c_obs['lat'].max())
     ax_wrf.set_xlabel('Longitude (°)')
     ax_wrf.set_ylabel('Latitude (°)')
-    ax_wrf.set_title(f'Simulação WRF-ARW d03 (2 km, Milbrandt-Yau) — {t_obs_str} UTC\n'
+    ax_wrf.set_title(f'Simulação WRF-ARW d03 (2 km, Milbrandt-Yau): {t_obs_str} UTC\n'
                      f'Deslocamento espacial do núcleo: {dist_erro_km:.1f} km',
                      fontsize=10.5, fontweight='bold')
     ax_wrf.legend(loc='lower left', fontsize=8.5, framealpha=0.92)
@@ -440,6 +449,7 @@ def main():
         'wrfout_d03': wrfout,
         'dx_km': dx_km,
         'it_pico': it_pico,
+        'criterio_horario': f'mais graupel e granizo a até {RAIO_ILHA_KM:g} km de Jurerê',
         'tempo_pico_utc': t_pico_str,
         'it_obs': it_obs,
         'tempo_obs_utc': t_obs_str,

@@ -53,13 +53,13 @@ FONT = r'C:\Windows\Fonts\arial.ttf'
 FONT_B = r'C:\Windows\Fonts\arialbd.ttf'
 
 HIDROS = [
-    ('QCLOUD', 'Nuvem (QCLOUD)',              '#b8c2cc', 0.10, 0.42),
+    ('QCLOUD', 'Nuvem (QCLOUD)',              '#b8c2cc', 0.30, 0.36),   # 0,1 g/kg vira uma camada que esconde o núcleo
     ('QRAIN',  'Chuva (QRAIN)',               '#1f6fd1', 0.50, 0.65),
     ('QICE',   'Cristais de Gelo (QICE)',     '#22b8cf', 0.05, 0.50),
     ('QSNOW',  'Neve (QSNOW)',                '#9b72cf', 0.10, 0.50),
     ('QGRAUP', 'Graupel (QGRAUP)',            '#f08c00', 0.50, 0.78),
     ('QHAIL',  'Granizo (QHAIL)',             '#d62828', 0.10, 0.95),
-    ('SLW',    'Água Super-resfriada (SLW)',  '#2b9348', 0.20, 0.72),
+    ('SLW',    'Água Super-resfriada (SLW)',  '#2b9348', 0.50, 0.62),   # idem: há uma camada extensa de SLW a 0,2 g/kg
 ]
 
 
@@ -184,6 +184,36 @@ def preparar_vtk():
     return relevo_vts, hidro_vti, t_str, focal, limiares_usados, maximos_grade
 
 
+MEIA_CAIXA_KM = 32.0   # só os hidrometeoros a até esta distância da célula sobre a Ilha (o relevo fica inteiro)
+
+
+def recorte_celula(fonte_vti, ref=None):
+    """Recorta o volume dos hidrometeoros numa caixa em volta da célula (j_celula, i_celula de metricas_wrf.json)."""
+    meta = json.load(open(os.path.join(BASE, 'metricas_wrf.json'), encoding='utf-8'))
+    n = int(round(MEIA_CAIXA_KM / meta['dx_km']))
+    ref = ref or fonte_vti                     # de onde ler as dimensões (num pipeline temporal, o leitor)
+    ref.UpdatePipeline()
+    ext = ref.GetDataInformation().GetExtent()
+    nx, ny, nz = ext[1] + 1, ext[3] + 1, ext[5] + 1
+    print('volume', nx, ny, nz, '| recorte em volta de', meta['j_celula'], meta['i_celula'], 'com', n, 'pontos', flush=True)
+    j, i = meta['j_celula'], meta['i_celula']
+    return ExtractSubset(Input=fonte_vti, VOI=[max(i - n, 0), min(i + n, nx - 1), max(j - n, 0), min(j + n, ny - 1), 0, nz - 1])
+
+
+def marcar_coluna(view, focal):
+    """Linha vertical branca e um ponto no chão na coluna da célula: mostra onde ela está em relação à costa."""
+    linha = Line(Point1=[focal[0], focal[1], 0.0], Point2=[focal[0], focal[1], 13.0 * VE])
+    d = Show(linha, view)
+    d.ColorArrayName = ['POINTS', '']
+    d.AmbientColor = d.DiffuseColor = hx('#ffffff')
+    d.LineWidth = 2.5
+    d.Opacity = 0.8
+    ponto = Sphere(Center=[focal[0], focal[1], 0.6], Radius=1.3)
+    dp = Show(ponto, view)
+    dp.ColorArrayName = ['POINTS', '']
+    dp.AmbientColor = dp.DiffuseColor = hx('#ffffff')
+
+
 def fonte(sz, bold=False):
     return ImageFont.truetype(FONT_B if bold else FONT, sz)
 
@@ -267,7 +297,10 @@ def main():
     cd_costa.AmbientColor = cd_costa.DiffuseColor = hx('#f8fafc')
     cd_costa.LineWidth = 2.0
 
-    hidro = XMLImageDataReader(registrationName='Hidrometeoros_WRF_d03', FileName=[hidro_vti])
+    marcar_coluna(view, focal)
+
+    hidro_dom = XMLImageDataReader(registrationName='Hidrometeoros_WRF_d03', FileName=[hidro_vti])
+    hidro = recorte_celula(hidro_dom)
 
     # Criar um filtro Contour para cada hidrometeoro
     contornos = {}
