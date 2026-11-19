@@ -1631,11 +1631,56 @@
                 </table>
             </div>
 
-            <div class="block-title">8.2. Visualização 3D dos Hidrometeoros no ParaView com Textura Realista do Google Earth (Altura Real \(z = (\text{PH}+\text{PHB})/g\), Exagero \(4\times\))</div>
+            <div class="block-title">8.2. Visão Geral da Precipitação e Granizo em Superfície nas Três Grades (18 km, 6 km e 2 km)</div>
+            <div class="explanation-text">
+                Assim como demonstrado nas análises de supercélulas do projeto, a caracterização rigorosa de tempestades severas exige a <strong>inspeção multiescala contínua</strong> das condições de superfície desde a escala sinótica/regional até a escala local:
+                <ul style="margin: 8px 0 12px 20px;">
+                    <li><strong>Grade 18 km (d01 - Sul do Brasil):</strong> capta a forçante sinótica, o fluxo de umidade do Jato em Baixos Níveis (JBN) e o alinhamento da instabilidade que atravessou Santa Catarina.</li>
+                    <li><strong>Grade 6 km (d02 - Santa Catarina e Serra Geral):</strong> resolve a orografia da escarpa da Serra Geral, evidenciando o disparo dos primeiros núcleos convectivos no interior e a sua rápida propagação em direção ao litoral.</li>
+                    <li><strong>Grade 2 km (d03 - Grande Florianópolis):</strong> microfísica de dois momentos explícita (Milbrandt-Yau), delimitando a trilha local de granizo (<code>HAILNC</code> e <code>HAILCAST</code>) concentrada no corredor de Biguaçu e Norte da Ilha, perfeitamente coincidente com os relatos observados.</li>
+                </ul>
+            </div>
+
+            <div style="display:flex; flex-wrap:wrap; gap:8px; margin:14px 0;">
+                <button type="button" class="wrf-sup-tab" onclick="mostraWrfSup('multigrid', 'Painel Comparativo Multigrid: Chuva Acumulada e Trilhas de Granizo nos Domínios 18, 6 e 2 km', this)" style="padding:8px 14px; border:1px solid #c2410c; border-radius:6px; background:#ffedd5; font-weight:700; cursor:pointer; color:#9a3412;">Painel Multigrid (18 / 6 / 2 km)</button>
+                <button type="button" class="wrf-sup-tab" onclick="mostraWrfSup('d01', 'Domínio 1 (18 km): Visão Geral do Sul do Brasil e SC (Chuva e Granizo)', this)" style="padding:8px 14px; border:1px solid #cbd5e1; border-radius:6px; background:#ffffff; font-weight:600; cursor:pointer;">Grade 18 km (d01)</button>
+                <button type="button" class="wrf-sup-tab" onclick="mostraWrfSup('d02', 'Domínio 2 (6 km): Avanço da Instabilidade da Serra Geral ao Litoral de SC', this)" style="padding:8px 14px; border:1px solid #cbd5e1; border-radius:6px; background:#ffffff; font-weight:600; cursor:pointer;">Grade 6 km (d02)</button>
+                <button type="button" class="wrf-sup-tab" onclick="mostraWrfSup('d03', 'Domínio 3 (2 km): Trilha Local de Granizo em Biguaçu e Florianópolis', this)" style="padding:8px 14px; border:1px solid #cbd5e1; border-radius:6px; background:#ffffff; font-weight:600; cursor:pointer;">Grade 2 km (d03)</button>
+            </div>
+
+            <div class="figure-wrapper">
+                <img id="img-wrf-sup" src="figuras/multigrid_chuva_granizo.png" alt="Chuva Acumulada e Granizo em Superfície nas Grades do WRF" onclick="openModal(this.src)">
+                <div class="figure-caption" id="cap-wrf-sup">Painel Comparativo Multigrid: Chuva Acumulada e Trilhas de Granizo nos Domínios 18, 6 e 2 km, Clique na imagem para ampliar</div>
+            </div>
+
+            <script>
+                function mostraWrfSup(tag, legenda, botao) {
+                    var arq = tag === 'multigrid' ? 'figuras/multigrid_chuva_granizo.png' : 'figuras/chuva_granizo_' + tag + '.png';
+                    document.getElementById('img-wrf-sup').src = arq;
+                    document.getElementById('cap-wrf-sup').textContent = legenda + ', Clique na imagem para ampliar';
+                    document.querySelectorAll('.wrf-sup-tab').forEach(function (b) {
+                        b.style.background = '#ffffff';
+                        b.style.borderColor = '#cbd5e1';
+                        b.style.color = '#0f172a';
+                        b.style.fontWeight = '600';
+                    });
+                    botao.style.background = '#ffedd5';
+                    botao.style.borderColor = '#c2410c';
+                    botao.style.color = '#9a3412';
+                    botao.style.fontWeight = '700';
+                }
+            </script>
+
+            <div class="block-title" style="margin-top:28px;">8.3. Visualização 3D dos Hidrometeoros no ParaView com Relevo do Google Earth e Trilha no Chão (Relação Vertical Natural \(VE = 1{,}8\times\))</div>
             <div class="explanation-text">
                 As figuras 3D abaixo foram geradas com o ParaView 6.2 (<code>pvpython</code>) a partir do arquivo <code>wrfout_d03</code> interpolado dos níveis \(\eta\)
-                para a altura geométrica real \(z = (\text{PH} + \text{PHB})/9{,}81\) (em km acima do nível do mar), mantendo exatamente o <strong>mesmo ponto de vista de câmera</strong>,
-                exagero vertical de \(4\times\) e paleta de cores fixa por hidrometeoro. <strong>O relevo topográfico 3D de Santa Catarina conta com mapeamento de textura de ortofoto real de satélite (Google Earth)</strong>, reproduzindo com fidelidade a cobertura vegetal da Mata Atlântica e Serra Geral, as praias, baías Norte/Sul e a hidrografia costeira. Use os botões abaixo para inspecionar a estrutura 3D combinada ou cada hidrometeoro isoladamente:
+                para a altura geométrica real \(z = (\text{PH} + \text{PHB})/9{,}81\) (em km acima do nível do mar), com os seguintes aprimoramentos técnicos:
+                <ul style="margin: 8px 0 12px 20px;">
+                    <li><strong>Relação Vertical Natural (\(VE = 1{,}8\times\)):</strong> reduzida a distorção vertical excessiva anterior (que era de \(4\times\)), conferindo proporção volumétrica equilibrada e realista entre a extensão horizontal (\(120\times 120\text{ km}\)) e a altura da troposfera (\(15\text{ km}\)).</li>
+                    <li><strong>Relevo Texturizado com Google Earth e Trilha no Solo:</strong> a superfície 3D combina ortofoto real de satélite (vegetação, costa, baías Norte/Sul e oceano) com a <strong>trilha projetada de chuva e granizo acumulado no chão</strong> e demarcação dos municípios (Florianópolis, Biguaçu, São José e Palhoça).</li>
+                    <li><strong>Transparência Otimizada:</strong> envelope de nuvem diáfano (\(22\%\)) e chuva líquida translúcida (\(38\%\)), permitindo visualizar com clareza os núcleos densos internos de água super-resfriada (verde, \(50\%\)), graupel (laranja, \(60\%\)) e granizo severo (vermelho, \(80\%\)).</li>
+                </ul>
+                Use os botões abaixo para inspecionar a estrutura 3D combinada ou cada hidrometeoro isoladamente:
             </div>
 
             <div style="display:flex; flex-wrap:wrap; gap:8px; margin:14px 0;">
@@ -1654,32 +1699,34 @@
                 <div class="figure-caption" id="cap-wrf-3d">Estrutura 3D Combinada: Todos os Hidrometeoros + Água Super-resfriada (SLW), Clique na imagem para ampliar</div>
             </div>
 
-            <div class="explanation-text" style="margin-top:18px;">
-                <strong>1. Animação da Evolução Temporal 4D Completa (12 Horas de Simulação: 12:00 a 00:00 UTC, 49 Saídas WRF).</strong>
+            <div class="explanation-text" style="margin-top:22px;">
+                <strong>1. Animação da Evolução Temporal 4D Contínua com Câmera Estável (12 Horas, 49 Saídas WRF d03).</strong>
                 Animação contínua da evolução tridimensional de todos os hidrometeoros cobrindo todo o ciclo de vida convectivo do domínio interno (d03, 2 km) a cada 15 minutos:
                 <ul style="margin: 8px 0 12px 20px;">
-                    <li><strong>Ciclo Convectivo Completo:</strong> mostra a convecção diurna inicial (12:45–14:00 UTC), a reorganização vespertina (15:00–18:00 UTC), o avanço da frente de instabilidade da Serra Geral para a costa e a <strong>explosão da supercélula noturna severa entre 21:45 e 23:15 UTC</strong> cruzando Biguaçu e Florianópolis até dissipar no oceano após as 23:45 UTC.</li>
-                    <li><strong>Cores Padronizadas e Não-sobrepostas:</strong> Nuvem em cinza claro (\(0{,}1\text{ g/kg}\)), Chuva líquida em azul (\(0{,}5\text{ g/kg}\)), Graupel em laranja (\(0{,}5\text{ g/kg}\)), Granizo denso em vermelho (\(0{,}1\text{ g/kg}\)) e Água super-resfriada (SLW) em verde (\(0{,}2\text{ g/kg}\)).</li>
-                    <li><strong>Órbita Panorâmica:</strong> a câmera realiza uma órbita suave e contínua ao redor do relevo da Ilha e da linha de costa durante o transcurso das 12 horas de simulação.</li>
+                    <li><strong>Câmera Fixa e Estável:</strong> enquadramento estável a partir do sudoeste, eliminando vertigens ou rotações contínuas indesejadas e permitindo acompanhar com precisão científica a aproximação e passagem da tempestade.</li>
+                    <li><strong>Relevo Texturizado com Trilha de Superfície:</strong> relevo realista do Google Earth com a projeção no solo da chuva acumulada e trilha de granizo em Biguaçu e Florianópolis, além da demarcação dos municípios.</li>
+                    <li><strong>Relação Vertical Natural (\(VE = 1{,}8\times\)) e Transparência:</strong> aspecto volumétrico equilibrado com envelopes de nuvem diáfanos (\(22\%\)) e chuva translúcida (\(38\%\)), revelando o núcleo denso de granizo e água super-resfriada.</li>
+                    <li><strong>Ciclo Convectivo Completo:</strong> mostra a convecção diurna inicial (12:45–14:00 UTC), a reorganização na Serra Geral (15:00–18:00 UTC) e a <strong>explosão da supercélula noturna severa entre 21:45 e 23:15 UTC</strong> cruzando a Grande Florianópolis.</li>
                 </ul>
             </div>
             <div class="figure-wrapper">
                 <video src="figuras/granizo_3d_evolucao_temporal.mp4" poster="figuras/3d_todos.png" controls loop muted playsinline preload="auto" style="width:100%; border-radius:8px; background:#0b1324;"></video>
-                <div class="figure-caption">Animação 3D da Evolução Temporal 4D (12 Horas Contínuas, 49 Saídas WRF d03 a cada 15 min, 12:00 às 00:00 UTC) com Órbita Suave sobre o Relevo de Santa Catarina. Também disponível em <a href="figuras/granizo_3d_evolucao_temporal.gif" target="_blank" style="color:#c2410c; font-weight:700;">formato GIF animado</a>.</div>
+                <div class="figure-caption">Animação 3D da Evolução Temporal 4D (12 Horas Contínuas, 49 Saídas WRF d03 a cada 15 min, 12:00 às 00:00 UTC) com Câmera Fixa sobre o Relevo com Google Earth e Trilha no Chão. Também disponível em <a href="figuras/granizo_3d_evolucao_temporal.gif" target="_blank" style="color:#c2410c; font-weight:700;">formato GIF animado</a>.</div>
             </div>
 
             <div class="explanation-text" style="margin-top:24px;">
-                <strong>2. Animação 3D com Decomposição Anatômica no Pico Noturno ("Despindo e Vestindo as Camadas").</strong>
-                Animação com rotação completa de \(360^\circ\) ao redor da tempestade severa, combinando a evolução temporal com a dissecação estrutural no pico convectivo noturno (22:45 UTC / 19:45 Local, \(77{,}4\text{ dBZ}\)):
+                <strong>2. Animação Mestre Cinemática Multiescala com 4 Fases (18 km &rarr; 6 km &rarr; 2 km Estável &rarr; Órbita 360° e Decomposição Anatômica).</strong>
+                Vídeo mestre completo que segue a metodologia científica rigorosa: inicia com uma visão ampla das supercélulas nas grades maiores e culmina no detalhamento tridimensional com órbita e dissecação apenas no pico noturno:
                 <ul style="margin: 8px 0 12px 20px;">
-                    <li><strong>Parte 1 (Evolução Temporal 4D):</strong> avanço contínuo do campo hidrometeórico pelas 49 saídas da simulação.</li>
-                    <li><strong>Parte 2 (Despindo as Camadas no Pico Noturno):</strong> congelamento no pico das 22:45 UTC com rotação 360° ininterrupta; a nuvem cinza é desfeita para revelar a chuva líquida, a chuva azul é removida para expor o núcleo congelado, e em seguida destacam-se isoladamente a água super-resfriada (verde, 7,24 g/kg), o graupel (laranja, 8,30 g/kg) e o granizo severo (vermelho, 5,21 g/kg).</li>
-                    <li><strong>Parte 3 (Vestindo as Camadas):</strong> recomposição tridimensional passo a passo a partir do granizo vermelho, somando o graupel, a SLW, a chuva líquida e fechando com o envelope de nuvem até a órbita final.</li>
+                    <li><strong>Fase 1 (Visão Geral - Grade 18 km - d01):</strong> campo sinótico de precipitação e núcleos de tempestade sobre o Sul do Brasil e SC com demarcação dos domínios aninhados.</li>
+                    <li><strong>Fase 2 (Visão Regional - Grade 6 km - d02):</strong> aproximação para Santa Catarina e Serra Geral, mostrando o disparo dos núcleos convectivos e a propagação da instabilidade para o litoral.</li>
+                    <li><strong>Fase 3 (Visão Local 3D - Grade 2 km - d03):</strong> câmera fixa estável sobre a Grande Florianópolis, acompanhando as 12 horas contínuas de evolução dos hidrometeoros em 3D sobre o relevo do Google Earth com a trilha de chuva e granizo no solo.</li>
+                    <li><strong>Fase 4 (Pico Noturno 22:45 UTC - Giro 360° e Despir/Vestir as Camadas):</strong> no momento de refletividade máxima (\(77{,}4\text{ dBZ}\)), a câmera executa a órbita de \(360^\circ\). Primeiro <em>despe as camadas</em> (removendo nuvem e chuva para expor a água super-resfriada verde de \(7{,}2\text{ g/kg}\), o graupel laranja de \(8{,}3\text{ g/kg}\) e o granizo severo vermelho de \(5{,}2\text{ g/kg}\)) e em seguida <em>veste as camadas de volta</em> até a recomposição completa.</li>
                 </ul>
             </div>
             <div class="figure-wrapper">
                 <video src="figuras/granizo_3d_evolucao.mp4" poster="figuras/3d_todos.png" controls loop muted playsinline preload="auto" style="width:100%; border-radius:8px; background:#0b1324;"></video>
-                <div class="figure-caption">Animação 3D Mestre com Rotação 360° e Decomposição Anatômica (Despindo e Vestindo as Camadas de Hidrometeoros) da Tempestade Noturna sobre Santa Catarina. Também disponível em <a href="figuras/granizo_3d_evolucao.gif" target="_blank" style="color:#c2410c; font-weight:700;">formato GIF animado</a>.</div>
+                <div class="figure-caption">Animação 3D Mestre Cinemática Multiescala (Grades 18 km, 6 km, 2 km Temporal com Câmera Estável e Órbita 360° com Despir/Vestir no Pico Noturno de 22:45 UTC). Também disponível em <a href="figuras/granizo_3d_evolucao.gif" target="_blank" style="color:#c2410c; font-weight:700;">formato GIF animado</a>.</div>
             </div>
             <script>
                 function mostraWrf3d(tag, legenda, botao) {
@@ -1689,14 +1736,16 @@
                         b.style.background = '#ffffff';
                         b.style.borderColor = '#cbd5e1';
                         b.style.color = '#0f172a';
+                        b.style.fontWeight = '600';
                     });
                     botao.style.background = '#ffedd5';
                     botao.style.borderColor = '#c2410c';
                     botao.style.color = '#9a3412';
+                    botao.style.fontWeight = '700';
                 }
             </script>
 
-            <div class="block-title">8.3. Corte Vertical pela Célula sobre a Ilha e Tabela de Máximos</div>
+            <div class="block-title" style="margin-top:28px;">8.4. Corte Vertical pela Célula sobre a Ilha e Tabela de Máximos</div>
             <div class="figure-wrapper">
                 <img src="figuras/corte_vertical.png" alt="Corte Vertical pela Célula Mais Vigorosa" onclick="openModal(this.src)">
                 <div class="figure-caption">Corte vertical oeste-leste pela célula noturna sobre a Ilha (22:45 UTC, \(-27{,}58^\circ, -48{,}50^\circ\)): <code>QGRAUP</code> sombreado (máx 8,30 g/kg), <code>QHAIL</code> em vermelho (máx 5,21 g/kg), <code>SLW</code> em verde (máx 7,24 g/kg), <code>W</code> em preto (máx 31,0 m/s) e isotermas de 0, −20 e −40 °C</div>

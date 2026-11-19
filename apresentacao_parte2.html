@@ -61,8 +61,8 @@ body.com-notas .notas { display:block; }
   <a href="index.html#sec-wrf-parte2">Voltar ao site</a>
 </nav>
 <main>
-<section class="slide" id="s1" aria-label="Slide 1 de 10: O caso severo">
-  <header><div><p class="num">1/10</p><h2>O caso severo</h2><p class="sub">Tempestade Noturna: Granizo no norte da Ilha de Santa Catarina, 29/08/2026</p></div><p class="tempo">00 a 03 min</p></header>
+<section class="slide" id="s1" aria-label="Slide 1 de 11: O caso severo">
+  <header><div><p class="num">1/11</p><h2>O caso severo</h2><p class="sub">Tempestade Noturna: Granizo no norte da Ilha de Santa Catarina, 29/08/2026</p></div><p class="tempo">00 a 03 min</p></header>
   <div class="corpo">
 <div class="duas">
   <div>
@@ -79,8 +79,8 @@ body.com-notas .notas { display:block; }
 </div></div>
   <aside class="notas"><b>Roteiro de fala:</b> Apresentar o evento noturno real (22:00–23:00 UTC / 19–20h local) e os dados de radar/satélite rastreados em granizo-gigante.</aside>
 </section>
-<section class="slide" id="s2" aria-label="Slide 2 de 10: Da Parte 1 para a Parte 2" hidden>
-  <header><div><p class="num">2/10</p><h2>Da Parte 1 para a Parte 2</h2><p class="sub">A sondagem de Florianópolis na véspera</p></div><p class="tempo">00 a 03 min</p></header>
+<section class="slide" id="s2" aria-label="Slide 2 de 11: Da Parte 1 para a Parte 2" hidden>
+  <header><div><p class="num">2/11</p><h2>Da Parte 1 para a Parte 2</h2><p class="sub">A sondagem de Florianópolis na véspera</p></div><p class="tempo">00 a 03 min</p></header>
   <div class="corpo">
 <div class="duas">
   <div>
@@ -94,8 +94,8 @@ body.com-notas .notas { display:block; }
 </div></div>
   <aside class="notas"><b>Roteiro de fala:</b> Ligar com a Parte 1 em um minuto: a carga de condensado reduz o empuxo. A Parte 2 mostra essa carga em 3D.</aside>
 </section>
-<section class="slide" id="s3" aria-label="Slide 3 de 10: Desenho da grade" hidden>
-  <header><div><p class="num">3/10</p><h2>Desenho da grade</h2><p class="sub">Três domínios aninhados: 18, 6 e 2 km</p></div><p class="tempo">03 a 06 min</p></header>
+<section class="slide" id="s3" aria-label="Slide 3 de 11: Desenho da grade" hidden>
+  <header><div><p class="num">3/11</p><h2>Desenho da grade</h2><p class="sub">Três domínios aninhados: 18, 6 e 2 km</p></div><p class="tempo">03 a 06 min</p></header>
   <div class="corpo">
 <div class="duas">
   <figure><img src="figuras/dominios.png" alt="Três domínios aninhados do WRF sobre o relevo, centrados no norte da Ilha"><figcaption>Cada domínio com o relevo na sua resolução: no centro, o de 2 km (HGT_M do WPS).</figcaption></figure>
@@ -116,8 +116,8 @@ body.com-notas .notas { display:block; }
 </div></div>
   <aside class="notas"><b>Roteiro de fala:</b> Mostrar que o requisito de 3 km ou menos foi cumprido e explicar por que o d01 é pequeno: limitação de dado, não escolha física.</aside>
 </section>
-<section class="slide" id="s4" aria-label="Slide 4 de 10: A combinação da namelist.input" hidden>
-  <header><div><p class="num">4/10</p><h2>A combinação da namelist.input</h2><p class="sub">Cada escolha com a sua justificativa</p></div><p class="tempo">03 a 06 min</p></header>
+<section class="slide" id="s4" aria-label="Slide 4 de 11: A combinação da namelist.input" hidden>
+  <header><div><p class="num">4/11</p><h2>A combinação da namelist.input</h2><p class="sub">Cada escolha com a sua justificativa</p></div><p class="tempo">03 a 06 min</p></header>
   <div class="corpo">
 <table class="tab larga">
   <tr><th>Opção</th><th>Escolha</th><th>Por quê</th></tr>
@@ -131,27 +131,42 @@ body.com-notas .notas { display:block; }
 </table></div>
   <aside class="notas"><b>Roteiro de fala:</b> Não ler a tabela inteira: destacar microfísica e cumulus, que são as escolhas que mais pesam no resultado.</aside>
 </section>
-<section class="slide" id="s5" aria-label="Slide 5 de 10: Microfísica em 3D" hidden>
-  <header><div><p class="num">5/10</p><h2>Microfísica em 3D</h2><p class="sub">Evolução Temporal 4D (12 Horas) e Decomposição Anatômica no Pico</p></div><p class="tempo">06 a 10 min</p></header>
+<section class="slide" id="s5" aria-label="Slide 5 de 11: Precipitação e Granizo em Superfície" hidden>
+  <header><div><p class="num">5/11</p><h2>Precipitação e Granizo em Superfície</h2><p class="sub">Visão Multigrid das Três Grades: 18, 6 e 2 km</p></div><p class="tempo">03 a 06 min</p></header>
+  <div class="corpo">
+<div class="duas">
+  <figure><img src="figuras/multigrid_chuva_granizo.png" alt="Painel multigrid com chuva acumulada e trilhas de granizo nos domínios 18, 6 e 2 km"><figcaption>Chuva acumulada em superfície (RAINNC + RAINC) e contornos de granizo nas três grades aninhadas.</figcaption></figure>
+  <div>
+    <ul>
+      <li><b>Grade 18 km (d01 - Sul do Brasil):</b> capta o padrão sinótico, a linha de instabilidade pré-frontal e a convergência de umidade que atravessou Santa Catarina.</li>
+      <li><b>Grade 6 km (d02 - Santa Catarina e Serra Geral):</b> resolve o relevo da escarpa da Serra Geral, evidenciando o disparo dos núcleos convectivos no interior e a sua rápida marcha para o Litoral.</li>
+      <li><b>Grade 2 km (d03 - Grande Florianópolis):</b> microfísica de 2 momentos explícita resolvendo a trilha concentrada de granizo (<code>HAILNC</code> e <code>HAILCAST</code>) em Biguaçu e Norte da Ilha, alinhada aos relatos de 5 a 6 cm.</li>
+    </ul>
+  </div>
+</div></div>
+  <aside class="notas"><b>Roteiro de fala:</b> Destacar a progressão multiescala: da visão sinótica do d01 para a propagação na Serra em d02 e a trilha local de granizo em d03.</aside>
+</section>
+<section class="slide" id="s6" aria-label="Slide 6 de 11: Microfísica em 3D" hidden>
+  <header><div><p class="num">6/11</p><h2>Microfísica em 3D</h2><p class="sub">Relação Natural (1,8x), Relevo Google Earth e Animações 4D</p></div><p class="tempo">06 a 10 min</p></header>
   <div class="corpo">
 <div class="duas">
   <div>
     <div style="display:flex; gap:6px; margin-bottom:8px;">
-      <button type="button" id="btn-vid-temp" onclick="document.getElementById('vid-main').src='figuras/granizo_3d_evolucao_temporal.mp4'; document.getElementById('vid-leg').innerHTML='<b>Evolução Temporal 4D Contínua (12 Horas, 49 Saídas WRF d03 a cada 15 min):</b> Mostra o ciclo completo da convecção (12:00 a 00:00 UTC), a reorganização na Serra Geral e a explosão da supercélula noturna sobre Florianópolis às 22:15–23:15 UTC. Nuvem (cinza), Chuva (azul), Graupel (laranja), Granizo (vermelho) e SLW (verde). Disponível também em <a href=\'figuras/granizo_3d_evolucao_temporal.gif\' target=\'_blank\'>GIF animado</a>.'; this.style.fontWeight='700'; this.style.borderColor='#f97316'; document.getElementById('btn-vid-peel').style.fontWeight='400'; document.getElementById('btn-vid-peel').style.borderColor='#475569';" style="padding:4px 10px; font-size:12px; border-radius:4px; border:1px solid #f97316; font-weight:700; background:#1e293b; color:#fff; cursor:pointer;">1. Evolução Temporal 4D (12h)</button>
-      <button type="button" id="btn-vid-peel" onclick="document.getElementById('vid-main').src='figuras/granizo_3d_evolucao.mp4'; document.getElementById('vid-leg').innerHTML='<b>Animação Mestre 360° com Despir e Vestir as Camadas:</b> Rotação circular contínua ao redor da tempestade sobre o relevo de SC. Inclui a evolução temporal contínua das 12h e a dissecação anatômica no pico noturno (22:45 UTC), isolando granizo vermelho (5,2 g/kg), graupel laranja (8,3 g/kg) e SLW verde (7,2 g/kg). Disponível também em <a href=\'figuras/granizo_3d_evolucao.gif\' target=\'_blank\'>GIF animado</a>.'; this.style.fontWeight='700'; this.style.borderColor='#f97316'; document.getElementById('btn-vid-temp').style.fontWeight='400'; document.getElementById('btn-vid-temp').style.borderColor='#475569';" style="padding:4px 10px; font-size:12px; border-radius:4px; border:1px solid #475569; font-weight:400; background:#1e293b; color:#fff; cursor:pointer;">2. Órbita 360° (Despir/Vestir)</button>
+      <button type="button" id="btn-vid-temp" onclick="document.getElementById('vid-main').src='figuras/granizo_3d_evolucao_temporal.mp4'; document.getElementById('vid-leg').innerHTML='<b>Evolução Temporal 4D Contínua (Câmera Estável, 12 Horas, 49 Saídas WRF d03):</b> Mostra o ciclo completo (12:00 a 00:00 UTC) com câmera perfeitamente fixa, sem vertigens, destacando a aproximação e passagem da tempestade sobre o relevo com ortofoto do Google Earth e trilha no chão. Nuvem (cinza, 22%), Chuva (azul, 38%), Graupel (laranja, 60%), Granizo (vermelho, 80%) e SLW (verde, 50%). Disponível também em <a href=\'figuras/granizo_3d_evolucao_temporal.gif\' target=\'_blank\'>GIF animado</a>.'; this.style.fontWeight='700'; this.style.borderColor='#f97316'; document.getElementById('btn-vid-peel').style.fontWeight='400'; document.getElementById('btn-vid-peel').style.borderColor='#475569';" style="padding:4px 10px; font-size:12px; border-radius:4px; border:1px solid #f97316; font-weight:700; background:#1e293b; color:#fff; cursor:pointer;">1. Evolução Temporal 4D (Câmera Fixa)</button>
+      <button type="button" id="btn-vid-peel" onclick="document.getElementById('vid-main').src='figuras/granizo_3d_evolucao.mp4'; document.getElementById('vid-leg').innerHTML='<b>Vídeo Mestre Cinemático (4 Fases: 18 km &rarr; 6 km &rarr; 2 km Estável &rarr; Órbita 360° no Pico):</b> Visão geral sinótica e regional, foco na Grande Florianópolis e órbita 360° no pico das 22:45 UTC dissecando as camadas (despir e vestir). Disponível também em <a href=\'figuras/granizo_3d_evolucao.gif\' target=\'_blank\'>GIF animado</a>.'; this.style.fontWeight='700'; this.style.borderColor='#f97316'; document.getElementById('btn-vid-temp').style.fontWeight='400'; document.getElementById('btn-vid-temp').style.borderColor='#475569';" style="padding:4px 10px; font-size:12px; border-radius:4px; border:1px solid #475569; font-weight:400; background:#1e293b; color:#fff; cursor:pointer;">2. Vídeo Mestre Multiescala (4 Fases)</button>
     </div>
     <video id="vid-main" src="figuras/granizo_3d_evolucao_temporal.mp4" poster="figuras/3d_todos.png" controls loop muted playsinline preload="auto" style="width:100%; border-radius:8px;"></video>
-    <p class="leg" id="vid-leg"><b>Evolução Temporal 4D Contínua (12 Horas, 49 Saídas WRF d03 a cada 15 min):</b> Mostra o ciclo completo da convecção (12:00 a 00:00 UTC), a reorganização na Serra Geral e a explosão da supercélula noturna sobre Florianópolis às 22:15–23:15 UTC. Nuvem (cinza), Chuva (azul), Graupel (laranja), Granizo (vermelho) e SLW (verde). Disponível também em <a href="figuras/granizo_3d_evolucao_temporal.gif" target="_blank">GIF animado</a>.</p>
+    <p class="leg" id="vid-leg"><b>Evolução Temporal 4D Contínua (Câmera Estável, 12 Horas, 49 Saídas WRF d03):</b> Mostra o ciclo completo (12:00 a 00:00 UTC) com câmera perfeitamente fixa, sem vertigens, destacando a aproximação e passagem da tempestade sobre o relevo com ortofoto do Google Earth e trilha no chão. Nuvem (cinza, 22%), Chuva (azul, 38%), Graupel (laranja, 60%), Granizo (vermelho, 80%) e SLW (verde, 50%). Disponível também em <a href="figuras/granizo_3d_evolucao_temporal.gif" target="_blank">GIF animado</a>.</p>
   </div>
   <div>
     <div class="abas" role="group" aria-label="Hidrometeoro"><button type="button" data-h="todos" aria-pressed="true">todos</button><button type="button" data-h="SLW">água super-resfriada</button><button type="button" data-h="QGRAUP">graupel</button><button type="button" data-h="QHAIL">granizo</button><button type="button" data-h="QCLOUD">nuvem</button><button type="button" data-h="QRAIN">chuva</button><button type="button" data-h="QICE">gelo</button><button type="button" data-h="QSNOW">neve</button></div>
-    <figure><img id="img3d" src="figuras/3d_todos.png" alt="Hidrometeoros em 3D às 22:45 UTC sobre a Ilha"><figcaption>22:45 UTC, célula sobre a Ilha, ParaView, relevo 3D com textura do Google Earth (vegetação e costa), z = (PH + PHB)/9,81, exagero vertical 4×, limiares na legenda.</figcaption></figure>
+    <figure><img id="img3d" src="figuras/3d_todos.png" alt="Hidrometeoros em 3D às 22:45 UTC sobre a Ilha"><figcaption>22:45 UTC, célula sobre a Ilha, ParaView, relevo 3D Google Earth + trilha de granizo no solo, proporção natural (VE = 1,8x), transparência otimizada.</figcaption></figure>
   </div>
 </div></div>
-  <aside class="notas"><b>Roteiro de fala:</b> Executar a animação temporal 4D mostrando o avanço das 12 horas de convecção até a explosão da supercélula noturna sobre Florianópolis, alternando para a dissecação anatômica 360° no pico.</aside>
+  <aside class="notas"><b>Roteiro de fala:</b> Executar a animação temporal 4D estável e alternar para o vídeo mestre com as 4 fases e a dissecação 360° das camadas.</aside>
 </section>
-<section class="slide" id="s6" aria-label="Slide 6 de 10: Corte vertical e máximos" hidden>
-  <header><div><p class="num">6/10</p><h2>Corte vertical e máximos</h2><p class="sub">A célula sobre a Ilha, 22:45 UTC</p></div><p class="tempo">06 a 10 min</p></header>
+<section class="slide" id="s7" aria-label="Slide 7 de 11: Corte vertical e máximos" hidden>
+  <header><div><p class="num">7/11</p><h2>Corte vertical e máximos</h2><p class="sub">A célula sobre a Ilha, 22:45 UTC</p></div><p class="tempo">06 a 10 min</p></header>
   <div class="corpo">
 <div class="duas">
   <figure><img src="figuras/corte_vertical.png" alt="Corte vertical oeste-leste com graupel, granizo, água super-resfriada, velocidade vertical e isotermas"><figcaption>Graupel sombreado, granizo em vermelho, SLW em verde, W em preto, isotermas de 0, −20 e −40 °C.</figcaption></figure>
@@ -162,8 +177,8 @@ body.com-notas .notas { display:block; }
 </div></div>
   <aside class="notas"><b>Roteiro de fala:</b> Destacar a grande carga de água super-resfriada e graupel sustentando a granizogênese vigorosa no pico noturno.</aside>
 </section>
-<section class="slide" id="s7" aria-label="Slide 7 de 10: Evolução no tempo" hidden>
-  <header><div><p class="num">7/10</p><h2>Evolução no tempo</h2><p class="sub">Ciclo da Tempestade Severa Noturna sobre SC</p></div><p class="tempo">10 a 14 min</p></header>
+<section class="slide" id="s8" aria-label="Slide 8 de 11: Evolução no tempo" hidden>
+  <header><div><p class="num">8/11</p><h2>Evolução no tempo</h2><p class="sub">Ciclo da Tempestade Severa Noturna sobre SC</p></div><p class="tempo">10 a 14 min</p></header>
   <div class="corpo">
 <div class="duas">
   <div>
@@ -182,15 +197,15 @@ body.com-notas .notas { display:block; }
 </div></div>
   <aside class="notas"><b>Roteiro de fala:</b> Mostrar a perfeita correspondência temporal: o pico do modelo ({HORA} UTC) coincide com a janela observada de granizo severo à noite.</aside>
 </section>
-<section class="slide" id="s8" aria-label="Slide 8 de 10: Comparação com a observação" hidden>
-  <header><div><p class="num">8/10</p><h2>Comparação com a observação</h2><p class="sub">Validação: Radar Morro da Igreja e Relatos de Superfície</p></div><p class="tempo">10 a 14 min</p></header>
+<section class="slide" id="s9" aria-label="Slide 9 de 11: Comparação com a observação" hidden>
+  <header><div><p class="num">9/11</p><h2>Comparação com a observação</h2><p class="sub">Validação: Radar Morro da Igreja e Relatos de Superfície</p></div><p class="tempo">10 a 14 min</p></header>
   <div class="corpo">
 <figure class="cheia"><img src="figuras/comparacao_obs.png" alt="Observação ao lado da refletividade simulada às 22:30 UTC"><figcaption>Janela do evento (22:30 UTC): relatos de granizo e radar Morro da Igreja (esquerda) ao lado da refletividade simulada no d03 (direita).</figcaption></figure>
 <p class="destaque">Às 22:30–22:45 UTC, o núcleo simulado atinge refletividade extrema (>70 dBZ) na Grande Florianópolis, reproduzindo com alta fidelidade a posição e intensidade do eco MaxCAPPI (>60 dBZ) registrado pelo radar do Morro da Igreja (DECEA) sobre Biguaçu e Norte da Ilha.</p></div>
   <aside class="notas"><b>Roteiro de fala:</b> Enfatizar a excelente concordância no horário noturno real: a tempestade severa foi reproduzida no tempo e no espaço corretos.</aside>
 </section>
-<section class="slide" id="s9" aria-label="Slide 9 de 10: Sensibilidade e Física da Convecção" hidden>
-  <header><div><p class="num">9/10</p><h2>Sensibilidade e Física da Convecção</h2><p class="sub">A Chave da Simulação: Tratamento de Cumulus em Mesoescala</p></div><p class="tempo">14 a 17 min</p></header>
+<section class="slide" id="s10" aria-label="Slide 10 de 11: Sensibilidade e Física da Convecção" hidden>
+  <header><div><p class="num">10/11</p><h2>Sensibilidade e Física da Convecção</h2><p class="sub">A Chave da Simulação: Tratamento de Cumulus em Mesoescala</p></div><p class="tempo">14 a 17 min</p></header>
   <div class="corpo">
 <div class="duas">
   <div>
@@ -213,8 +228,8 @@ body.com-notas .notas { display:block; }
 <p class="destaque">Conclusão Metodológica: Convecção explícita na grade de 6 km associada a cumulus Grell-Freitas na grade externa foi a configuração ótima para capturar tempestades severas noturnas no litoral catarinense.</p></div>
   <aside class="notas"><b>Roteiro de fala:</b> Explicar a física da parametrização cumuliforme e como a preservação de CAPE permitiu a supercélula noturna.</aside>
 </section>
-<section class="slide" id="s10" aria-label="Slide 10 de 10: Conclusões" hidden>
-  <header><div><p class="num">10/10</p><h2>Conclusões</h2><p class="sub">Síntese da Simulação WRF dos Hidrometeoros</p></div><p class="tempo">17 a 20 min</p></header>
+<section class="slide" id="s11" aria-label="Slide 11 de 11: Conclusões" hidden>
+  <header><div><p class="num">11/11</p><h2>Conclusões</h2><p class="sub">Síntese da Simulação WRF dos Hidrometeoros</p></div><p class="tempo">17 a 20 min</p></header>
   <div class="corpo">
 <div class="duas">
   <ul>
